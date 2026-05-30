@@ -15,3 +15,4 @@ Proyecto de Sistemas Embebidos basado en ESP32.
 
 ## Integrantes
 - María Grazia
+- Daniel

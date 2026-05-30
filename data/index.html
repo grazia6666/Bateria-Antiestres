@@ -2,1437 +2,851 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Batería Anti-Estrés Politécnico</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Batería Anti-Estrés · ESPOL</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --c-bg:       #07080f;
-    --c-bg2:      #0d0f1e;
-    --c-surface:  #12152a;
-    --c-border:   #1e2340;
-    --c-cyan:     #00f5ff;
-    --c-pink:     #ff2d78;
-    --c-yellow:   #ffe03a;
-    --c-green:    #39ff6e;
-    --c-purple:   #b44dff;
-    --c-orange:   #ff6b1a;
-    --c-text:     #e8eaf6;
-    --c-muted:    #5a5f80;
-    --pad0: #00f5ff;
-    --pad1: #ff2d78;
-    --pad2: #ffe03a;
-    --pad3: #39ff6e;
-    --pad4: #b44dff;
-    --pad5: #ff6b1a;
-  }
+:root {
+  --bg:       #060810;
+  --bg2:      #0b0d1a;
+  --surface:  #101426;
+  --border:   #1a1f3a;
+  --cyan:     #00e5ff;
+  --pink:     #ff1f6e;
+  --yellow:   #ffd600;
+  --green:    #00e676;
+  --purple:   #d500f9;
+  --orange:   #ff6d00;
+  --text:     #eceff1;
+  --muted:    #4a5070;
+  --font-hd:  'Orbitron', sans-serif;
+  --font-bd:  'Exo 2', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-bd);
+  font-size:15px;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── GRID BG ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+/* ── CORNER GLOW ── */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(0,229,255,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(255,31,110,.07) 0%, transparent 70%);
+  pointer-events:none;
+}
 
-  body {
-    background: var(--c-bg);
-    color: var(--c-text);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 16px;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ── APP SHELL ── */
+#app{
+  position:relative;z-index:1;
+  height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px;
+  overflow-y:auto;
+}
 
-  /* GRID BG */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-  }
+/* ── SCREENS ── */
+.screen{display:none;width:100%;max-width:460px;flex-direction:column;align-items:center;gap:20px}
+.screen.active{display:flex;animation:screenIn .3s ease}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-  /* SCANLINES */
-  body::after {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-  }
+/* ── LOGO ── */
+.logo{text-align:center}
+.logo h1{
+  font-family:var(--font-hd);
+  font-weight:900;
+  font-size:clamp(1.3rem,5vw,2rem);
+  line-height:1.1;
+  letter-spacing:.04em;
+  background:linear-gradient(90deg,var(--cyan),var(--pink),var(--yellow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 16px rgba(0,229,255,.3));
+}
+.logo p{font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:5px}
 
-  #app {
-    position: relative; z-index: 1;
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px;
-  }
+/* ── CARD ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px 26px;
+  width:100%;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink),var(--yellow));
+}
 
-  /* ---- SCREEN BASE ---- */
-  .screen {
-    display: none;
-    width: 100%; max-width: 520px;
-    animation: fadeIn .35s ease;
-  }
-  .screen.active { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+/* ── FIELD ── */
+.field{display:flex;flex-direction:column;gap:7px;width:100%}
+.field label{
+  font-family:var(--font-hd);font-size:.6rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);
+}
+.field input{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:11px 14px;color:var(--text);
+  font-family:var(--font-bd);font-size:1rem;font-weight:600;
+  outline:none;width:100%;
+  transition:border-color .2s,box-shadow .2s;
+}
+.field input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* ── BUTTONS ── */
+.btn{
+  font-family:var(--font-hd);font-size:.72rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  border:none;border-radius:8px;padding:13px 24px;
+  cursor:pointer;width:100%;
+  transition:transform .13s,filter .2s,box-shadow .2s;
+}
+.btn:active{transform:scale(.97)}
+.btn-cyan{
+  background:linear-gradient(135deg,var(--cyan),#0077cc);
+  color:#000;box-shadow:0 0 18px rgba(0,229,255,.25);
+}
+.btn-cyan:hover{filter:brightness(1.1);box-shadow:0 0 28px rgba(0,229,255,.45)}
+.btn-pink{
+  background:linear-gradient(135deg,var(--pink),#99003d);
+  color:#fff;box-shadow:0 0 18px rgba(255,31,110,.25);
+}
+.btn-pink:hover{filter:brightness(1.1);box-shadow:0 0 28px rgba(255,31,110,.45)}
+.btn-ghost{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-row{display:flex;gap:10px;width:100%}
+.btn-row .btn{flex:1}
 
-  /* LOGO / TITLE */
-  .logo {
-    text-align: center;
-  }
-  .logo h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: clamp(1.4rem, 5vw, 2.2rem);
-    line-height: 1.1;
-    letter-spacing: .05em;
-    background: linear-gradient(90deg, var(--c-cyan), var(--c-pink), var(--c-yellow));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 18px rgba(0,245,255,.35));
-  }
-  .logo p {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: .85rem;
-    letter-spacing: .25em;
-    text-transform: uppercase;
-    color: var(--c-muted);
-    margin-top: 6px;
-  }
+/* ── STATUS BAR ── */
+.status-bar{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--green);animation:blink 2s infinite}
+.dot.off{background:var(--pink);animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* CARD */
-  .card {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: 16px;
-    padding: 28px 32px;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-  }
-  .card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--c-cyan), var(--c-pink), var(--c-yellow));
-  }
+/* ══════════════════════════════
+   SCREEN LOGIN
+══════════════════════════════ */
+.avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(0,229,255,.1),rgba(255,31,110,.1));
+  border:2px solid var(--cyan);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 16px;
+  box-shadow:0 0 20px rgba(0,229,255,.2);
+}
 
-  /* INPUTS */
-  .field { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-  .field label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .65rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--c-cyan);
-  }
-  .field input {
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    color: var(--c-text);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-    width: 100%;
-  }
-  .field input:focus {
-    border-color: var(--c-cyan);
-    box-shadow: 0 0 0 3px rgba(0,245,255,.12);
-  }
+/* ══════════════════════════════
+   SCREEN MODOS
+══════════════════════════════ */
+.player-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:100px;
+  padding:7px 16px;font-size:.88rem;font-weight:600;
+}
+.modes-grid{display:flex;flex-direction:column;gap:12px;width:100%}
+.mode-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;cursor:pointer;
+  display:flex;align-items:center;gap:16px;
+  transition:border-color .2s,transform .15s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.mode-card:hover{transform:translateX(5px);border-color:var(--mc)}
+.mode-card:hover{box-shadow:0 0 14px color-mix(in srgb,var(--mc) 30%,transparent)}
+.mode-icon{font-size:2rem;filter:drop-shadow(0 0 6px var(--mc))}
+.mode-info h3{
+  font-family:var(--font-hd);font-size:.78rem;font-weight:700;
+  letter-spacing:.07em;color:var(--mc);margin-bottom:4px;
+}
+.mode-info p{font-size:.78rem;color:var(--muted);line-height:1.4}
+.mode-badge{
+  font-family:var(--font-hd);font-size:.58rem;font-weight:700;letter-spacing:.1em;
+  padding:4px 9px;border-radius:100px;white-space:nowrap;
+  background:color-mix(in srgb,var(--mc) 12%,transparent);
+  color:var(--mc);
+  border:1px solid color-mix(in srgb,var(--mc) 35%,transparent);
+}
+.settings-btn{
+  position:absolute;top:12px;right:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:50%;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;
+  transition:border-color .2s;
+}
+.settings-btn:hover{border-color:var(--cyan)}
 
-  /* BUTTONS */
-  .btn {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .8rem;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    border: none;
-    border-radius: 8px;
-    padding: 14px 28px;
-    cursor: pointer;
-    transition: transform .15s, box-shadow .2s, filter .2s;
-    width: 100%;
-  }
-  .btn:active { transform: scale(.97); }
+/* ══════════════════════════════
+   SCREEN JUEGO
+══════════════════════════════ */
+.game-topbar{
+  display:flex;justify-content:space-between;align-items:center;width:100%;
+}
+.game-topbar .back-btn{
+  font-family:var(--font-hd);font-size:.62rem;letter-spacing:.1em;
+  background:none;border:1px solid var(--border);border-radius:6px;
+  color:var(--muted);padding:7px 12px;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.game-topbar .back-btn:hover{border-color:var(--pink);color:var(--pink)}
 
-  .btn-primary {
-    background: linear-gradient(135deg, var(--c-cyan), #007aff);
-    color: #000;
-    box-shadow: 0 0 20px rgba(0,245,255,.3);
-  }
-  .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 0 30px rgba(0,245,255,.5); }
+.score-big{
+  font-family:var(--font-hd);font-weight:900;
+  font-size:2.4rem;color:var(--yellow);
+  text-shadow:0 0 20px rgba(255,214,0,.4);
+  text-align:right;line-height:1;
+}
+.score-label{font-size:.6rem;letter-spacing:.2em;color:var(--muted);text-align:right;margin-top:2px}
 
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--c-border);
-    color: var(--c-muted);
-  }
-  .btn-ghost:hover { border-color: var(--c-cyan); color: var(--c-cyan); }
+.lives-row{display:flex;gap:4px}
+.life{font-size:.95rem;transition:filter .3s}
+.life.lost{filter:grayscale(1) opacity(.25)}
 
-  /* STATUS DOT */
-  .status-bar {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .78rem; color: var(--c-muted); letter-spacing: .05em;
-  }
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--c-muted);
-    animation: pulse 2s infinite;
-  }
-  .status-dot.connected { background: var(--c-green); }
-  .status-dot.error     { background: var(--c-pink); animation: none; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+/* STATUS JUEGO */
+.game-status-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:16px 20px;width:100%;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.estado-label{
+  font-family:var(--font-hd);font-size:.65rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);
+}
+.estado-valor{
+  font-family:var(--font-hd);font-size:1.1rem;font-weight:700;
+  color:var(--cyan);text-align:center;line-height:1.3;
+}
+.estado-valor.esperando{color:var(--muted);font-size:.85rem}
 
-  /* ========================
-     SCREEN: LOGIN
-  ======================== */
-  #screen-login .avatar {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--c-cyan)22, var(--c-pink)22);
-    border: 2px solid var(--c-cyan);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.2rem;
-    box-shadow: 0 0 24px rgba(0,245,255,.25);
-    margin: 0 auto 8px;
-  }
+/* FEED DE EVENTOS */
+.event-feed{
+  width:100%;min-height:52px;
+  display:flex;flex-direction:column;gap:6px;
+  overflow:hidden;
+}
+.event-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;
+  font-size:.82rem;font-weight:600;
+  animation:eventIn .25s ease;
+}
+@keyframes eventIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.event-item.correcto{border-color:rgba(0,230,118,.35);color:var(--green)}
+.event-item.incorrecto{border-color:rgba(255,31,110,.35);color:var(--pink)}
+.event-item.combo{border-color:rgba(255,214,0,.35);color:var(--yellow)}
+.event-item.info{border-color:var(--border);color:var(--muted)}
 
-  /* ========================
-     SCREEN: MODO
-  ======================== */
-  .player-chip {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 100px;
-    padding: 8px 18px;
-    font-size: .9rem; font-weight: 600;
-  }
-  .player-chip span:first-child { font-size: 1.1rem; }
+/* COMBO + RONDA */
+.meta-row{
+  display:flex;justify-content:space-between;align-items:center;width:100%;
+  font-size:.78rem;color:var(--muted);
+}
+.meta-val{
+  font-family:var(--font-hd);font-weight:700;
+}
+.meta-val.combo-v{color:var(--yellow)}
+.meta-val.ronda-v{color:var(--cyan)}
 
-  .modes-grid {
-    display: grid; grid-template-columns: 1fr;
-    gap: 14px; width: 100%;
-  }
+/* OLED HINT — solo recordatorio visual de que el OLED es el árbitro */
+.oled-hint{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 16px;width:100%;
+}
+.oled-screen{
+  width:56px;height:30px;
+  background:#000;border:1px solid #333;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:monospace;font-size:.6rem;color:#4cff50;
+  letter-spacing:.05em;flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+.oled-screen::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.2) 2px,rgba(0,0,0,.2) 3px);
+}
+.oled-screen span{z-index:1}
+.oled-hint p{font-size:.75rem;color:var(--muted);line-height:1.4}
+.oled-hint strong{color:var(--text)}
 
-  .mode-card {
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 12px;
-    padding: 20px 22px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 18px;
-    transition: border-color .2s, box-shadow .2s, transform .15s;
-    position: relative; overflow: hidden;
-  }
-  .mode-card::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: var(--mc, transparent);
-    opacity: 0;
-    transition: opacity .2s;
-  }
-  .mode-card:hover { transform: translateX(4px); }
-  .mode-card:hover::after { opacity: .06; }
-  .mode-card.selected { border-color: var(--mc, var(--c-cyan)); box-shadow: 0 0 16px color-mix(in srgb, var(--mc, var(--c-cyan)) 40%, transparent); }
+/* ══════════════════════════════
+   SCREEN RESULTADO
+══════════════════════════════ */
+.result-big{text-align:center}
+.result-num{
+  font-family:var(--font-hd);font-weight:900;font-size:4.5rem;line-height:1;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(255,214,0,.35));
+}
+.result-pts{font-size:.68rem;letter-spacing:.25em;color:var(--muted);margin-top:4px}
 
-  .mode-icon {
-    font-size: 2.2rem;
-    flex-shrink: 0;
-    filter: drop-shadow(0 0 8px var(--mc, var(--c-cyan)));
-  }
-  .mode-info { flex: 1; }
-  .mode-info h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .85rem; font-weight: 700;
-    letter-spacing: .08em;
-    color: var(--mc, var(--c-cyan));
-    margin-bottom: 4px;
-  }
-  .mode-info p { font-size: .82rem; color: var(--c-muted); line-height: 1.4; }
+.stats-row{display:flex;gap:10px;width:100%}
+.stat-box{
+  flex:1;background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:13px 10px;text-align:center;
+}
+.stat-v{font-family:var(--font-hd);font-size:1.2rem;font-weight:700;color:var(--cyan)}
+.stat-l{font-size:.68rem;color:var(--muted);margin-top:3px;letter-spacing:.07em}
 
-  .mode-badge {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .6rem; font-weight: 700;
-    letter-spacing: .1em;
-    padding: 4px 10px; border-radius: 100px;
-    background: color-mix(in srgb, var(--mc, var(--c-cyan)) 15%, transparent);
-    color: var(--mc, var(--c-cyan));
-    border: 1px solid color-mix(in srgb, var(--mc, var(--c-cyan)) 40%, transparent);
-    white-space: nowrap;
-  }
+/* ══════════════════════════════
+   SCREEN RANKING
+══════════════════════════════ */
+.rtabs{display:flex;gap:7px;width:100%}
+.rtab{
+  flex:1;font-family:var(--font-hd);font-size:.6rem;font-weight:700;
+  letter-spacing:.1em;padding:8px 4px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);cursor:pointer;text-align:center;
+  transition:border-color .2s,color .2s;
+}
+.rtab.active{border-color:var(--cyan);color:var(--cyan)}
+.rlist{width:100%;display:flex;flex-direction:column;gap:7px;max-height:340px;overflow-y:auto}
+.ritem{
+  display:flex;align-items:center;gap:11px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:9px;padding:11px 14px;
+}
+.ritem.mine{border-color:rgba(0,229,255,.4);background:rgba(0,229,255,.03)}
+.rnum{font-family:var(--font-hd);font-size:.75rem;font-weight:700;width:22px;text-align:center;color:var(--muted)}
+.rnum.g{color:#ffd700}.rnum.s{color:#b0bec5}.rnum.b{color:#a1887f}
+.rname{flex:1;font-weight:600;font-size:.9rem}
+.rmodo{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.rscore{font-family:var(--font-hd);font-size:.88rem;font-weight:700;color:var(--yellow)}
+.rempty{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 0;letter-spacing:.05em}
 
-  /* ========================
-     SCREEN: JUEGO
-  ======================== */
-  .game-header {
-    display: flex; justify-content: space-between; align-items: center;
-    width: 100%;
-  }
-  .game-header h2 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .8rem; font-weight: 700; letter-spacing: .15em;
-    color: var(--c-cyan);
-  }
-  .score-display {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.6rem; font-weight: 900;
-    color: var(--c-yellow);
-    text-shadow: 0 0 16px rgba(255,224,58,.5);
-  }
+/* ══════════════════════════════
+   SCREEN WIFI
+══════════════════════════════ */
+.wifi-slot{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:16px;display:flex;flex-direction:column;gap:11px;width:100%;
+}
+.wifi-slot-hd{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--font-hd);font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;color:var(--cyan);
+}
+.nav-back{
+  display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--muted);
+  background:none;border:none;cursor:pointer;letter-spacing:.07em;
+  transition:color .2s;
+}
+.nav-back:hover{color:var(--cyan)}
 
-  .timer-bar {
-    width: 100%;
-    height: 4px;
-    background: var(--c-border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .timer-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--c-cyan), var(--c-pink));
-    border-radius: 2px;
-    transition: width .1s linear;
-  }
-
-  .game-info {
-    text-align: center;
-    min-height: 48px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  }
-  .game-info .instruction {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .9rem; font-weight: 700;
-    color: var(--c-text);
-    letter-spacing: .08em;
-  }
-  .game-info .sub {
-    font-size: .8rem; color: var(--c-muted); letter-spacing: .05em;
-  }
-
-  /* PADS */
-  .pads-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    width: 100%;
-  }
-  .pad {
-    aspect-ratio: 1;
-    border-radius: 14px;
-    border: 2px solid var(--pc);
-    background: color-mix(in srgb, var(--pc) 8%, var(--c-bg2));
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem;
-    position: relative;
-    overflow: hidden;
-    transition: transform .1s;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .pad::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: var(--pc);
-    opacity: 0;
-    transition: opacity .15s;
-  }
-  .pad.lit::before { opacity: .25; }
-  .pad.lit {
-    box-shadow: 0 0 24px color-mix(in srgb, var(--pc) 60%, transparent),
-                inset 0 0 20px color-mix(in srgb, var(--pc) 20%, transparent);
-    transform: scale(.95);
-  }
-  .pad:active { transform: scale(.92); }
-  .pad:active::before { opacity: .4; }
-  .pad .pad-label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .6rem; font-weight: 700; letter-spacing: .1em;
-    color: var(--pc);
-    position: absolute; bottom: 8px;
-    z-index: 1;
-  }
-  .pad .pad-icon { z-index: 1; pointer-events: none; }
-
-  /* Libre: pad 3 ocupa espacio extra (centered bottom) */
-  .pads-grid.modo-libre .pad:nth-child(4) { grid-column: 1; }
-  .pads-grid.modo-libre .pad:nth-child(5) { grid-column: 2; }
-  .pads-grid.modo-libre .pad:nth-child(6) { display: none; }
-
-  /* combo + streak */
-  .combo-row {
-    display: flex; justify-content: space-between;
-    width: 100%; font-size: .8rem;
-  }
-  .combo-row span { color: var(--c-muted); }
-  .combo-row strong { font-family: 'Orbitron', sans-serif; }
-  .combo-row .combo-val { color: var(--c-yellow); }
-  .combo-row .streak-val { color: var(--c-pink); }
-
-  /* feedback flash */
-  .feedback {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem; font-weight: 900;
-    letter-spacing: .15em;
-    min-height: 36px;
-    text-align: center;
-    animation: feedbackAnim .4s ease forwards;
-  }
-  @keyframes feedbackAnim {
-    0%   { opacity: 0; transform: scale(.7); }
-    40%  { opacity: 1; transform: scale(1.1); }
-    100% { opacity: 1; transform: scale(1); }
-  }
-  .feedback.hit  { color: var(--c-green); text-shadow: 0 0 16px rgba(57,255,110,.6); }
-  .feedback.miss { color: var(--c-pink);  text-shadow: 0 0 16px rgba(255,45,120,.6); }
-  .feedback.combo { color: var(--c-yellow); text-shadow: 0 0 16px rgba(255,224,58,.6); }
-
-  /* countdown overlay */
-  .countdown-overlay {
-    position: fixed; inset: 0; z-index: 100;
-    background: rgba(7,8,15,.92);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 16px;
-    animation: fadeIn .2s ease;
-  }
-  .countdown-overlay.hidden { display: none; }
-  .countdown-number {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 7rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--c-cyan), var(--c-pink));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: countPop .9s ease;
-    filter: drop-shadow(0 0 30px rgba(0,245,255,.5));
-  }
-  @keyframes countPop {
-    0%  { transform: scale(1.8); opacity: 0; }
-    30% { transform: scale(1);   opacity: 1; }
-    80% { transform: scale(1);   opacity: 1; }
-    100%{ transform: scale(.6);  opacity: 0; }
-  }
-  .countdown-label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .85rem; letter-spacing: .3em;
-    color: var(--c-muted); text-transform: uppercase;
-  }
-
-  /* ========================
-     SCREEN: RESULTADO
-  ======================== */
-  .result-score {
-    text-align: center;
-  }
-  .result-score .big {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 5rem; font-weight: 900;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--c-yellow), var(--c-orange));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    filter: drop-shadow(0 0 24px rgba(255,224,58,.4));
-  }
-  .result-score .pts {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .75rem; letter-spacing: .3em; color: var(--c-muted);
-    margin-top: 4px;
-  }
-
-  .stats-row {
-    display: flex; gap: 12px; width: 100%;
-  }
-  .stat-box {
-    flex: 1;
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 10px;
-    padding: 14px 10px;
-    text-align: center;
-  }
-  .stat-box .val {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem; font-weight: 700;
-    color: var(--c-cyan);
-  }
-  .stat-box .lbl { font-size: .72rem; color: var(--c-muted); margin-top: 4px; letter-spacing: .08em; }
-
-  .btn-row { display: flex; gap: 10px; width: 100%; }
-  .btn-row .btn { flex: 1; }
-  .btn-pink {
-    background: linear-gradient(135deg, var(--c-pink), #c4006a);
-    color: #fff;
-    box-shadow: 0 0 20px rgba(255,45,120,.3);
-  }
-  .btn-pink:hover { filter: brightness(1.1); box-shadow: 0 0 30px rgba(255,45,120,.5); }
-
-  /* ========================
-     SCREEN: RANKING
-  ======================== */
-  .ranking-tabs {
-    display: flex; gap: 8px; width: 100%;
-  }
-  .tab {
-    flex: 1;
-    font-family: 'Orbitron', sans-serif;
-    font-size: .65rem; font-weight: 700; letter-spacing: .1em;
-    padding: 9px 6px;
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 8px;
-    color: var(--c-muted);
-    cursor: pointer;
-    text-align: center;
-    transition: border-color .2s, color .2s;
-  }
-  .tab.active { border-color: var(--c-cyan); color: var(--c-cyan); }
-
-  .ranking-list { width: 100%; display: flex; flex-direction: column; gap: 8px; }
-
-  .rank-item {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    transition: border-color .2s;
-  }
-  .rank-item.mine { border-color: var(--c-cyan); background: rgba(0,245,255,.04); }
-  .rank-num {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .8rem; font-weight: 700;
-    width: 24px; text-align: center;
-    color: var(--c-muted);
-  }
-  .rank-num.gold   { color: #ffd700; }
-  .rank-num.silver { color: #c0c0c0; }
-  .rank-num.bronze { color: #cd7f32; }
-  .rank-name { flex: 1; font-weight: 600; font-size: .95rem; }
-  .rank-score {
-    font-family: 'Orbitron', sans-serif;
-    font-size: .9rem; font-weight: 700;
-    color: var(--c-yellow);
-  }
-  .rank-empty {
-    text-align: center; color: var(--c-muted);
-    font-size: .85rem; padding: 24px 0;
-    letter-spacing: .05em;
-  }
-
-  /* ========================
-     SCREEN: CONFIG WIFI
-  ======================== */
-  .wifi-slots { display: flex; flex-direction: column; gap: 14px; width: 100%; }
-  .wifi-slot {
-    background: var(--c-bg2);
-    border: 1px solid var(--c-border);
-    border-radius: 10px;
-    padding: 16px;
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .wifi-slot-header {
-    display: flex; align-items: center; gap: 8px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: .7rem; font-weight: 700; letter-spacing: .15em;
-    color: var(--c-cyan);
-  }
-  .wifi-slot-header span { font-size: 1rem; }
-  .wifi-fields { display: flex; flex-direction: column; gap: 8px; }
-
-  .nav-bottom {
-    display: flex; align-items: center; gap: 6px;
-    font-size: .78rem; color: var(--c-muted); cursor: pointer;
-    background: none; border: none; padding: 0; letter-spacing: .08em;
-  }
-  .nav-bottom:hover { color: var(--c-cyan); }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--c-surface);
-    border: 1px solid var(--c-cyan);
-    border-radius: 100px;
-    padding: 10px 22px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: .72rem; font-weight: 700; letter-spacing: .1em;
-    color: var(--c-cyan);
-    box-shadow: 0 0 20px rgba(0,245,255,.25);
-    z-index: 200;
-    transition: opacity .4s;
-    white-space: nowrap;
-  }
-  .toast.hidden { display: none; }
-
-  /* PROGRESS (modo memoria) */
-  .sequence-progress {
-    display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
-    width: 100%;
-  }
-  .seq-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--c-border);
-    transition: background .2s;
-  }
-  .seq-dot.done   { background: var(--c-green); }
-  .seq-dot.active { background: var(--c-yellow); }
-  .seq-dot.error  { background: var(--c-pink); }
-
-  /* LIVES */
-  .lives-row {
-    display: flex; gap: 6px; align-items: center;
-    font-size: .85rem;
-  }
-  .life { font-size: 1rem; transition: filter .2s; }
-  .life.lost { filter: grayscale(1) opacity(.3); }
-
-  /* Settings button */
-  .settings-btn {
-    position: fixed; top: 16px; right: 16px; z-index: 50;
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: 50%;
-    width: 40px; height: 40px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 1.1rem;
-    transition: border-color .2s;
-  }
-  .settings-btn:hover { border-color: var(--c-cyan); }
-  .settings-btn.hidden { display: none; }
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+#toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  background:var(--surface);border:1px solid var(--cyan);border-radius:100px;
+  padding:9px 20px;font-family:var(--font-hd);font-size:.68rem;font-weight:700;
+  letter-spacing:.1em;color:var(--cyan);
+  box-shadow:0 0 16px rgba(0,229,255,.2);z-index:300;
+  white-space:nowrap;transition:opacity .3s;
+}
+#toast.off{display:none}
 </style>
 </head>
 <body>
-
-<!-- SETTINGS BUTTON -->
-<button class="settings-btn hidden" id="settings-btn" title="Configurar WiFi" onclick="goScreen('wifi')">⚙️</button>
-
-<!-- COUNTDOWN OVERLAY -->
-<div class="countdown-overlay hidden" id="countdown-overlay">
-  <div class="countdown-number" id="countdown-num">3</div>
-  <div class="countdown-label">¡Prepárate!</div>
-</div>
-
-<!-- TOAST -->
-<div class="toast hidden" id="toast"></div>
-
 <div id="app">
 
-  <!-- ======================== SCREEN: LOGIN ======================== -->
-  <div class="screen active" id="screen-login">
+  <!-- ═══════════ LOGIN ═══════════ -->
+  <div class="screen active" id="s-login">
     <div class="logo">
-      <h1>BATERÍA<br>ANTI-ESTRÉS</h1>
-      <p>Laboratorio · Sistemas Embebidos</p>
+      <h1>BATERÍA<br>ANTI‑ESTRÉS</h1>
+      <p>Sistemas Embebidos · ESPOL</p>
     </div>
-
     <div class="card">
       <div class="avatar">🥁</div>
-      <div style="height:20px"></div>
       <div class="field">
-        <label>Tu nombre de jugador</label>
-        <input type="text" id="input-nombre" placeholder="Ej: Daniel E." maxlength="20" autocomplete="off" />
+        <label>Nombre de jugador</label>
+        <input id="inp-nombre" type="text" placeholder="Ej: Daniel E." maxlength="18" autocomplete="off"/>
       </div>
-      <div style="height:16px"></div>
-      <button class="btn btn-primary" onclick="doLogin()">INGRESAR AL JUEGO</button>
+      <div style="height:14px"></div>
+      <button class="btn btn-cyan" onclick="doLogin()">ENTRAR AL JUEGO</button>
     </div>
-
     <div class="status-bar">
-      <div class="status-dot" id="ws-dot"></div>
-      <span id="ws-label">Conectando con ESP32...</span>
+      <div class="dot" id="ws-dot"></div>
+      <span id="ws-label">Conectando con ESP32…</span>
     </div>
   </div>
 
-  <!-- ======================== SCREEN: MODOS ======================== -->
-  <div class="screen" id="screen-modos">
-    <div class="logo">
-      <h1>SELECCIONA<br>MODO</h1>
-    </div>
-
-    <div class="player-chip">
-      <span>🎮</span>
-      <span id="chip-nombre">Jugador</span>
-    </div>
+  <!-- ═══════════ MODOS ═══════════ -->
+  <div class="screen" id="s-modos">
+    <div class="logo"><h1>ELIGE<br>TU MODO</h1></div>
+    <div class="player-chip">🎮 <span id="chip-name">Jugador</span></div>
 
     <div class="modes-grid">
-
-      <div class="mode-card" style="--mc: var(--c-cyan)" onclick="selectMode('libre')" id="mc-libre">
+      <div class="mode-card" style="--mc:var(--cyan)" onclick="elegirModo('libre')">
         <div class="mode-icon">🎵</div>
         <div class="mode-info">
           <h3>Modo Libre</h3>
-          <p>Crea tus propios ritmos. Toca los pads, explora sonidos y disfruta sin límites.</p>
+          <p>Toca los pads a tu ritmo. Cada golpe suma puntos según su intensidad.</p>
         </div>
         <div class="mode-badge">LIBRE</div>
       </div>
-
-      <div class="mode-card" style="--mc: var(--c-pink)" onclick="selectMode('reflejos')" id="mc-reflejos">
+      <div class="mode-card" style="--mc:var(--pink)" onclick="elegirModo('reflejos')">
         <div class="mode-icon">⚡</div>
         <div class="mode-info">
           <h3>Modo Reflejos</h3>
-          <p>Los pads se iluminan al azar. ¡Reacciona rápido antes de que se apaguen!</p>
+          <p>El OLED indica el pad. Reacciona antes de que se acabe el tiempo.</p>
         </div>
         <div class="mode-badge">SPEED</div>
       </div>
-
-      <div class="mode-card" style="--mc: var(--c-purple)" onclick="selectMode('memoria')" id="mc-memoria">
+      <div class="mode-card" style="--mc:var(--purple)" onclick="elegirModo('memoria')">
         <div class="mode-icon">🧠</div>
         <div class="mode-info">
           <h3>Modo Memoria</h3>
-          <p>Memoriza y repite secuencias de luces. ¡La dificultad aumenta con cada ronda!</p>
+          <p>El OLED muestra una secuencia. Memorízala y repítela en los pads.</p>
         </div>
         <div class="mode-badge">MEMORY</div>
       </div>
-
     </div>
 
-    <button class="btn btn-ghost" onclick="goScreen('ranking')">VER RANKING 🏆</button>
+    <button class="btn btn-ghost" onclick="ir('ranking')">VER RANKING 🏆</button>
+    <button class="settings-btn" onclick="ir('wifi')" title="Config WiFi">⚙️</button>
   </div>
 
-  <!-- ======================== SCREEN: JUEGO ======================== -->
-  <div class="screen" id="screen-juego">
-
-    <div class="game-header" style="width:100%">
-      <button class="nav-bottom" onclick="goScreen('modos')" style="color:var(--c-muted)">← SALIR</button>
+  <!-- ═══════════ JUEGO ═══════════ -->
+  <div class="screen" id="s-juego">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="terminarJuego()">✕ SALIR</button>
       <div>
-        <div class="score-display" id="score-display">0</div>
+        <div class="score-big" id="score-num">0</div>
+        <div class="score-label">PUNTOS</div>
       </div>
       <div class="lives-row" id="lives-row"></div>
     </div>
 
-    <div class="timer-bar" id="timer-bar-wrap" style="display:none">
-      <div class="timer-fill" id="timer-fill" style="width:100%"></div>
-    </div>
-
-    <div class="game-info">
-      <div class="instruction" id="game-instruction">¡A TOCAR!</div>
-      <div class="sub" id="game-sub"></div>
-    </div>
-
-    <!-- Secuencia dots (memoria) -->
-    <div class="sequence-progress" id="seq-progress" style="display:none"></div>
-
-    <div class="pads-grid" id="pads-grid">
-      <div class="pad" style="--pc:var(--pad0)" id="pad-0" onclick="padHit(0)">
-        <span class="pad-icon">🔴</span>
-        <span class="pad-label">PAD 1</span>
-      </div>
-      <div class="pad" style="--pc:var(--pad1)" id="pad-1" onclick="padHit(1)">
-        <span class="pad-icon">🟣</span>
-        <span class="pad-label">PAD 2</span>
-      </div>
-      <div class="pad" style="--pc:var(--pad2)" id="pad-2" onclick="padHit(2)">
-        <span class="pad-icon">🟡</span>
-        <span class="pad-label">PAD 3</span>
-      </div>
-      <div class="pad" style="--pc:var(--pad3)" id="pad-3" onclick="padHit(3)">
-        <span class="pad-icon">🟢</span>
-        <span class="pad-label">PAD 4</span>
-      </div>
-      <div class="pad" style="--pc:var(--pad4)" id="pad-4" onclick="padHit(4)">
-        <span class="pad-icon">🔵</span>
-        <span class="pad-label">PAD 5</span>
-      </div>
-      <div class="pad" style="--pc:var(--pad5)" id="pad-5" onclick="padHit(5)">
-        <span class="pad-icon">🟠</span>
-        <span class="pad-label">PAD 6</span>
+    <!-- Indicador modo activo -->
+    <div style="display:flex;align-items:center;gap:8px;width:100%">
+      <div style="font-family:var(--font-hd);font-size:.62rem;letter-spacing:.2em;color:var(--muted)">MODO</div>
+      <div id="modo-badge-active" class="mode-badge" style="--mc:var(--cyan)">—</div>
+      <div style="flex:1"></div>
+      <div class="meta-row" style="gap:16px">
+        <span>COMBO <span class="meta-val combo-v" id="combo-v">x1</span></span>
+        <span>RONDA <span class="meta-val ronda-v" id="ronda-v">—</span></span>
       </div>
     </div>
 
-    <div class="combo-row" id="combo-row">
-      <span>COMBO: <strong class="combo-val" id="combo-val">x1</strong></span>
-      <span>RACHA: <strong class="streak-val" id="streak-val">0</strong></span>
+    <!-- Estado actual (lo que dicta el OLED) -->
+    <div class="game-status-card">
+      <div class="estado-label" id="estado-label">ESPERANDO ESP32</div>
+      <div class="estado-valor esperando" id="estado-valor">Iniciando juego…</div>
     </div>
 
-    <div class="feedback" id="feedback" style="min-height:36px"></div>
+    <!-- Hint OLED -->
+    <div class="oled-hint">
+      <div class="oled-screen"><span id="oled-preview">···</span></div>
+      <p><strong>Mira el OLED</strong> en la batería.<br>Él te indica qué pad tocar.</p>
+    </div>
 
+    <!-- Feed de eventos en tiempo real -->
+    <div class="event-feed" id="event-feed"></div>
+
+    <button class="btn btn-ghost" style="margin-top:4px" onclick="terminarJuego()">TERMINAR PARTIDA</button>
   </div>
 
-  <!-- ======================== SCREEN: RESULTADO ======================== -->
-  <div class="screen" id="screen-resultado">
+  <!-- ═══════════ RESULTADO ═══════════ -->
+  <div class="screen" id="s-resultado">
     <div class="logo"><h1>RESULTADO</h1></div>
-
-    <div class="result-score">
-      <div class="big" id="res-score">0</div>
-      <div class="pts">PUNTOS</div>
+    <div class="result-big">
+      <div class="result-num" id="res-num">0</div>
+      <div class="result-pts">PUNTOS FINALES</div>
     </div>
-
     <div class="stats-row">
-      <div class="stat-box">
-        <div class="val" id="res-aciertos">0</div>
-        <div class="lbl">ACIERTOS</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" id="res-combo">x1</div>
-        <div class="lbl">COMBO MÁX</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" id="res-modo">—</div>
-        <div class="lbl">MODO</div>
-      </div>
+      <div class="stat-box"><div class="stat-v" id="res-aciertos">0</div><div class="stat-l">ACIERTOS</div></div>
+      <div class="stat-box"><div class="stat-v" id="res-combo">x1</div><div class="stat-l">COMBO MÁX</div></div>
+      <div class="stat-box"><div class="stat-v" id="res-modo">—</div><div class="stat-l">MODO</div></div>
     </div>
-
     <div class="btn-row">
-      <button class="btn btn-pink" onclick="playAgain()">🔁 JUGAR DE NUEVO</button>
-      <button class="btn btn-primary" onclick="goScreen('ranking')">🏆 RANKING</button>
+      <button class="btn btn-pink" onclick="jugarDeNuevo()">🔁 DE NUEVO</button>
+      <button class="btn btn-cyan" onclick="ir('ranking')">🏆 RANKING</button>
     </div>
-    <button class="btn btn-ghost" onclick="goScreen('modos')">CAMBIAR MODO</button>
+    <button class="btn btn-ghost" onclick="ir('modos')">CAMBIAR MODO</button>
   </div>
 
-  <!-- ======================== SCREEN: RANKING ======================== -->
-  <div class="screen" id="screen-ranking">
+  <!-- ═══════════ RANKING ═══════════ -->
+  <div class="screen" id="s-ranking">
     <div class="logo"><h1>RANKING 🏆</h1></div>
-
-    <div class="ranking-tabs">
-      <button class="tab active" onclick="filterRanking('todos')" id="tab-todos">TODOS</button>
-      <button class="tab" onclick="filterRanking('libre')" id="tab-libre">LIBRE</button>
-      <button class="tab" onclick="filterRanking('reflejos')" id="tab-reflejos">REFLEJOS</button>
-      <button class="tab" onclick="filterRanking('memoria')" id="tab-memoria">MEMORIA</button>
+    <div class="rtabs">
+      <button class="rtab active" id="rt-todos"    onclick="filtrarRanking('todos')">TODOS</button>
+      <button class="rtab"        id="rt-libre"    onclick="filtrarRanking('libre')">LIBRE</button>
+      <button class="rtab"        id="rt-reflejos" onclick="filtrarRanking('reflejos')">REFLEJOS</button>
+      <button class="rtab"        id="rt-memoria"  onclick="filtrarRanking('memoria')">MEMORIA</button>
     </div>
-
-    <div class="ranking-list" id="ranking-list"></div>
-
+    <div class="rlist" id="rlist"></div>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="goScreen('modos')">JUGAR</button>
-      <button class="btn btn-ghost" onclick="goScreen('login')">CAMBIAR JUGADOR</button>
+      <button class="btn btn-cyan"  onclick="ir('modos')">JUGAR</button>
+      <button class="btn btn-ghost" onclick="ir('login')">CAMBIAR JUGADOR</button>
     </div>
   </div>
 
-  <!-- ======================== SCREEN: CONFIG WIFI ======================== -->
-  <div class="screen" id="screen-wifi">
+  <!-- ═══════════ CONFIG WIFI ═══════════ -->
+  <div class="screen" id="s-wifi">
     <div class="logo">
-      <h1>CONFIG<br>WIFI</h1>
-      <p>Se guardan en memoria EEPROM</p>
+      <h1>CONFIG WiFi</h1>
+      <p>Almacenado en memoria EEPROM</p>
     </div>
-
-    <div class="wifi-slots">
-      <div class="wifi-slot">
-        <div class="wifi-slot-header"><span>📶</span> RED 1 (Principal)</div>
-        <div class="wifi-fields">
-          <div class="field"><label>SSID</label><input type="text" id="ssid0" placeholder="Nombre de red" autocomplete="off"/></div>
-          <div class="field"><label>Contraseña</label><input type="password" id="pass0" placeholder="••••••••"/></div>
-        </div>
-      </div>
-      <div class="wifi-slot">
-        <div class="wifi-slot-header"><span>📶</span> RED 2 (Respaldo)</div>
-        <div class="wifi-fields">
-          <div class="field"><label>SSID</label><input type="text" id="ssid1" placeholder="Nombre de red" autocomplete="off"/></div>
-          <div class="field"><label>Contraseña</label><input type="password" id="pass1" placeholder="••••••••"/></div>
-        </div>
-      </div>
+    <div class="wifi-slot">
+      <div class="wifi-slot-hd">📶 RED 1 — Principal</div>
+      <div class="field"><label>SSID</label><input id="ssid0" type="text" placeholder="Nombre de la red" autocomplete="off"/></div>
+      <div class="field"><label>Contraseña</label><input id="pass0" type="password" placeholder="••••••••"/></div>
     </div>
-
-    <button class="btn btn-primary" onclick="saveWifi()">💾 GUARDAR EN ESP32</button>
-    <button class="nav-bottom" onclick="goScreen('modos')">← VOLVER AL MENÚ</button>
+    <div class="wifi-slot">
+      <div class="wifi-slot-hd">📶 RED 2 — Respaldo</div>
+      <div class="field"><label>SSID</label><input id="ssid1" type="text" placeholder="Nombre de la red" autocomplete="off"/></div>
+      <div class="field"><label>Contraseña</label><input id="pass1" type="password" placeholder="••••••••"/></div>
+    </div>
+    <button class="btn btn-cyan" onclick="guardarWifi()">💾 GUARDAR EN ESP32</button>
+    <button class="nav-back" onclick="ir('modos')">← Volver al menú</button>
   </div>
 
 </div><!-- #app -->
+<div id="toast" class="off"></div>
 
 <script>
-/* ============================================================
-   STATE
-============================================================ */
-const state = {
+/* ═══════════════════════════════════════════════
+   ESTADO GLOBAL
+═══════════════════════════════════════════════ */
+const G = {
   jugador: '',
-  modoSeleccionado: null,
+  modo: null,
   score: 0,
   combo: 1,
   maxCombo: 1,
-  streak: 0,
   aciertos: 0,
-  // reflejos
-  timerInterval: null,
-  timerValue: 100,
-  padActivo: -1,
-  timerReflejo: null,
-  reflexRound: 0,
-  // memoria
-  secuencia: [],
-  pasoUsuario: 0,
-  mostrando: false,
-  rondaMemoria: 0,
-  // libre
-  grabandoLibre: false,
-  // vidas (reflejos)
   vidas: 3,
-  // scores local
+  ronda: 0,
   scores: [],
-  // WebSocket
+  rankFilter: 'todos',
   ws: null,
-  wsConectado: false,
+  wsOk: false,
 };
 
-const PADS_ICONS = ['🔴','🟣','🟡','🟢','🔵','🟠'];
-const PADS_NOMBRES = ['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6'];
-const MODO_LABELS = { libre:'LIBRE', reflejos:'REFLEJOS', memoria:'MEMORIA' };
+const MODO_LABEL = { libre:'LIBRE', reflejos:'REFLEJOS', memoria:'MEMORIA' };
+const MODO_COLOR = { libre:'var(--cyan)', reflejos:'var(--pink)', memoria:'var(--purple)' };
 
-/* ============================================================
-   WEB SOCKET — conecta al ESP32
-============================================================ */
-function connectWS() {
-  // En producción conecta al host (ESP32). En navegador normal usa mock.
-  const host = location.hostname === 'localhost' || location.hostname === ''
-    ? null  // modo demo sin ESP32
-    : `ws://${location.hostname}/ws`;
+/* ═══════════════════════════════════════════════
+   WEBSOCKET
+═══════════════════════════════════════════════ */
+function conectarWS() {
+  const host = (location.hostname === '' || location.hostname === 'localhost')
+    ? null : `ws://${location.hostname}/ws`;
 
-  if (!host) { mockWS(); return; }
+  if (!host) { setWSDot(false,'Modo demo (sin ESP32)'); cargarScoresDemo(); return; }
 
-  try {
-    state.ws = new WebSocket(host);
-    state.ws.onopen = () => {
-      state.wsConectado = true;
-      updateWSDot(true);
-      // pedir scores al conectar
-      wsSend({ accion: 'get_scores' });
-    };
-    state.ws.onclose = () => {
-      state.wsConectado = false;
-      updateWSDot(false);
-      setTimeout(connectWS, 3000);
-    };
-    state.ws.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        if (data.scores) { state.scores = data.scores; renderRanking(); }
-        if (data.ok) showToast('✅ Guardado en ESP32');
-        // El ESP32 puede enviar: { pad_hit: 2 } cuando detecta un golpe real
-        if (data.pad_hit !== undefined) padHitFromESP32(data.pad_hit);
-      } catch(_) {}
-    };
-  } catch(_) { mockWS(); }
+  G.ws = new WebSocket(host);
+
+  G.ws.onopen = () => {
+    G.wsOk = true;
+    setWSDot(true);
+    enviar({ accion:'get_scores' });
+  };
+  G.ws.onclose = () => {
+    G.wsOk = false;
+    setWSDot(false,'Sin conexión — reintentando…');
+    setTimeout(conectarWS, 3000);
+  };
+  G.ws.onmessage = (e) => {
+    try { manejarMensaje(JSON.parse(e.data)); } catch(_) {}
+  };
 }
 
-function mockWS() {
-  // Demo mode: sin ESP32 real, scores locales
-  updateWSDot(false, 'Modo demo (sin ESP32)');
-  // Cargar scores de localStorage si existen (solo demo)
-  try {
-    const s = localStorage.getItem('bateria_scores');
-    if (s) state.scores = JSON.parse(s);
-  } catch(_) {}
+function enviar(obj) {
+  if (G.ws && G.ws.readyState === 1) G.ws.send(JSON.stringify(obj));
 }
 
-function wsSend(obj) {
-  if (state.ws && state.ws.readyState === 1) {
-    state.ws.send(JSON.stringify(obj));
+/* ── Mensajes entrantes del ESP32 ── */
+function manejarMensaje(d) {
+  // Ranking actualizado
+  if (d.scores) { G.scores = d.scores; renderRanking(); }
+
+  // Confirmación guardado wifi
+  if (d.ok === true) toast('✅ Guardado en ESP32');
+
+  // ── Eventos de juego ──
+  switch(d.evento) {
+
+    case 'juego_iniciado':
+      G.score=0; G.combo=1; G.maxCombo=1; G.aciertos=0; G.vidas=d.vidas||3; G.ronda=0;
+      actualizarHUD();
+      setEstado('INICIANDO…','Sigue el OLED de la batería','esperando');
+      break;
+
+    case 'pad_objetivo':
+      // ESP32 indica qué pad debe tocar (solo para mostrar en web como referencia)
+      setEstado(
+        `TOCA → PAD ${d.pad + 1}`,
+        `Ronda ${d.ronda || G.ronda}`,
+        'activo'
+      );
+      setOledPreview(`P${d.pad+1}`);
+      G.ronda = d.ronda || G.ronda;
+      actualizarHUD();
+      break;
+
+    case 'mostrando_secuencia':
+      setEstado('MEMORIZA LA SECUENCIA', `${d.largo} pasos — Ronda ${d.ronda}`, 'activo');
+      setOledPreview(`R${d.ronda}`);
+      G.ronda = d.ronda;
+      actualizarHUD();
+      break;
+
+    case 'turno_jugador':
+      setEstado(`TU TURNO — PASO ${d.paso}/${d.total}`, 'Repite la secuencia','activo');
+      setOledPreview(`${d.paso}/${d.total}`);
+      break;
+
+    case 'hit_correcto':
+      G.score = d.puntos_total ?? G.score;
+      G.combo = d.combo ?? G.combo;
+      if (G.combo > G.maxCombo) G.maxCombo = G.combo;
+      G.aciertos++;
+      actualizarHUD();
+      if (G.combo >= 3)
+        addEvento(`🔥 COMBO x${G.combo}! +${d.puntos_ganados||0}pts`, 'combo');
+      else
+        addEvento(`✅ PAD ${d.pad+1} — +${d.puntos_ganados||0}pts`, 'correcto');
+      break;
+
+    case 'hit_incorrecto':
+      G.vidas = d.vidas ?? G.vidas - 1;
+      G.combo = 1;
+      actualizarHUD();
+      addEvento(`❌ PAD ${d.pad+1} incorrecto — vidas: ${G.vidas}`, 'incorrecto');
+      break;
+
+    case 'tiempo_agotado':
+      G.vidas = d.vidas ?? G.vidas - 1;
+      G.combo = 1;
+      actualizarHUD();
+      addEvento(`⏰ Tiempo agotado — vidas: ${G.vidas}`, 'incorrecto');
+      break;
+
+    case 'ronda_completada':
+      G.score = d.puntos_total ?? G.score;
+      actualizarHUD();
+      addEvento(`🎯 Ronda ${d.ronda} completada!`, 'combo');
+      break;
+
+    case 'score_update':
+      G.score = d.puntos ?? G.score;
+      G.combo = d.combo ?? G.combo;
+      if (G.combo > G.maxCombo) G.maxCombo = G.combo;
+      actualizarHUD();
+      break;
+
+    case 'juego_terminado':
+      G.score = d.puntos_final ?? G.score;
+      mostrarResultado();
+      break;
   }
 }
 
-function updateWSDot(ok, msg) {
+function setWSDot(ok, msg) {
   const dot = document.getElementById('ws-dot');
   const lbl = document.getElementById('ws-label');
-  if (ok) {
-    dot.className = 'status-dot connected';
-    lbl.textContent = 'Conectado al ESP32';
-  } else if (msg) {
-    dot.className = 'status-dot';
-    lbl.textContent = msg;
-  } else {
-    dot.className = 'status-dot error';
-    lbl.textContent = 'Sin conexión — reintentando...';
-  }
+  dot.className = 'dot ' + (ok ? 'on' : 'off');
+  lbl.textContent = ok ? 'Conectado al ESP32 ✓' : (msg || 'Sin conexión');
 }
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
    NAVEGACIÓN
-============================================================ */
-function goScreen(id) {
+═══════════════════════════════════════════════ */
+function ir(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + id).classList.add('active');
-  const settBtn = document.getElementById('settings-btn');
-  settBtn.classList.toggle('hidden', id === 'login' || id === 'wifi' || id === 'juego');
+  document.getElementById('s-' + id).classList.add('active');
   if (id === 'ranking') renderRanking();
-  if (id === 'juego') startGame();
 }
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
    LOGIN
-============================================================ */
+═══════════════════════════════════════════════ */
 function doLogin() {
-  const nombre = document.getElementById('input-nombre').value.trim();
-  if (!nombre) { showToast('⚠️ Escribe tu nombre'); return; }
-  state.jugador = nombre;
-  document.getElementById('chip-nombre').textContent = nombre;
-  goScreen('modos');
+  const n = document.getElementById('inp-nombre').value.trim();
+  if (!n) { toast('⚠️ Escribe tu nombre'); return; }
+  G.jugador = n;
+  document.getElementById('chip-name').textContent = n;
+  ir('modos');
 }
-document.getElementById('input-nombre').addEventListener('keydown', e => {
+document.getElementById('inp-nombre').addEventListener('keydown', e => {
   if (e.key === 'Enter') doLogin();
 });
 
-/* ============================================================
-   SELECCIÓN DE MODO
-============================================================ */
-function selectMode(modo) {
-  state.modoSeleccionado = modo;
-  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('mc-' + modo).classList.add('selected');
-  // pequeña espera visual, luego va al juego
-  setTimeout(() => goScreen('juego'), 280);
+/* ═══════════════════════════════════════════════
+   MODOS
+═══════════════════════════════════════════════ */
+function elegirModo(modo) {
+  G.modo = modo;
+  // Configurar badge del modo en pantalla de juego
+  const badge = document.getElementById('modo-badge-active');
+  badge.textContent = MODO_LABEL[modo];
+  badge.style.setProperty('--mc', MODO_COLOR[modo]);
+  // Limpiar feed
+  document.getElementById('event-feed').innerHTML = '';
+  setEstado('CONECTANDO…','Enviando modo al ESP32…','esperando');
+  setOledPreview('···');
+  // Ir a pantalla de juego ANTES de enviar, para que el usuario vea el estado
+  ir('juego');
+  // Enviar al ESP32
+  enviar({ accion:'iniciar_juego', modo, jugador: G.jugador });
 }
 
-/* ============================================================
-   JUEGO — COMÚN
-============================================================ */
-function resetGameState() {
-  state.score = 0;
-  state.combo = 1;
-  state.maxCombo = 1;
-  state.streak = 0;
-  state.aciertos = 0;
-  state.vidas = 3;
-  updateScore();
-  updateCombo();
-  updateLives();
-  setFeedback('', '');
-}
-
-function startGame() {
-  resetGameState();
-  clearAllTimers();
-
-  const modo = state.modoSeleccionado;
-  // configurar UI según modo
-  document.getElementById('seq-progress').style.display = modo === 'memoria' ? 'flex' : 'none';
-  document.getElementById('timer-bar-wrap').style.display = modo === 'reflejos' ? 'block' : 'none';
-  document.getElementById('combo-row').style.display = modo === 'libre' ? 'none' : 'flex';
-
-  // grid de pads
-  const grid = document.getElementById('pads-grid');
-  grid.className = 'pads-grid' + (modo === 'libre' ? ' modo-libre' : '');
-
-  if (modo === 'libre') {
-    startLibre();
-  } else {
-    // countdown antes de empezar
-    showCountdown(() => {
-      if (modo === 'reflejos') startReflejos();
-      else startMemoria();
-    });
-  }
-}
-
-function showCountdown(cb) {
-  const overlay = document.getElementById('countdown-overlay');
-  const num = document.getElementById('countdown-num');
-  overlay.classList.remove('hidden');
-  let c = 3;
-  num.textContent = c;
-  // forzar restart animación
-  num.style.animation = 'none';
-  void num.offsetWidth;
-  num.style.animation = '';
-
-  const iv = setInterval(() => {
-    c--;
-    if (c <= 0) {
-      clearInterval(iv);
-      num.textContent = '¡YA!';
-      num.style.animation = 'none';
-      void num.offsetWidth;
-      num.style.animation = '';
-      setTimeout(() => {
-        overlay.classList.add('hidden');
-        cb();
-      }, 700);
-    } else {
-      num.textContent = c;
-      num.style.animation = 'none';
-      void num.offsetWidth;
-      num.style.animation = '';
-    }
-  }, 900);
-}
-
-function clearAllTimers() {
-  clearInterval(state.timerInterval);
-  clearTimeout(state.timerReflejo);
-  state.timerInterval = null;
-  state.timerReflejo = null;
-  apagaTodos();
-}
-
-function apagaTodos() {
-  for (let i = 0; i < 6; i++) {
-    document.getElementById('pad-' + i)?.classList.remove('lit');
-  }
-  state.padActivo = -1;
-}
-
-function iluminaPad(i) {
-  apagaTodos();
-  state.padActivo = i;
-  document.getElementById('pad-' + i)?.classList.add('lit');
-  // Enviar al ESP32 para que encienda el LED real
-  wsSend({ accion: 'led_on', pad: i });
-}
-
-function updateScore() {
-  document.getElementById('score-display').textContent = state.score;
-}
-function updateCombo() {
-  document.getElementById('combo-val').textContent = 'x' + state.combo;
-  document.getElementById('streak-val').textContent = state.streak;
-}
-function updateLives() {
+/* ═══════════════════════════════════════════════
+   JUEGO — HUD
+═══════════════════════════════════════════════ */
+function actualizarHUD() {
+  document.getElementById('score-num').textContent = G.score;
+  document.getElementById('combo-v').textContent = 'x' + G.combo;
+  document.getElementById('ronda-v').textContent = G.ronda || '—';
+  // Vidas
   const row = document.getElementById('lives-row');
   row.innerHTML = '';
   for (let i = 0; i < 3; i++) {
-    const sp = document.createElement('span');
-    sp.className = 'life' + (i >= state.vidas ? ' lost' : '');
-    sp.textContent = '❤️';
-    row.appendChild(sp);
-  }
-}
-function setFeedback(text, type) {
-  const el = document.getElementById('feedback');
-  el.textContent = text;
-  el.className = 'feedback' + (type ? ' ' + type : '');
-  if (text) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
-}
-
-function padHitFromESP32(padIdx) {
-  // Cuando el ESP32 detecta un golpe real en un sensor
-  padHit(padIdx, true);
-}
-
-/* ============================================================
-   MODO LIBRE
-============================================================ */
-function startLibre() {
-  document.getElementById('game-instruction').textContent = '¡TOCA LIBREMENTE!';
-  document.getElementById('game-sub').textContent = 'Crea tus propios ritmos';
-  document.getElementById('lives-row').innerHTML = '';
-}
-
-/* ============================================================
-   MODO REFLEJOS
-============================================================ */
-const REFLEJOS_TIEMPO_MS = 1500; // tiempo para reaccionar
-
-function startReflejos() {
-  state.reflexRound = 0;
-  siguienteReflejo();
-}
-
-function siguienteReflejo() {
-  state.reflexRound++;
-  document.getElementById('game-instruction').textContent = '¡TOCA EL PAD ILUMINADO!';
-  document.getElementById('game-sub').textContent = `Ronda ${state.reflexRound}`;
-
-  const padIdx = Math.floor(Math.random() * 6);
-  iluminaPad(padIdx);
-
-  // timer visual
-  let tiempo = REFLEJOS_TIEMPO_MS;
-  const fill = document.getElementById('timer-fill');
-  fill.style.width = '100%';
-  fill.style.transition = 'none';
-  void fill.offsetWidth;
-  fill.style.transition = `width ${REFLEJOS_TIEMPO_MS}ms linear`;
-  fill.style.width = '0%';
-
-  state.timerReflejo = setTimeout(() => {
-    if (state.padActivo !== -1) {
-      // tiempo agotado
-      apagaTodos();
-      perderVida('⏰ ¡TIEMPO!');
-    }
-  }, REFLEJOS_TIEMPO_MS);
-}
-
-function perderVida(msg) {
-  state.vidas--;
-  state.combo = 1;
-  state.streak = 0;
-  updateLives();
-  updateCombo();
-  setFeedback(msg, 'miss');
-  if (state.vidas <= 0) {
-    setTimeout(endGame, 700);
-  } else {
-    setTimeout(siguienteReflejo, 900);
+    const s = document.createElement('span');
+    s.className = 'life' + (i >= G.vidas ? ' lost' : '');
+    s.textContent = '❤️';
+    row.appendChild(s);
   }
 }
 
-/* ============================================================
-   MODO MEMORIA
-============================================================ */
-const MEMORIA_DELAY_MS = 500;
-const MEMORIA_LIT_MS = 400;
-
-function startMemoria() {
-  state.secuencia = [];
-  state.rondaMemoria = 0;
-  siguienteRondaMemoria();
+function setEstado(label, valor, tipo) {
+  document.getElementById('estado-label').textContent = label;
+  const v = document.getElementById('estado-valor');
+  v.textContent = valor;
+  v.className = 'estado-valor' + (tipo === 'esperando' ? ' esperando' : '');
 }
 
-function siguienteRondaMemoria() {
-  state.rondaMemoria++;
-  state.pasoUsuario = 0;
-  state.mostrando = true;
-
-  // Agregar un pad random a la secuencia
-  state.secuencia.push(Math.floor(Math.random() * 6));
-
-  document.getElementById('game-instruction').textContent = '¡MEMORIZA!';
-  document.getElementById('game-sub').textContent = `Secuencia de ${state.secuencia.length}`;
-  renderSeqDots(-1);
-
-  // Inhabilitar pads durante la muestra
-  document.querySelectorAll('.pad').forEach(p => p.style.pointerEvents = 'none');
-
-  mostrarSecuencia(0);
+function setOledPreview(txt) {
+  document.getElementById('oled-preview').textContent = txt;
 }
 
-function mostrarSecuencia(idx) {
-  if (idx >= state.secuencia.length) {
-    // terminó de mostrar
-    setTimeout(() => {
-      state.mostrando = false;
-      document.querySelectorAll('.pad').forEach(p => p.style.pointerEvents = '');
-      document.getElementById('game-instruction').textContent = '¡REPITE LA SECUENCIA!';
-      document.getElementById('game-sub').textContent = `${state.secuencia.length} pasos`;
-      renderSeqDots(0);
-    }, 400);
-    return;
-  }
-  const padIdx = state.secuencia[idx];
-  iluminaPad(padIdx);
-  setTimeout(() => {
-    apagaTodos();
-    setTimeout(() => mostrarSecuencia(idx + 1), MEMORIA_DELAY_MS);
-  }, MEMORIA_LIT_MS);
+function addEvento(txt, tipo) {
+  const feed = document.getElementById('event-feed');
+  // Máximo 3 eventos visibles
+  while (feed.children.length >= 3) feed.removeChild(feed.lastChild);
+  const div = document.createElement('div');
+  div.className = 'event-item ' + (tipo || 'info');
+  div.textContent = txt;
+  feed.insertBefore(div, feed.firstChild);
 }
 
-function renderSeqDots(paso) {
-  const container = document.getElementById('seq-progress');
-  container.innerHTML = '';
-  state.secuencia.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'seq-dot';
-    if (i < paso) d.classList.add('done');
-    else if (i === paso) d.classList.add('active');
-    container.appendChild(d);
-  });
+function terminarJuego() {
+  enviar({ accion:'terminar_juego' });
+  ir('modos');
 }
 
-/* ============================================================
-   PAD HIT (común a todos los modos)
-============================================================ */
-function padHit(padIdx, fromESP32 = false) {
-  const modo = state.modoSeleccionado;
-
-  // feedback visual en el pad
-  const padEl = document.getElementById('pad-' + padIdx);
-  padEl.classList.add('lit');
-  setTimeout(() => padEl.classList.remove('lit'), 150);
-
-  // Enviar al ESP32 (si el hit viene del frontend, no del ESP32 mismo)
-  if (!fromESP32) {
-    wsSend({ accion: 'pad_hit', pad: padIdx });
-  }
-
-  if (modo === 'libre') {
-    handleLibreHit(padIdx);
-  } else if (modo === 'reflejos') {
-    handleReflejosHit(padIdx);
-  } else if (modo === 'memoria') {
-    handleMemoriaHit(padIdx);
-  }
+/* ═══════════════════════════════════════════════
+   RESULTADO
+═══════════════════════════════════════════════ */
+function mostrarResultado() {
+  document.getElementById('res-num').textContent = G.score;
+  document.getElementById('res-aciertos').textContent = G.aciertos;
+  document.getElementById('res-combo').textContent = 'x' + G.maxCombo;
+  document.getElementById('res-modo').textContent = MODO_LABEL[G.modo] || '—';
+  ir('resultado');
 }
 
-function handleLibreHit(padIdx) {
-  // Solo efectos visuales/sonoros en libre
-  state.score += 10;
-  updateScore();
-  setFeedback(PADS_ICONS[padIdx], '');
+function jugarDeNuevo() {
+  elegirModo(G.modo);
 }
 
-function handleReflejosHit(padIdx) {
-  if (state.padActivo === -1) return; // ya expiró
-  clearTimeout(state.timerReflejo);
-
-  if (padIdx === state.padActivo) {
-    // ACIERTO
-    apagaTodos();
-    state.aciertos++;
-    state.streak++;
-    if (state.streak > 0 && state.streak % 5 === 0) {
-      state.combo = Math.min(state.combo + 1, 8);
-      if (state.combo > state.maxCombo) state.maxCombo = state.combo;
-      setFeedback(`🔥 COMBO x${state.combo}!`, 'combo');
-    } else {
-      setFeedback('✅ ¡BIEN!', 'hit');
-    }
-    state.score += 100 * state.combo;
-    updateScore(); updateCombo();
-    setTimeout(siguienteReflejo, 600);
-  } else {
-    // ERROR — pad equivocado
-    apagaTodos();
-    perderVida('❌ PAD INCORRECTO');
-  }
-}
-
-function handleMemoriaHit(padIdx) {
-  if (state.mostrando) return;
-
-  const esperado = state.secuencia[state.pasoUsuario];
-
-  if (padIdx === esperado) {
-    // correcto
-    state.pasoUsuario++;
-    state.aciertos++;
-    renderSeqDots(state.pasoUsuario);
-
-    if (state.pasoUsuario >= state.secuencia.length) {
-      // completó la ronda
-      state.streak++;
-      state.combo = Math.min(Math.floor(state.rondaMemoria / 2) + 1, 8);
-      if (state.combo > state.maxCombo) state.maxCombo = state.combo;
-      state.score += state.secuencia.length * 150 * state.combo;
-      updateScore(); updateCombo();
-      setFeedback(`🧠 RONDA ${state.rondaMemoria} ¡PERFECTA!`, 'combo');
-      setTimeout(siguienteRondaMemoria, 1200);
-    } else {
-      setFeedback('✅', 'hit');
-    }
-  } else {
-    // error en memoria
-    state.vidas--;
-    state.combo = 1;
-    state.streak = 0;
-    updateLives(); updateCombo();
-    setFeedback('❌ ¡ERROR!', 'miss');
-    if (state.vidas <= 0) {
-      setTimeout(endGame, 700);
-    } else {
-      // reintentar misma ronda
-      setTimeout(() => {
-        state.pasoUsuario = 0;
-        renderSeqDots(0);
-        document.getElementById('game-instruction').textContent = '¡INTÉNTALO DE NUEVO!';
-      }, 800);
-    }
-  }
-}
-
-/* ============================================================
-   FIN DE JUEGO
-============================================================ */
-function endGame() {
-  clearAllTimers();
-
-  const entry = {
-    nombre: state.jugador,
-    modo: state.modoSeleccionado,
-    puntos: state.score,
-    fecha: new Date().toLocaleDateString('es-EC'),
-  };
-
-  // Guardar en ESP32 vía WS
-  wsSend({ accion: 'guardar_score', ...entry });
-
-  // Guardar localmente para demo
-  state.scores.push(entry);
-  try { localStorage.setItem('bateria_scores', JSON.stringify(state.scores)); } catch(_) {}
-
-  // Mostrar pantalla resultado
-  document.getElementById('res-score').textContent = state.score;
-  document.getElementById('res-aciertos').textContent = state.aciertos;
-  document.getElementById('res-combo').textContent = 'x' + state.maxCombo;
-  document.getElementById('res-modo').textContent = MODO_LABELS[state.modoSeleccionado] || '—';
-
-  goScreen('resultado');
-}
-
-function playAgain() {
-  goScreen('juego');
-}
-
-/* ============================================================
+/* ═══════════════════════════════════════════════
    RANKING
-============================================================ */
-let rankFilter = 'todos';
-
-function filterRanking(modo) {
-  rankFilter = modo;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + modo).classList.add('active');
+═══════════════════════════════════════════════ */
+function filtrarRanking(f) {
+  G.rankFilter = f;
+  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  document.getElementById('rt-' + f).classList.add('active');
   renderRanking();
 }
 
 function renderRanking() {
-  const list = document.getElementById('ranking-list');
-  let scores = [...state.scores];
-  if (rankFilter !== 'todos') scores = scores.filter(s => s.modo === rankFilter);
-  scores.sort((a, b) => b.puntos - a.puntos);
+  const list = document.getElementById('rlist');
+  let scores = [...G.scores];
+  if (G.rankFilter !== 'todos') scores = scores.filter(s => s.modo === G.rankFilter);
+  scores.sort((a,b) => b.puntos - a.puntos);
 
   if (!scores.length) {
-    list.innerHTML = '<div class="rank-empty">Aún no hay puntuaciones en este modo</div>';
+    list.innerHTML = '<div class="rempty">Aún no hay puntuaciones</div>';
     return;
   }
-
   list.innerHTML = '';
-  scores.slice(0, 10).forEach((s, i) => {
-    const item = document.createElement('div');
-    const isMine = s.nombre === state.jugador;
-    item.className = 'rank-item' + (isMine ? ' mine' : '');
-
-    const numClass = i === 0 ? 'rank-num gold' : i === 1 ? 'rank-num silver' : i === 2 ? 'rank-num bronze' : 'rank-num';
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
-
-    item.innerHTML = `
-      <div class="${numClass}">${medal}</div>
-      <div class="rank-name">${s.nombre}${isMine ? ' 🎮' : ''}</div>
-      <div style="font-size:.7rem;color:var(--c-muted);text-transform:uppercase">${MODO_LABELS[s.modo]||s.modo}</div>
-      <div class="rank-score">${s.puntos}</div>
-    `;
-    list.appendChild(item);
+  scores.slice(0,10).forEach((s,i) => {
+    const div = document.createElement('div');
+    div.className = 'ritem' + (s.nombre === G.jugador ? ' mine' : '');
+    const nc = i===0?'rnum g':i===1?'rnum s':i===2?'rnum b':'rnum';
+    const med = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
+    div.innerHTML = `
+      <div class="${nc}">${med}</div>
+      <div class="rname">${s.nombre}${s.nombre===G.jugador?' 🎮':''}</div>
+      <div class="rmodo">${MODO_LABEL[s.modo]||s.modo}</div>
+      <div class="rscore">${s.puntos}</div>`;
+    list.appendChild(div);
   });
 }
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
    CONFIG WIFI
-============================================================ */
-function saveWifi() {
-  const ssid0 = document.getElementById('ssid0').value.trim();
-  const pass0 = document.getElementById('pass0').value;
-  const ssid1 = document.getElementById('ssid1').value.trim();
-  const pass1 = document.getElementById('pass1').value;
-
-  if (!ssid0) { showToast('⚠️ La Red 1 no puede estar vacía'); return; }
-
-  wsSend({ accion: 'guardar_wifi', slot: 0, ssid: ssid0, pass: pass0 });
-  if (ssid1) wsSend({ accion: 'guardar_wifi', slot: 1, ssid: ssid1, pass: pass1 });
-
-  // demo: mostrar confirmación aunque no haya ESP32
-  showToast('💾 Redes guardadas en EEPROM');
-  setTimeout(() => goScreen('modos'), 1200);
+═══════════════════════════════════════════════ */
+function guardarWifi() {
+  const s0 = document.getElementById('ssid0').value.trim();
+  const p0 = document.getElementById('pass0').value;
+  const s1 = document.getElementById('ssid1').value.trim();
+  const p1 = document.getElementById('pass1').value;
+  if (!s0) { toast('⚠️ La Red 1 no puede estar vacía'); return; }
+  enviar({ accion:'guardar_wifi', slot:0, ssid:s0, pass:p0 });
+  if (s1) enviar({ accion:'guardar_wifi', slot:1, ssid:s1, pass:p1 });
+  toast('💾 Enviado al ESP32…');
+  setTimeout(() => ir('modos'), 1100);
 }
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
    TOAST
-============================================================ */
-let toastTimer = null;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.remove('hidden');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.add('hidden'), 2200);
+═══════════════════════════════════════════════ */
+let _toastT = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.remove('off');
+  clearTimeout(_toastT);
+  _toastT = setTimeout(() => el.classList.add('off'), 2400);
 }
 
-/* ============================================================
-   INIT
-============================================================ */
-connectWS();
+/* ═══════════════════════════════════════════════
+   DEMO (sin ESP32)
+═══════════════════════════════════════════════ */
+function cargarScoresDemo() {
+  try {
+    const s = localStorage.getItem('esp32_scores');
+    if (s) G.scores = JSON.parse(s);
+  } catch(_) {}
+}
+
+/* ─── INIT ─── */
+actualizarHUD();
+conectarWS();
 </script>
 </body>
 </html>
