@@ -8,42 +8,34 @@
 #include "scores.h"
 #include "game_modes.h"
 
-void setup() {
+void setup(void) {
+    char ip[20];
+
     Serial.begin(115200);
     delay(500);
-    Serial.println("\n=== BATERIA ANTI-ESTRES ESPOL ===");
+    Serial.println("=== BATERIA ANTI-ESTRES ESPOL ===");
 
-    // 1. OLED — primero para mostrar progreso de arranque
     oledInit();
     delay(1500);
 
-    // 2. Sistema de archivos (LittleFS) y scores
     scoresInit();
-
-    // 3. Periféricos físicos
     padsInit();
     ledsInit();
     audioInit();
 
-    // 4. WiFi (intenta STA, si falla AP)
     wifiInit();
 
-    // 5. Servidor web + WebSocket
     servidorInit();
 
-    // 6. Mostrar IP en OLED
-    oledEspera(ipActual().c_str());
+    ipActual(ip, sizeof(ip));
+    oledEspera(ip);
 
-    // 7. Animación de bienvenida en LEDs
     ledAnimacionInicio();
 
     Serial.println("[MAIN] Setup completo. Esperando jugador...");
 }
 
-void loop() {
-    // Tick del juego — maneja toda la lógica de modos
+void loop(void) {
     gameModeTick();
-
-    // Pequeña pausa para no saturar el ADC ni el procesador
     delay(10);
 }

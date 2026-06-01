@@ -1,5 +1,10 @@
-#pragma once
+#ifndef WEB_SERVER_H
+#define WEB_SERVER_H
+ 
 #include <Arduino.h>
-
-void servidorInit();
-void wsBroadcast(const String& json);   // enviar a todos los clientes conectados
+ 
+void servidorInit(void);
+void wsBroadcast(const char* json);
+ 
+#endif
+ 

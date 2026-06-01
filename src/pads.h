@@ -1,12 +1,17 @@
-#pragma once
+#ifndef PADS_H
+#define PADS_H
+ 
 #include <Arduino.h>
  
 #define NUM_PADS 6
  
-struct GolpePad {
-    int  pad;         // 0-5, -1 = ninguno
-    int  intensidad;  // 0-4095 (ADC 12 bits)
-};
+typedef struct {
+    int pad;         /* 0-5, -1 = ningun golpe */
+    int intensidad;  /* 0-4095 ADC 12 bits     */
+} GolpePad;
  
-void      padsInit();
-GolpePad  leerGolpe();   // retorna el pad golpeado; pad=-1 si no hay golpe
+void     padsInit(void);
+GolpePad leerGolpe(void);
+ 
+#endif
+ 

@@ -1,16 +1,18 @@
-#pragma once
+#ifndef OLED_DISPLAY_H
+#define OLED_DISPLAY_H
+
 #include <Arduino.h>
 
-void oledInit();
-
-// Pantallas del juego
+void oledInit(void);
 void oledEspera(const char* ip);
-void oledPadObjetivo(int pad, int barraProgreso);   // barraProgreso: 0-100
+void oledContdown(int num);
+void oledPadObjetivo(int pad, int barraProgreso);
 void oledMostrarSecuencia(int* seq, int len, int ronda);
 void oledTurnoJugador(int paso, int total, int ronda);
 void oledHitCorrecto(int pad, int puntos);
 void oledHitIncorrecto(int pad, int vidas);
 void oledScore(int puntos, int vidas, int combo);
-void oledFinJuego(int puntos, const char* jugador);
 void oledModoLibre(int puntos);
-void oledContdown(int num);                          // 3, 2, 1, 0 = ¡YA!
+void oledFinJuego(int puntos, const char* jugador);
+
+#endif

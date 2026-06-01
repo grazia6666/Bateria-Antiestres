@@ -1,49 +1,42 @@
 #include "pads.h"
 
-// Pines definidos en platformio.ini como build_flags
 static const int PINES[NUM_PADS] = {
     PIN_PAD0, PIN_PAD1, PIN_PAD2,
     PIN_PAD3, PIN_PAD4, PIN_PAD5
 };
 
-// Tiempo mínimo entre golpes del mismo pad (ms) — evita rebotes
 #define DEBOUNCE_MS 80
 
-static unsigned long ultimoGolpe[NUM_PADS] = {0};
+static unsigned long ultimoGolpe[NUM_PADS];
 
-void padsInit() {
-    for (int i = 0; i < NUM_PADS; i++) {
+void padsInit(void) {
+    int i;
+    for (i = 0; i < NUM_PADS; i++) {
         pinMode(PINES[i], INPUT);
-        // El ESP32 tiene ADC de 12 bits (0-4095) en estos pines
-        // No se necesita configuración adicional para ADC de lectura analógica
+        ultimoGolpe[i] = 0;
     }
-    Serial.println("[PADS] Inicializados 6 sensores piezoeléctricos");
+    Serial.println("[PADS] 6 sensores piezoelectricos listos");
 }
 
-// ── Lee todos los pads y devuelve el primero que supere el umbral ─────────
-//   Si varios se golpean simultáneamente toma el de mayor intensidad.
-GolpePad leerGolpe() {
-    GolpePad resultado = { -1, 0 };
+GolpePad leerGolpe(void) {
+    GolpePad resultado;
     unsigned long ahora = millis();
+    int i, val;
 
-    for (int i = 0; i < NUM_PADS; i++) {
-        // Debounce: ignorar si golpeó hace menos de DEBOUNCE_MS
+    resultado.pad        = -1;
+    resultado.intensidad =  0;
+
+    for (i = 0; i < NUM_PADS; i++) {
         if ((ahora - ultimoGolpe[i]) < DEBOUNCE_MS) continue;
-
-        int val = analogRead(PINES[i]);
-
-        if (val >= PIEZO_UMBRAL) {
-            // Si hay empate de intensidad, tomar el primero que supere umbral
-            if (val > resultado.intensidad) {
-                resultado.pad        = i;
-                resultado.intensidad = val;
-            }
+        val = analogRead(PINES[i]);
+        if (val >= PIEZO_UMBRAL && val > resultado.intensidad) {
+            resultado.pad        = i;
+            resultado.intensidad = val;
         }
     }
 
-    if (resultado.pad != -1) {
+    if (resultado.pad != -1)
         ultimoGolpe[resultado.pad] = ahora;
-    }
 
     return resultado;
 }

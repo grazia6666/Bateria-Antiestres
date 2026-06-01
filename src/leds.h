@@ -1,13 +1,16 @@
-#pragma once
+#ifndef LEDS_H
+#define LEDS_H
+
 #include <Arduino.h>
- 
-void ledsInit();
-void ledEncender(int pad);                          // color del pad
+
+void ledsInit(void);
+void ledEncender(int pad);
 void ledApagar(int pad);
-void ledApagarTodos();
-void ledAnimacionCorrecto(int pad);                 // destello verde
-void ledAnimacionIncorrecto(int pad);               // destello rojo
-void ledAnimacionInicio();                          // barrido arcoíris
-void ledAnimacionGameOver();                        // pulso rojo
-void ledSetBrillo(int intensidad);                  // 0-4095 → 0-255
- 
+void ledApagarTodos(void);
+void ledAnimacionCorrecto(int pad);
+void ledAnimacionIncorrecto(int pad);
+void ledAnimacionInicio(void);
+void ledAnimacionGameOver(void);
+void ledSetBrillo(int intensidad);
+
+#endif
