@@ -5,6 +5,10 @@ Paralelo 101 · Ing. Karen Thamara Torres Medina
 Estudiantes: Daniel Espinoza (Mecatrónica) · Maria Bravo (Telemática)
 
 ---
+## MARIA NO OLVIDAR
+En la carpeta proyecto 
+pio run --target uploadfs
+pio device monitor 
 
 ## Descripción
 

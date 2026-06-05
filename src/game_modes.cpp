@@ -203,11 +203,13 @@ static void reflejos_nueva_ronda(void) {
     ledEncender(G.padActivo);
     oledPadObjetivo(G.padActivo, 100);
     bcast_pad_objetivo(G.padActivo, ronda);
-    Serial.printf("[REFLEJOS] Ronda %d -> PAD %d\n", ronda, G.padActivo + 1);
+    Serial.printf("\n[REFLEJOS] === Ronda %d ===\n", ronda);
+    Serial.printf("[REFLEJOS]  >> TOCA PAD %d <<\n\n", G.padActivo + 1);
 }
 
 /* ── Memoria ─────────────────────────────────────────────────── */
 static void memoria_nueva_ronda(void) {
+    int i;
     G.seqRonda++;
     if (G.seqLen < MEMORIA_MAX_RONDA)
         G.secuencia[G.seqLen++] = random(0, NUM_PADS);
@@ -217,7 +219,16 @@ static void memoria_nueva_ronda(void) {
     G.estado          = EST_MEMORIA_MOSTRANDO;
     oledMostrarSecuencia(G.secuencia, G.seqLen, G.seqRonda);
     bcast_mostrando_secuencia(G.seqLen, G.seqRonda);
-    Serial.printf("[MEMORIA] Ronda %d  seq=%d\n", G.seqRonda, G.seqLen);
+
+    /* DEBUG: imprimir secuencia completa en Serial */
+    Serial.printf("\n[MEMORIA] === Ronda %d ===  Secuencia de %d pads:\n", G.seqRonda, G.seqLen);
+    Serial.print("[MEMORIA]  Orden: ");
+    for (i = 0; i < G.seqLen; i++) {
+        Serial.printf("PAD %d", G.secuencia[i] + 1);
+        if (i < G.seqLen - 1) Serial.print(" -> ");
+    }
+    Serial.println();
+    Serial.println("[MEMORIA]  Memoriza y repite en ese orden!\n");
 }
 
 static void memoria_iniciar_turno(void) {
@@ -225,6 +236,7 @@ static void memoria_iniciar_turno(void) {
     G.estado  = EST_MEMORIA_JUGADOR;
     oledTurnoJugador(0, G.seqLen, G.seqRonda);
     bcast_turno_jugador(0, G.seqLen, G.seqRonda);
+    Serial.println("[MEMORIA]  >> AHORA ES TU TURNO - repite la secuencia en los pads!");
 }
 
 /* ════════════════════════════════════════════════════════════
