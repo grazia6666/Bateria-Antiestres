@@ -6,6 +6,7 @@
 #include "scores.h"
 #include "wifi_manager.h"
 #include "game_modes.h"
+#include "modo_cancion.h"
 
 #define JSON_BUF_LEN 4096
 
@@ -45,6 +46,12 @@ static void onWsEvent(AsyncWebSocket* s, AsyncWebSocketClient* client,
     }
     else if (strcmp(accion, "terminar_juego") == 0) {
         gameModeStop();
+        cancionStop();
+    }
+    else if (strcmp(accion, "iniciar_cancion") == 0) {
+        int         id      = doc["id"]      | 0;
+        const char* jugador = doc["jugador"] | "Jugador";
+        cancionStart(id, jugador);
     }
     else if (strcmp(accion, "get_scores") == 0) {
         obtenerScoresJSON(scoresBuf, JSON_BUF_LEN);
@@ -68,6 +75,17 @@ void servidorInit(void) {
     server.on("/api/scores", HTTP_GET, [](AsyncWebServerRequest* req) {
         static char buf[JSON_BUF_LEN];
         obtenerScoresJSON(buf, JSON_BUF_LEN);
+        req->send(200, "application/json", buf);
+    });
+
+    server.on("/api/fs", HTTP_GET, [](AsyncWebServerRequest* req) {
+        static char buf[128];
+        unsigned long total = LittleFS.totalBytes();
+        unsigned long usado = LittleFS.usedBytes();
+        unsigned long libre = total - usado;
+        snprintf(buf, sizeof(buf),
+            "{\"total\":%lu,\"usado\":%lu,\"libre\":%lu}",
+            total, usado, libre);
         req->send(200, "application/json", buf);
     });
 

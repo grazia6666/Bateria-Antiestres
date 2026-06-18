@@ -3,66 +3,34 @@
 
 #include "tipos_juego.h"
 
-// Configuración principal de la canción
-const int SEVEN_NATION_BPM = 126;
-struct NotaRitmica {
-    int pad;                  // Qué tambor golpear (0 a 5)
-    unsigned long tiempo_ms;  // En qué milisegundo exacto de la pista debe sonar
-    bool luzEncendida;        // Flag: ¿El LED ya avisó al jugador?
-    bool evaluada;            // Flag: ¿Ya se golpeó o se falló (para no volver a leerla)?
-};
-// Mapeo según el diseño de tu batería:
-// PAD 0 = Bombo (Bass Drum)
-// PAD 1 = Caja (Snare)
-// PAD 4 = Tom de Piso (Floor Tom)
+#define SEVEN_NATION_BPM  126
 
-// Secuencia representativa: 
-// 2 compases de Intro (Solo Bombo + Floor Tom)
-// 2 compases de Verso (Se añade la Caja en los tiempos 2 y 4)
-const NotaRitmica pistaSevenNationArmy[] = {
-    
-    // --- COMPÁS 1 (Intro) ---
-    // Beat 1
-    {0, 0, false, false}, {4, 0, false, false},
-    // Beat 2
-    {0, 476, false, false}, {4, 476, false, false},
-    // Beat 3
-    {0, 952, false, false}, {4, 952, false, false},
-    // Beat 4
-    {0, 1428, false, false}, {4, 1428, false, false},
+/* PAD 0 = Bombo · PAD 1 = Caja · PAD 4 = Tom de Piso */
 
-    // --- COMPÁS 2 (Intro) ---
-    // Beat 1
-    {0, 1904, false, false}, {4, 1904, false, false},
-    // Beat 2
-    {0, 2380, false, false}, {4, 2380, false, false},
-    // Beat 3
-    {0, 2857, false, false}, {4, 2857, false, false},
-    // Beat 4
-    {0, 3333, false, false}, {4, 3333, false, false},
-
-    // --- COMPÁS 3 (Verso: Entra la Caja en tiempos 2 y 4) ---
-    // Beat 1
-    {0, 3809, false, false}, {4, 3809, false, false},
-    // Beat 2 (Añadimos PAD 1)
-    {0, 4285, false, false}, {4, 4285, false, false}, {1, 4285, false, false},
-    // Beat 3
-    {0, 4761, false, false}, {4, 4761, false, false},
-    // Beat 4 (Añadimos PAD 1)
-    {0, 5238, false, false}, {4, 5238, false, false}, {1, 5238, false, false},
-
-    // --- COMPÁS 4 (Verso) ---
-    // Beat 1
-    {0, 5714, false, false}, {4, 5714, false, false},
-    // Beat 2
-    {0, 6190, false, false}, {4, 6190, false, false}, {1, 6190, false, false},
-    // Beat 3
-    {0, 6666, false, false}, {4, 6666, false, false},
-    // Beat 4
-    {0, 7142, false, false}, {4, 7142, false, false}, {1, 7142, false, false}
+static NotaRitmica pistaSevenNationArmy[] = {
+    /* --- COMPAS 1 (Intro) --- */
+    {0, 0,    0,0}, {4, 0,    0,0},   /* Beat 1 */
+    {0, 476,  0,0}, {4, 476,  0,0},   /* Beat 2 */
+    {0, 952,  0,0}, {4, 952,  0,0},   /* Beat 3 */
+    {0, 1428, 0,0}, {4, 1428, 0,0},   /* Beat 4 */
+    /* --- COMPAS 2 (Intro) --- */
+    {0, 1904, 0,0}, {4, 1904, 0,0},
+    {0, 2380, 0,0}, {4, 2380, 0,0},
+    {0, 2857, 0,0}, {4, 2857, 0,0},
+    {0, 3333, 0,0}, {4, 3333, 0,0},
+    /* --- COMPAS 3 (Verso: entra Caja en tiempos 2 y 4) --- */
+    {0, 3809, 0,0}, {4, 3809, 0,0},
+    {0, 4285, 0,0}, {4, 4285, 0,0}, {1, 4285, 0,0},
+    {0, 4761, 0,0}, {4, 4761, 0,0},
+    {0, 5238, 0,0}, {4, 5238, 0,0}, {1, 5238, 0,0},
+    /* --- COMPAS 4 (Verso) --- */
+    {0, 5714, 0,0}, {4, 5714, 0,0},
+    {0, 6190, 0,0}, {4, 6190, 0,0}, {1, 6190, 0,0},
+    {0, 6666, 0,0}, {4, 6666, 0,0},
+    {0, 7142, 0,0}, {4, 7142, 0,0}, {1, 7142, 0,0}
 };
 
-// El compilador calcula el número total de notas matemáticamente
-const int TOTAL_NOTAS_SEVEN_NATION = sizeof(pistaSevenNationArmy) / sizeof(pistaSevenNationArmy[0]);
+#define TOTAL_NOTAS_SEVEN_NATION \
+    (int)(sizeof(pistaSevenNationArmy) / sizeof(pistaSevenNationArmy[0]))
 
 #endif

@@ -3,60 +3,32 @@
 
 #include "tipos_juego.h"
 
-// Configuración principal de la canción
-const int CAMISA_NEGRA_BPM = 97;
-struct NotaRitmica {
-    int pad;                  // Qué tambor golpear (0 a 5)
-    unsigned long tiempo_ms;  // En qué milisegundo exacto de la pista debe sonar
-    bool luzEncendida;        // Flag: ¿El LED ya avisó al jugador?
-    bool evaluada;            // Flag: ¿Ya se golpeó o se falló (para no volver a leerla)?
-};
-// Mapeo según el diseño de tu batería:
-// PAD 0 = Bombo (Bass Drum)
-// PAD 1 = Caja (Snare)
-// PAD 2 = Hi-Hat 
+#define CAMISA_NEGRA_BPM  97
 
-// Secuencia representativa: 2 compases de la Sección A (El ritmo principal Guasca/Pop)
-const NotaRitmica pistaCamisaNegra[] = {
-    
-    // --- COMPÁS 1 ---
-    // Beat 1: Bombo y Hi-Hat
-    {0, 0, false, false}, {2, 0, false, false},
-    // Beat 1.5: Solo Hi-Hat
-    {2, 309, false, false},
-    // Beat 2: Caja y Hi-Hat
-    {1, 619, false, false}, {2, 619, false, false},
-    // Beat 2.5: ¡CONTRATIEMPO! Bombo y Hi-Hat adelantado
-    {0, 928, false, false}, {2, 928, false, false},
-    // Beat 3: Bombo y Hi-Hat
-    {0, 1237, false, false}, {2, 1237, false, false},
-    // Beat 3.5: Solo Hi-Hat
-    {2, 1546, false, false},
-    // Beat 4: Caja y Hi-Hat
-    {1, 1856, false, false}, {2, 1856, false, false},
-    // Beat 4.5: Solo Hi-Hat
-    {2, 2165, false, false},
+/* PAD 0 = Bombo · PAD 1 = Caja · PAD 2 = Hi-Hat */
 
-    // --- COMPÁS 2 ---
-    // Beat 1: Bombo y Hi-Hat
-    {0, 2474, false, false}, {2, 2474, false, false},
-    // Beat 1.5: Solo Hi-Hat
-    {2, 2783, false, false},
-    // Beat 2: Caja y Hi-Hat
-    {1, 3093, false, false}, {2, 3093, false, false},
-    // Beat 2.5: ¡CONTRATIEMPO! Bombo y Hi-Hat
-    {0, 3402, false, false}, {2, 3402, false, false},
-    // Beat 3: Bombo y Hi-Hat
-    {0, 3711, false, false}, {2, 3711, false, false},
-    // Beat 3.5: Solo Hi-Hat
-    {2, 4020, false, false},
-    // Beat 4: Caja y Hi-Hat
-    {1, 4330, false, false}, {2, 4330, false, false},
-    // Beat 4.5: Solo Hi-Hat
-    {2, 4639, false, false}
+static NotaRitmica pistaCamisaNegra[] = {
+    /* --- COMPAS 1 --- */
+    {0, 0,    0,0}, {2, 0,    0,0},   /* Beat 1   : Bombo + Hi-Hat     */
+    {2, 309,  0,0},                   /* Beat 1.5 : Hi-Hat             */
+    {1, 619,  0,0}, {2, 619,  0,0},   /* Beat 2   : Caja + Hi-Hat      */
+    {0, 928,  0,0}, {2, 928,  0,0},   /* Beat 2.5 : Contratiempo Bombo */
+    {0, 1237, 0,0}, {2, 1237, 0,0},   /* Beat 3   : Bombo + Hi-Hat     */
+    {2, 1546, 0,0},                   /* Beat 3.5 : Hi-Hat             */
+    {1, 1856, 0,0}, {2, 1856, 0,0},   /* Beat 4   : Caja + Hi-Hat      */
+    {2, 2165, 0,0},                   /* Beat 4.5 : Hi-Hat             */
+    /* --- COMPAS 2 --- */
+    {0, 2474, 0,0}, {2, 2474, 0,0},
+    {2, 2783, 0,0},
+    {1, 3093, 0,0}, {2, 3093, 0,0},
+    {0, 3402, 0,0}, {2, 3402, 0,0},
+    {0, 3711, 0,0}, {2, 3711, 0,0},
+    {2, 4020, 0,0},
+    {1, 4330, 0,0}, {2, 4330, 0,0},
+    {2, 4639, 0,0}
 };
 
-// El compilador calcula el número total de notas matemáticamente
-const int TOTAL_NOTAS_CAMISA_NEGRA = sizeof(pistaCamisaNegra) / sizeof(pistaCamisaNegra[0]);
+#define TOTAL_NOTAS_CAMISA_NEGRA \
+    (int)(sizeof(pistaCamisaNegra) / sizeof(pistaCamisaNegra[0]))
 
 #endif

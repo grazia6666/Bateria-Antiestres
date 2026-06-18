@@ -8,6 +8,7 @@
 #include "oled_display.h"
 #include "scores.h"
 #include "web_server.h"
+#include "modo_cancion.h"
 
 /* ── Configuracion ───────────────────────────────────────────── */
 #define VIDAS_INICIAL        3
@@ -301,6 +302,9 @@ void gameModeTick(void) {
     int           barra, pts, p, esperado;
     GolpePad      g;
 
+    /* Tick del modo cancion (corre en paralelo con game_modes) */
+    cancionTick();
+
     if (G.estado == EST_INACTIVO || G.estado == EST_FIN) return;
 
     /* ── COUNTDOWN ────────────────────────────────────────── */
@@ -328,11 +332,11 @@ void gameModeTick(void) {
                   (int)((long)(g.intensidad - PIEZO_UMBRAL) * (PUNTOS_BASE_LIBRE * 4) /
                         (4095 - PIEZO_UMBRAL));
             G.score += pts;
+            reproducirPad(g.pad);
             ledSetBrillo(g.intensidad);
             ledEncender(g.pad);
             delay(60);
             ledApagar(g.pad);
-            reproducirPad(g.pad);
             oledModoLibre(G.score);
             bcast_score_update();
         }

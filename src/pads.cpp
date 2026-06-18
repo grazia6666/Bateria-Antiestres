@@ -18,6 +18,7 @@ void padsInit(void) {
     Serial.println("[PADS] 6 sensores piezoelectricos listos");
 }
 
+
 GolpePad leerGolpe(void) {
     GolpePad resultado;
     unsigned long ahora = millis();
@@ -28,7 +29,13 @@ GolpePad leerGolpe(void) {
 
     for (i = 0; i < NUM_PADS; i++) {
         if ((ahora - ultimoGolpe[i]) < DEBOUNCE_MS) continue;
+
         val = analogRead(PINES[i]);
+
+        /* ── DEBUG temporal ── */
+        if (val > 50)
+            Serial.printf("[PAD DEBUG] GPIO%d = %d\n", PINES[i], val);
+
         if (val >= PIEZO_UMBRAL && val > resultado.intensidad) {
             resultado.pad        = i;
             resultado.intensidad = val;

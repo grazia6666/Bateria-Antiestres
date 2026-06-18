@@ -1,0 +1,291 @@
+#include "modo_cancion.h"
+#include <ArduinoJson.h>
+#include <string.h>
+#include <stdio.h>
+#include "pads.h"
+#include "leds.h"
+#include "audio.h"
+#include "oled_display.h"
+#include "scores.h"
+#include "web_server.h"
+
+/* ── Incluir todas las pistas ────────────────────────────────── */
+#include "pista_billie_jean.h"
+#include "pista_camisa_negra.h"
+#include "pista_center_mass.h"
+#include "pista_overcompensate.h"
+#include "pista_seven_nation.h"
+
+/* ── Tabla de canciones ──────────────────────────────────────── */
+static NotaRitmica* tablaNotas[TOTAL_CANCIONES] = {
+    pistaBillieJean,
+    pistaCamisaNegra,
+    pistaCenterMass,
+    pistaOvercompensate,
+    pistaSevenNationArmy
+};
+
+static const int totalNotas[TOTAL_CANCIONES] = {
+    TOTAL_NOTAS_BILLIE_JEAN,
+    TOTAL_NOTAS_CAMISA_NEGRA,
+    TOTAL_NOTAS_CENTER_MASS,
+    TOTAL_NOTAS_OVERCOMPENSATE,
+    TOTAL_NOTAS_SEVEN_NATION
+};
+
+static const char* nombresCancion[TOTAL_CANCIONES] = {
+    "Billie Jean",
+    "Camisa Negra",
+    "Center of Mass",
+    "Overcompensate",
+    "Seven Nation Army"
+};
+
+/* ── Estado del modo cancion ─────────────────────────────────── */
+static struct {
+    int           activo;
+    int           idCancion;
+    char          jugador[20];
+    unsigned long tInicio;
+    int           score;
+    int           combo;
+    int           maxCombo;
+    int           aciertos;
+    int           fallos;
+    int           vidas;
+    int           racha;
+    NotaRitmica*  notas;
+    int           totalN;
+} C;
+
+/* ── Helpers broadcast ───────────────────────────────────────── */
+static void cbcast(JsonDocument& doc) {
+    char buf[256];
+    serializeJson(doc, buf, sizeof(buf));
+    wsBroadcast(buf);
+}
+
+static void bcast_cancion_update(void) {
+    JsonDocument d;
+    d["evento"]  = "cancion_update";
+    d["puntos"]  = C.score;
+    d["combo"]   = C.combo;
+    d["aciertos"]= C.aciertos;
+    d["fallos"]  = C.fallos;
+    d["vidas"]   = C.vidas;
+    cbcast(d);
+}
+
+static void bcast_nota_hit(int pad, int pts, int perfecto) {
+    JsonDocument d;
+    d["evento"]   = "nota_hit";
+    d["pad"]      = pad;
+    d["puntos"]   = pts;
+    d["perfecto"] = perfecto;
+    d["combo"]    = C.combo;
+    cbcast(d);
+}
+
+static void bcast_nota_miss(int pad) {
+    JsonDocument d;
+    d["evento"] = "nota_miss";
+    d["pad"]    = pad;
+    d["vidas"]  = C.vidas;
+    cbcast(d);
+}
+
+static void bcast_cancion_fin(void) {
+    JsonDocument d;
+    d["evento"]       = "cancion_terminada";
+    d["puntos_final"] = C.score;
+    d["aciertos"]     = C.aciertos;
+    d["fallos"]       = C.fallos;
+    d["cancion"]      = nombresCancion[C.idCancion];
+    cbcast(d);
+    /* enviar ranking actualizado */
+    char scoresBuf[2048];
+    obtenerScoresJSON(scoresBuf, sizeof(scoresBuf));
+    wsBroadcast(scoresBuf);
+}
+
+/* ── Reset de flags de la pista ──────────────────────────────── */
+static void resetPista(void) {
+    int i;
+    for (i = 0; i < C.totalN; i++) {
+        C.notas[i].luzEncendida = 0;
+        C.notas[i].evaluada     = 0;
+    }
+}
+
+/* ── API publica ─────────────────────────────────────────────── */
+void cancionStart(int idCancion, const char* jugador) {
+    JsonDocument d;
+    char buf[128];
+
+    if (idCancion < 0 || idCancion >= TOTAL_CANCIONES) return;
+
+    C.activo    = 1;
+    C.idCancion = idCancion;
+    C.score     = 0;
+    C.combo     = 1;
+    C.maxCombo  = 1;
+    C.aciertos  = 0;
+    C.fallos    = 0;
+    C.vidas     = 3;
+    C.racha     = 0;
+    C.notas     = tablaNotas[idCancion];
+    C.totalN    = totalNotas[idCancion];
+    C.tInicio   = millis();
+
+    strncpy(C.jugador, jugador, sizeof(C.jugador) - 1);
+    C.jugador[sizeof(C.jugador) - 1] = '\0';
+
+    resetPista();
+    ledApagarTodos();
+
+    /* reproducir pista en DFPlayer 2 */
+    reproducirCancion(idCancion);
+
+    /* broadcast inicio */
+    d["evento"]  = "cancion_iniciada";
+    d["cancion"] = nombresCancion[idCancion];
+    d["jugador"] = jugador;
+    d["vidas"]   = C.vidas;
+    serializeJson(d, buf, sizeof(buf));
+    wsBroadcast(buf);
+
+    Serial.printf("\n[CANCION] Iniciando: %s (%d notas)\n",
+                  nombresCancion[idCancion], C.totalN);
+    Serial.printf("[CANCION] Reproduce la pista en el celular y presiona INICIAR\n\n");
+}
+
+void cancionStop(void) {
+    if (!C.activo) return;
+    C.activo = 0;
+    ledApagarTodos();
+    detenerCancion();
+    Serial.println("[CANCION] Detenida por usuario");
+}
+
+int cancionActiva(void) {
+    return C.activo;
+}
+
+/* ── Tick principal ─────────────────────────────────────────── */
+void cancionTick(void) {
+    unsigned long ahora, elapsed;
+    int i, pad, pts, perfecto;
+    GolpePad g;
+
+    if (!C.activo) return;
+
+    ahora   = millis();
+    elapsed = ahora - C.tInicio;
+
+    /* ── 1. Recorrer notas: encender LEDs y detectar MISS ─── */
+    for (i = 0; i < C.totalN; i++) {
+        if (C.notas[i].evaluada) continue;
+
+        /* Encender LED con anticipacion */
+        if (!C.notas[i].luzEncendida &&
+            elapsed >= C.notas[i].tiempo_ms - ANTICIPACION_VISUAL) {
+            ledEncender(C.notas[i].pad);
+            C.notas[i].luzEncendida = 1;
+            Serial.printf("[CANCION] LED PAD %d encendido (t=%lu)\n",
+                          C.notas[i].pad + 1, elapsed);
+        }
+
+        /* MISS: ya paso la ventana y no fue golpeada */
+        if (elapsed > C.notas[i].tiempo_ms + VENTANA_TOLERANCIA) {
+            C.notas[i].evaluada = 1;
+            ledApagar(C.notas[i].pad);
+            C.fallos++;
+            C.combo  = 1;
+            C.racha  = 0;
+            C.vidas--;
+            bcast_nota_miss(C.notas[i].pad);
+            reproducir(SND_MISS);
+            Serial.printf("[CANCION] MISS PAD %d  vidas=%d\n",
+                          C.notas[i].pad + 1, C.vidas);
+
+            if (C.vidas <= 0) {
+                /* fin de juego por vidas */
+                C.activo = 0;
+                ledAnimacionGameOver();
+                reproducir(SND_GAMEOVER);
+                oledFinJuego(C.score, C.jugador);
+                guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
+                bcast_cancion_fin();
+                return;
+            }
+        }
+    }
+
+    /* ── 2. Leer golpe del jugador ────────────────────────── */
+    g = leerGolpe();
+    if (g.pad == -1) goto check_fin;
+
+    pad      = g.pad;
+    pts      = 0;
+    perfecto = 0;
+
+    /* Buscar nota activa que coincida con el pad */
+    for (i = 0; i < C.totalN; i++) {
+        if (C.notas[i].evaluada)     continue;
+        if (C.notas[i].pad != pad)   continue;
+        if (!C.notas[i].luzEncendida) continue;
+
+        /* Calcular diferencia temporal */
+        long diff = (long)elapsed - (long)C.notas[i].tiempo_ms;
+        if (diff < 0) diff = -diff;
+
+        if (diff <= VENTANA_TOLERANCIA) {
+            /* ACIERTO */
+            C.notas[i].evaluada = 1;
+            perfecto = (diff <= VENTANA_TOLERANCIA / 2) ? 1 : 0;
+            pts      = perfecto ? 200 * C.combo : 100 * C.combo;
+            C.score += pts;
+            C.aciertos++;
+            C.racha++;
+            if (C.racha >= 5) {
+                C.racha = 0;
+                if (C.combo < 8) C.combo++;
+                if (C.combo > C.maxCombo) C.maxCombo = C.combo;
+            }
+            ledAnimacionCorrecto(pad);
+            reproducirPad(pad);
+            if (C.combo >= 3) reproducir(SND_COMBO);
+            bcast_nota_hit(pad, pts, perfecto);
+            bcast_cancion_update();
+            Serial.printf("[CANCION] %s PAD %d +%d pts  combo x%d\n",
+                          perfecto ? "PERFECTO!" : "BIEN!",
+                          pad + 1, pts, C.combo);
+            goto check_fin;
+        }
+    }
+
+    /* Golpe en pad incorrecto o fuera de ventana */
+    C.combo = 1;
+    C.racha = 0;
+    ledAnimacionIncorrecto(pad);
+    reproducir(SND_MISS);
+    Serial.printf("[CANCION] Golpe fuera de tiempo PAD %d\n", pad + 1);
+
+check_fin:
+    /* ── 3. Verificar si terminaron todas las notas ───────── */
+    {
+        int todasEvaluadas = 1;
+        for (i = 0; i < C.totalN; i++) {
+            if (!C.notas[i].evaluada) { todasEvaluadas = 0; break; }
+        }
+        if (todasEvaluadas) {
+            C.activo = 0;
+            reproducir(SND_WIN);
+            oledFinJuego(C.score, C.jugador);
+            guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
+            bcast_cancion_fin();
+            Serial.printf("[CANCION] Fin! Score=%d  Aciertos=%d  Fallos=%d\n",
+                          C.score, C.aciertos, C.fallos);
+        }
+    }
+}
