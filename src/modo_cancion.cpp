@@ -135,7 +135,6 @@ void cancionStart(int idCancion, const char* jugador) {
     C.racha     = 0;
     C.notas     = tablaNotas[idCancion];
     C.totalN    = totalNotas[idCancion];
-    C.tInicio   = millis();
 
     strncpy(C.jugador, jugador, sizeof(C.jugador) - 1);
     C.jugador[sizeof(C.jugador) - 1] = '\0';
@@ -146,7 +145,11 @@ void cancionStart(int idCancion, const char* jugador) {
     /* reproducir pista en DFPlayer 2 */
     reproducirCancion(idCancion);
 
-    /* broadcast inicio */
+    /* esperar 500ms a que el DFPlayer arranque realmente
+       antes de iniciar el contador — esto sincroniza audio con LEDs */
+    delay(500);
+    C.tInicio = millis();   /* timer arranca DESPUES del DFPlayer */
+
     d["evento"]  = "cancion_iniciada";
     d["cancion"] = nombresCancion[idCancion];
     d["jugador"] = jugador;

@@ -30,8 +30,7 @@ void audioInit(void) {
         dfPads.volume(25);
         dfPads.EQ(DFPLAYER_EQ_NORMAL);
         delay(500);
-        dfPads.playFolder(1, 7);   /* prueba al arrancar: carpeta 01, archivo 0007 */
-        Serial.println("[AUDIO] DFPlayer 1 (pads) listo — reproduciendo prueba");
+        Serial.println("[AUDIO] DFPlayer 1 (pads) listo");
     } else {
         Serial.println("[AUDIO] DFPlayer 1 (pads) no responde");
     }
@@ -52,15 +51,15 @@ void audioInit(void) {
 /* ── DFPlayer 1: sonido de pad ───────────────────────────── */
 void reproducirPad(int pad) {
     if (!dfPadsOk || pad < 0 || pad > 5) return;
-    dfPads.playFolder(1, SND_PAD0 + pad);  /* carpeta 01, archivo 0007-0012 */
+    dfPads.play(pad + 1);   /* PAD0=archivo1, PAD1=archivo2, ... PAD5=archivo6 */
     Serial.printf("[AUDIO] reproducirPad %d -> archivo %d\n",
-                  pad + 1, SND_PAD0 + pad);
+                  pad + 1, pad + 1);
 }
 
 /* ── DFPlayer 2: efecto de sonido ────────────────────────── */
 void reproducir(int sonido) {
     if (!dfPistaOk) return;
-    dfPista.playFolder(1, sonido);
+    dfPista.play(sonido);
 }
 
 /* ── DFPlayer 2: reproducir cancion en loop ──────────────── */
@@ -75,7 +74,7 @@ void reproducirCancion(int idCancion) {
         case 4: archivo = SND_CANCION_SEVEN;    break;
         default: return;
     }
-    dfPista.playFolder(1, archivo);
+    dfPista.play(archivo);
     Serial.printf("[AUDIO] Reproduciendo cancion %d (archivo %d)\n",
                   idCancion, archivo);
 }
