@@ -65,7 +65,7 @@ void reproducir(int sonido) {
 /* ── DFPlayer 2: reproducir cancion en loop ──────────────── */
 void reproducirCancion(int idCancion) {
     if (!dfPistaOk) return;
-    int archivo;
+    int archivo; 
     switch (idCancion) {
         case 0: archivo = SND_CANCION_BILLIE;   break;
         case 1: archivo = SND_CANCION_CAMISA;   break;

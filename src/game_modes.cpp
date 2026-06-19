@@ -380,6 +380,7 @@ void gameModeTick(void) {
             pts = PUNTOS_BASE_REFLEJO * G.combo;
             G.score += pts;
             registrar_acierto();
+            reproducirPad(g.pad);   /* DFPlayer 1 suena al golpear */
             ledAnimacionCorrecto(g.pad);
             reproducir(SND_HIT);
             if (G.combo >= 3) reproducir(SND_COMBO);
@@ -415,7 +416,7 @@ void gameModeTick(void) {
                 }
                 p = G.secuencia[G.seqMostrandoIdx];
                 ledEncender(p);
-                reproducirPad(p);
+                /* NO reproducirPad aqui — solo suena cuando el usuario golpea */
                 G.tMostrar    = ahora;
                 G.padEncendido = 1;
             }
@@ -439,6 +440,7 @@ void gameModeTick(void) {
         esperado = G.secuencia[G.seqPaso];
 
         if (g.pad == esperado) {
+            reproducirPad(g.pad);   /* DFPlayer 1 suena al golpear */
             ledAnimacionCorrecto(g.pad);
             reproducir(SND_HIT);
             G.seqPaso++;
