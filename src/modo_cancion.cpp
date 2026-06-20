@@ -41,7 +41,6 @@ static const char* nombresCancion[TOTAL_CANCIONES] = {
     "Seven Nation Army"
 };
 
-/* IDs de archivo en DFPlayer 2, en el mismo orden que TOTAL_CANCIONES */
 static const int archivoCancion[TOTAL_CANCIONES] = {
     CANCION_BILLIE_JEAN,
     CANCION_CAMISA_NEGRA,
@@ -61,7 +60,6 @@ static struct {
     int           maxCombo;
     int           aciertos;
     int           fallos;
-    int           vidas;
     int           racha;
     NotaRitmica*  notas;
     int           totalN;
@@ -76,12 +74,11 @@ static void cbcast(JsonDocument& doc) {
 
 static void bcast_cancion_update(void) {
     JsonDocument d;
-    d["evento"]  = "cancion_update";
-    d["puntos"]  = C.score;
-    d["combo"]   = C.combo;
-    d["aciertos"]= C.aciertos;
-    d["fallos"]  = C.fallos;
-    d["vidas"]   = C.vidas;
+    d["evento"]   = "cancion_update";
+    d["puntos"]   = C.score;
+    d["combo"]    = C.combo;
+    d["aciertos"] = C.aciertos;
+    d["fallos"]   = C.fallos;
     cbcast(d);
 }
 
@@ -99,7 +96,6 @@ static void bcast_nota_miss(int pad) {
     JsonDocument d;
     d["evento"] = "nota_miss";
     d["pad"]    = pad;
-    d["vidas"]  = C.vidas;
     cbcast(d);
 }
 
@@ -139,7 +135,6 @@ void cancionStart(int idCancion, const char* jugador) {
     C.maxCombo  = 1;
     C.aciertos  = 0;
     C.fallos    = 0;
-    C.vidas     = 3;
     C.racha     = 0;
     C.notas     = tablaNotas[idCancion];
     C.totalN    = totalNotas[idCancion];
@@ -150,18 +145,14 @@ void cancionStart(int idCancion, const char* jugador) {
     resetPista();
     ledApagarTodos();
 
-    /* reproducir pista en DFPlayer 2 */
     reproducirCancion(archivoCancion[idCancion]);
 
-    /* esperar a que el DFPlayer arranque realmente antes
-       de iniciar el contador — sincroniza audio con LEDs */
     delay(500);
     C.tInicio = millis();
 
     d["evento"]  = "cancion_iniciada";
     d["cancion"] = nombresCancion[idCancion];
     d["jugador"] = jugador;
-    d["vidas"]   = C.vidas;
     serializeJson(d, buf, sizeof(buf));
     wsBroadcast(buf);
 
@@ -181,7 +172,7 @@ int cancionActiva(void) {
     return C.activo;
 }
 
-/* ── Tick principal ─────────────────────────────────────────── */
+/* ── Tick principal ──────────────────────────────────────────── */
 void cancionTick(void) {
     unsigned long ahora, elapsed;
     int i, pad, pts, perfecto;
@@ -205,22 +196,12 @@ void cancionTick(void) {
         if (elapsed > C.notas[i].tiempo_ms + VENTANA_TOLERANCIA) {
             C.notas[i].evaluada = 1;
             ledApagar(C.notas[i].pad);
+            /* solo cuenta el fallo, sin descontar vidas ni game over */
             C.fallos++;
-            C.combo  = 1;
-            C.racha  = 0;
-            C.vidas--;
+            C.combo = 1;
+            C.racha = 0;
             bcast_nota_miss(C.notas[i].pad);
-            Serial.printf("[CANCION] MISS PAD %d  vidas=%d\n",
-                          C.notas[i].pad + 1, C.vidas);
-
-            if (C.vidas <= 0) {
-                C.activo = 0;
-                ledAnimacionGameOver();
-                oledFinJuego(C.score, C.jugador);
-                guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
-                bcast_cancion_fin();
-                return;
-            }
+            Serial.printf("[CANCION] MISS PAD %d\n", C.notas[i].pad + 1);
         }
     }
 
@@ -263,7 +244,7 @@ void cancionTick(void) {
         }
     }
 
-    /* Golpe en pad incorrecto o fuera de ventana */
+    /* Golpe fuera de ventana o pad sin nota activa */
     C.combo = 1;
     C.racha = 0;
     reproducirPad(pad);

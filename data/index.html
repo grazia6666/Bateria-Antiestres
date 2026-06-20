@@ -460,7 +460,8 @@ body::after{
 
     <div class="event-feed" id="event-feed"></div>
 
-    <button class="btn btn-ghost" style="margin-top:4px" onclick="terminarJuego()">TERMINAR PARTIDA</button>
+    <button class="btn btn-ghost" id="btn-terminar-juego"   style="margin-top:4px"              onclick="terminarJuego()">TERMINAR PARTIDA</button>
+    <button class="btn btn-pink" id="btn-terminar-cancion" style="margin-top:4px;display:none" onclick="terminarJuego()">⏹ PARAR MÚSICA Y SALIR</button>
   </div>
 
   <!-- ═══════════ RESULTADO ═══════════ -->
@@ -717,6 +718,9 @@ function elegirModo(modo) {
 
   document.getElementById('event-feed').innerHTML='';
   document.getElementById('song-progress-wrap').style.display='none';
+  document.getElementById('lives-row').style.display='';
+  document.getElementById('btn-terminar-juego').style.display='';
+  document.getElementById('btn-terminar-cancion').style.display='none';
   document.getElementById('meta-ronda-wrap').style.display='';
   setEstado('CONECTANDO…','Enviando modo al ESP32…','esperando');
   setOledPreview('···');
@@ -780,6 +784,9 @@ function iniciarCancion() {
 
   document.getElementById('event-feed').innerHTML='';
   document.getElementById('song-progress-wrap').style.display='flex';
+  document.getElementById('lives-row').style.display='none';
+  document.getElementById('btn-terminar-juego').style.display='none';
+  document.getElementById('btn-terminar-cancion').style.display='block';
   document.getElementById('prog-song-name').textContent=c.nombre;
   document.getElementById('prog-hits').textContent='0 aciertos';
   document.getElementById('prog-fill').style.width='0%';
@@ -836,6 +843,9 @@ function addEvento(txt,tipo) {
 
 function terminarJuego() {
   enviar({accion:'terminar_juego'});
+  document.getElementById('lives-row').style.display='';
+  document.getElementById('btn-terminar-juego').style.display='';
+  document.getElementById('btn-terminar-cancion').style.display='none';
   ir('modos');
 }
 
