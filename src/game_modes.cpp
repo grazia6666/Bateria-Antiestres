@@ -61,7 +61,7 @@ static struct {
     int           seqPaso;
     int           seqMostrandoIdx;
     unsigned long tMostrar;
-    int           padEncendido;   /* flag bool */
+    int           padEncendido;
 
     /* countdown */
     int           countNum;
@@ -147,7 +147,6 @@ static void bcast_juego_terminado(void) {
     d["evento"]       = "juego_terminado";
     d["puntos_final"] = G.score;
     broadcast_json(d);
-    /* enviar ranking actualizado */
     obtenerScoresJSON(scoresBuf, sizeof(scoresBuf));
     wsBroadcast(scoresBuf);
 }
@@ -174,7 +173,6 @@ static void end_game(void) {
     const char* modo_str;
     G.estado = EST_FIN;
     ledAnimacionGameOver();
-    reproducir(SND_GAMEOVER);
     oledFinJuego(G.score, G.jugador);
 
     modo_str = (G.modo == MODO_LIBRE)    ? "libre"    :
@@ -192,7 +190,6 @@ static void iniciar_countdown(void) {
     G.countNum = 3;
     G.tCount   = millis();
     oledContdown(G.countNum);
-    reproducir(SND_COUNTDOWN);
 }
 
 /* ── Reflejos ────────────────────────────────────────────────── */
@@ -221,7 +218,6 @@ static void memoria_nueva_ronda(void) {
     oledMostrarSecuencia(G.secuencia, G.seqLen, G.seqRonda);
     bcast_mostrando_secuencia(G.seqLen, G.seqRonda);
 
-    /* DEBUG: imprimir secuencia completa en Serial */
     Serial.printf("\n[MEMORIA] === Ronda %d ===  Secuencia de %d pads:\n", G.seqRonda, G.seqLen);
     Serial.print("[MEMORIA]  Orden: ");
     for (i = 0; i < G.seqLen; i++) {
@@ -247,7 +243,6 @@ void gameModeStart(const char* modo, const char* jugador) {
     JsonDocument d;
     char buf[JSON_BUF];
 
-    /* reset */
     G.score     = 0;
     G.combo     = 1;
     G.maxCombo  = 1;
@@ -268,7 +263,6 @@ void gameModeStart(const char* modo, const char* jugador) {
     ledApagarTodos();
     ledAnimacionInicio();
 
-    /* broadcast juego iniciado */
     d["evento"] = "juego_iniciado";
     d["vidas"]  = VIDAS_INICIAL;
     d["modo"]   = modo;
@@ -313,9 +307,7 @@ void gameModeTick(void) {
             G.tCount = ahora;
             G.countNum--;
             oledContdown(G.countNum);
-            if (G.countNum > 0) {
-                reproducir(SND_COUNTDOWN);
-            } else {
+            if (G.countNum <= 0) {
                 delay(500);
                 if      (G.modo == MODO_REFLEJOS) reflejos_nueva_ronda();
                 else if (G.modo == MODO_MEMORIA)  memoria_nueva_ronda();
@@ -347,7 +339,6 @@ void gameModeTick(void) {
     if (G.estado == EST_REFLEJOS_ESPERANDO) {
         elapsed = ahora - G.tInicioRonda;
 
-        /* actualizar barra OLED cada 50 ms */
         static unsigned long tUltOled = 0;
         if (ahora - tUltOled > 50UL) {
             tUltOled = ahora;
@@ -358,10 +349,8 @@ void gameModeTick(void) {
             oledPadObjetivo(G.padActivo, barra);
         }
 
-        /* tiempo agotado */
         if (elapsed >= (unsigned long)TIEMPO_REFLEJO_MS) {
             ledAnimacionIncorrecto(G.padActivo);
-            reproducir(SND_MISS);
             registrar_fallo();
             bcast_tiempo_agotado();
             oledHitIncorrecto(G.padActivo, G.vidas);
@@ -380,16 +369,14 @@ void gameModeTick(void) {
             pts = PUNTOS_BASE_REFLEJO * G.combo;
             G.score += pts;
             registrar_acierto();
-            reproducirPad(g.pad);   /* DFPlayer 1 suena al golpear */
+            reproducirPad(g.pad);
             ledAnimacionCorrecto(g.pad);
-            reproducir(SND_HIT);
-            if (G.combo >= 3) reproducir(SND_COMBO);
             oledHitCorrecto(g.pad, pts);
             bcast_hit_correcto(g.pad, pts);
         } else {
             registrar_fallo();
+            reproducirPad(g.pad);
             ledAnimacionIncorrecto(g.pad);
-            reproducir(SND_MISS);
             oledHitIncorrecto(g.pad, G.vidas);
             bcast_hit_incorrecto(g.pad);
             if (G.vidas <= 0) { end_game(); return; }
@@ -416,7 +403,7 @@ void gameModeTick(void) {
                 }
                 p = G.secuencia[G.seqMostrandoIdx];
                 ledEncender(p);
-                /* NO reproducirPad aqui — solo suena cuando el usuario golpea */
+                /* sin sonido — solo LED al mostrar secuencia */
                 G.tMostrar    = ahora;
                 G.padEncendido = 1;
             }
@@ -440,9 +427,8 @@ void gameModeTick(void) {
         esperado = G.secuencia[G.seqPaso];
 
         if (g.pad == esperado) {
-            reproducirPad(g.pad);   /* DFPlayer 1 suena al golpear */
+            reproducirPad(g.pad);
             ledAnimacionCorrecto(g.pad);
-            reproducir(SND_HIT);
             G.seqPaso++;
             oledTurnoJugador(G.seqPaso, G.seqLen, G.seqRonda);
             bcast_turno_jugador(G.seqPaso, G.seqLen, G.seqRonda);
@@ -451,21 +437,18 @@ void gameModeTick(void) {
                 pts = PUNTOS_BASE_MEMORIA * G.seqRonda * G.combo;
                 G.score += pts;
                 registrar_acierto();
-                if (G.combo >= 3) reproducir(SND_COMBO);
-                reproducir(SND_WIN);
                 bcast_ronda_completada(G.seqRonda);
                 if (G.seqLen >= MEMORIA_MAX_RONDA) { end_game(); return; }
                 G.estado = EST_MEMORIA_PAUSA;
                 G.tPausa = ahora;
             }
         } else {
+            reproducirPad(g.pad);
             ledAnimacionIncorrecto(g.pad);
-            reproducir(SND_MISS);
             registrar_fallo();
             oledHitIncorrecto(g.pad, G.vidas);
             bcast_hit_incorrecto(g.pad);
             if (G.vidas <= 0) { end_game(); return; }
-            /* reintentar misma ronda */
             G.seqPaso         = 0;
             G.seqMostrandoIdx = 0;
             G.padEncendido    = 0;

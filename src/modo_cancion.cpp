@@ -41,6 +41,15 @@ static const char* nombresCancion[TOTAL_CANCIONES] = {
     "Seven Nation Army"
 };
 
+/* IDs de archivo en DFPlayer 2, en el mismo orden que TOTAL_CANCIONES */
+static const int archivoCancion[TOTAL_CANCIONES] = {
+    CANCION_BILLIE_JEAN,
+    CANCION_CAMISA_NEGRA,
+    CANCION_CENTER_MASS,
+    CANCION_OVERCOMPENSATE,
+    CANCION_SEVEN_NATION
+};
+
 /* ── Estado del modo cancion ─────────────────────────────────── */
 static struct {
     int           activo;
@@ -95,6 +104,7 @@ static void bcast_nota_miss(int pad) {
 }
 
 static void bcast_cancion_fin(void) {
+    char scoresBuf[2048];
     JsonDocument d;
     d["evento"]       = "cancion_terminada";
     d["puntos_final"] = C.score;
@@ -102,8 +112,6 @@ static void bcast_cancion_fin(void) {
     d["fallos"]       = C.fallos;
     d["cancion"]      = nombresCancion[C.idCancion];
     cbcast(d);
-    /* enviar ranking actualizado */
-    char scoresBuf[2048];
     obtenerScoresJSON(scoresBuf, sizeof(scoresBuf));
     wsBroadcast(scoresBuf);
 }
@@ -143,12 +151,12 @@ void cancionStart(int idCancion, const char* jugador) {
     ledApagarTodos();
 
     /* reproducir pista en DFPlayer 2 */
-    reproducirCancion(idCancion);
+    reproducirCancion(archivoCancion[idCancion]);
 
-    /* esperar 500ms a que el DFPlayer arranque realmente
-       antes de iniciar el contador — esto sincroniza audio con LEDs */
+    /* esperar a que el DFPlayer arranque realmente antes
+       de iniciar el contador — sincroniza audio con LEDs */
     delay(500);
-    C.tInicio = millis();   /* timer arranca DESPUES del DFPlayer */
+    C.tInicio = millis();
 
     d["evento"]  = "cancion_iniciada";
     d["cancion"] = nombresCancion[idCancion];
@@ -159,7 +167,6 @@ void cancionStart(int idCancion, const char* jugador) {
 
     Serial.printf("\n[CANCION] Iniciando: %s (%d notas)\n",
                   nombresCancion[idCancion], C.totalN);
-    Serial.printf("[CANCION] Reproduce la pista en el celular y presiona INICIAR\n\n");
 }
 
 void cancionStop(void) {
@@ -189,16 +196,12 @@ void cancionTick(void) {
     for (i = 0; i < C.totalN; i++) {
         if (C.notas[i].evaluada) continue;
 
-        /* Encender LED con anticipacion */
         if (!C.notas[i].luzEncendida &&
             elapsed >= C.notas[i].tiempo_ms - ANTICIPACION_VISUAL) {
             ledEncender(C.notas[i].pad);
             C.notas[i].luzEncendida = 1;
-            Serial.printf("[CANCION] LED PAD %d encendido (t=%lu)\n",
-                          C.notas[i].pad + 1, elapsed);
         }
 
-        /* MISS: ya paso la ventana y no fue golpeada */
         if (elapsed > C.notas[i].tiempo_ms + VENTANA_TOLERANCIA) {
             C.notas[i].evaluada = 1;
             ledApagar(C.notas[i].pad);
@@ -207,15 +210,12 @@ void cancionTick(void) {
             C.racha  = 0;
             C.vidas--;
             bcast_nota_miss(C.notas[i].pad);
-            reproducir(SND_MISS);
             Serial.printf("[CANCION] MISS PAD %d  vidas=%d\n",
                           C.notas[i].pad + 1, C.vidas);
 
             if (C.vidas <= 0) {
-                /* fin de juego por vidas */
                 C.activo = 0;
                 ledAnimacionGameOver();
-                reproducir(SND_GAMEOVER);
                 oledFinJuego(C.score, C.jugador);
                 guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
                 bcast_cancion_fin();
@@ -232,18 +232,15 @@ void cancionTick(void) {
     pts      = 0;
     perfecto = 0;
 
-    /* Buscar nota activa que coincida con el pad */
     for (i = 0; i < C.totalN; i++) {
-        if (C.notas[i].evaluada)     continue;
-        if (C.notas[i].pad != pad)   continue;
+        if (C.notas[i].evaluada)      continue;
+        if (C.notas[i].pad != pad)    continue;
         if (!C.notas[i].luzEncendida) continue;
 
-        /* Calcular diferencia temporal */
         long diff = (long)elapsed - (long)C.notas[i].tiempo_ms;
         if (diff < 0) diff = -diff;
 
         if (diff <= VENTANA_TOLERANCIA) {
-            /* ACIERTO */
             C.notas[i].evaluada = 1;
             perfecto = (diff <= VENTANA_TOLERANCIA / 2) ? 1 : 0;
             pts      = perfecto ? 200 * C.combo : 100 * C.combo;
@@ -255,9 +252,8 @@ void cancionTick(void) {
                 if (C.combo < 8) C.combo++;
                 if (C.combo > C.maxCombo) C.maxCombo = C.combo;
             }
-            ledAnimacionCorrecto(pad);
             reproducirPad(pad);
-            if (C.combo >= 3) reproducir(SND_COMBO);
+            ledAnimacionCorrecto(pad);
             bcast_nota_hit(pad, pts, perfecto);
             bcast_cancion_update();
             Serial.printf("[CANCION] %s PAD %d +%d pts  combo x%d\n",
@@ -270,8 +266,8 @@ void cancionTick(void) {
     /* Golpe en pad incorrecto o fuera de ventana */
     C.combo = 1;
     C.racha = 0;
+    reproducirPad(pad);
     ledAnimacionIncorrecto(pad);
-    reproducir(SND_MISS);
     Serial.printf("[CANCION] Golpe fuera de tiempo PAD %d\n", pad + 1);
 
 check_fin:
@@ -283,7 +279,6 @@ check_fin:
         }
         if (todasEvaluadas) {
             C.activo = 0;
-            reproducir(SND_WIN);
             oledFinJuego(C.score, C.jugador);
             guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
             bcast_cancion_fin();

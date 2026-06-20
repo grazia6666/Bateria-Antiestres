@@ -2,29 +2,26 @@
 #include <DFRobotDFPlayerMini.h>
 #include <HardwareSerial.h>
 
-/* ── DFPlayer 1: sonidos de pads ─────────────────────────────
-   UART2 — pines definidos en platformio.ini
-   PIN_DFP1_RX = 16
-   PIN_DFP1_TX = 17
+/* ── DFPlayer 1: sonidos de pads (UART1) ─────────────────────
+   GPIO 16 = RX ESP32 <- TX DFPlayer
+   GPIO 17 = TX ESP32 -> RX DFPlayer (1kOhm en serie)
 ──────────────────────────────────────────────────────────────*/
-static HardwareSerial      dfSerial1(1);   /* UART1 — pines 25/26 */
+static HardwareSerial      dfSerial1(1);
 static DFRobotDFPlayerMini dfPads;
 static int                 dfPadsOk = 0;
 
-/* ── DFPlayer 2: pista de fondo y efectos ────────────────────
-   UART2 — pines definidos en platformio.ini
-   PIN_DFP2_RX = 27
-   PIN_DFP2_TX = 14
+/* ── DFPlayer 2: pistas de fondo (UART2) ─────────────────────
+   GPIO 27 = RX ESP32 <- TX DFPlayer
+   GPIO 14 = TX ESP32 -> RX DFPlayer (1kOhm en serie)
 ──────────────────────────────────────────────────────────────*/
-static HardwareSerial      dfSerial2(2);   /* UART2 — pines 27/14 */
+static HardwareSerial      dfSerial2(2);
 static DFRobotDFPlayerMini dfPista;
 static int                 dfPistaOk = 0;
 
-/* ── Init ambos DFPlayer ─────────────────────────────────── */
 void audioInit(void) {
-    /* DFPlayer 1 — pads */
+    /* ── DFPlayer 1 — pads ── */
     dfSerial1.begin(9600, SERIAL_8N1, PIN_DFP1_RX, PIN_DFP1_TX);
-    delay(2000);   /* aumentado a 2000ms para clones lentos */
+    delay(2000);
     if (dfPads.begin(dfSerial1)) {
         dfPadsOk = 1;
         dfPads.volume(25);
@@ -35,48 +32,32 @@ void audioInit(void) {
         Serial.println("[AUDIO] DFPlayer 1 (pads) no responde");
     }
 
-    /* DFPlayer 2 — pista */
+    /* ── DFPlayer 2 — pistas ── */
     dfSerial2.begin(9600, SERIAL_8N1, PIN_DFP2_RX, PIN_DFP2_TX);
     delay(2000);
     if (dfPista.begin(dfSerial2)) {
         dfPistaOk = 1;
         dfPista.volume(20);
         dfPista.EQ(DFPLAYER_EQ_NORMAL);
-        Serial.println("[AUDIO] DFPlayer 2 (pista) listo");
+        delay(500);
+        Serial.println("[AUDIO] DFPlayer 2 (pistas) listo");
     } else {
-        Serial.println("[AUDIO] DFPlayer 2 (pista) no responde");
+        Serial.println("[AUDIO] DFPlayer 2 (pistas) no responde");
     }
 }
 
-/* ── DFPlayer 1: sonido de pad ───────────────────────────── */
+/* ── DFPlayer 1: reproducir sonido del pad ───────────────── */
 void reproducirPad(int pad) {
     if (!dfPadsOk || pad < 0 || pad > 5) return;
-    dfPads.play(pad + 1);   /* PAD0=archivo1, PAD1=archivo2, ... PAD5=archivo6 */
-    Serial.printf("[AUDIO] reproducirPad %d -> archivo %d\n",
-                  pad + 1, pad + 1);
+    dfPads.play(pad + 1);   /* PAD0=1, PAD1=2, ... PAD5=6 */
+    Serial.printf("[AUDIO] PAD %d -> archivo %d\n", pad + 1, pad + 1);
 }
 
-/* ── DFPlayer 2: efecto de sonido ────────────────────────── */
-void reproducir(int sonido) {
+/* ── DFPlayer 2: reproducir pista de cancion ─────────────── */
+void reproducirCancion(int id) {
     if (!dfPistaOk) return;
-    dfPista.play(sonido);
-}
-
-/* ── DFPlayer 2: reproducir cancion en loop ──────────────── */
-void reproducirCancion(int idCancion) {
-    if (!dfPistaOk) return;
-    int archivo; 
-    switch (idCancion) {
-        case 0: archivo = SND_CANCION_BILLIE;   break;
-        case 1: archivo = SND_CANCION_CAMISA;   break;
-        case 2: archivo = SND_CANCION_CENTER;   break;
-        case 3: archivo = SND_CANCION_OVERCOMP; break;
-        case 4: archivo = SND_CANCION_SEVEN;    break;
-        default: return;
-    }
-    dfPista.play(archivo);
-    Serial.printf("[AUDIO] Reproduciendo cancion %d (archivo %d)\n",
-                  idCancion, archivo);
+    dfPista.play(id);   /* id 1-5 segun CANCION_* en audio.h */
+    Serial.printf("[AUDIO] Pista %d iniciada\n", id);
 }
 
 /* ── DFPlayer 2: detener pista ───────────────────────────── */
@@ -86,7 +67,7 @@ void detenerCancion(void) {
     Serial.println("[AUDIO] Pista detenida");
 }
 
-/* ── Control de volumen ──────────────────────────────────── */
+/* ── Volumen ─────────────────────────────────────────────── */
 void setVolumenPads(int vol) {
     if (!dfPadsOk) return;
     if (vol < 0)  vol = 0;
