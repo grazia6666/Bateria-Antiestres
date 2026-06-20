@@ -31,7 +31,6 @@ body{
   font-size:15px;
 }
 
-/* ── GRID BG ── */
 body::before{
   content:'';
   position:fixed;inset:0;z-index:0;
@@ -41,7 +40,6 @@ body::before{
   background-size:48px 48px;
   pointer-events:none;
 }
-/* ── CORNER GLOW ── */
 body::after{
   content:'';
   position:fixed;inset:0;z-index:0;
@@ -51,7 +49,6 @@ body::after{
   pointer-events:none;
 }
 
-/* ── APP SHELL ── */
 #app{
   position:relative;z-index:1;
   height:100vh;
@@ -60,41 +57,29 @@ body::after{
   overflow-y:auto;
 }
 
-/* ── SCREENS ── */
 .screen{display:none;width:100%;max-width:460px;flex-direction:column;align-items:center;gap:20px}
 .screen.active{display:flex;animation:screenIn .3s ease}
 @keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── LOGO ── */
 .logo{text-align:center}
 .logo h1{
-  font-family:var(--font-hd);
-  font-weight:900;
-  font-size:clamp(1.3rem,5vw,2rem);
-  line-height:1.1;
-  letter-spacing:.04em;
+  font-family:var(--font-hd);font-weight:900;
+  font-size:clamp(1.3rem,5vw,2rem);line-height:1.1;letter-spacing:.04em;
   background:linear-gradient(90deg,var(--cyan),var(--pink),var(--yellow));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   filter:drop-shadow(0 0 16px rgba(0,229,255,.3));
 }
 .logo p{font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:5px}
 
-/* ── CARD ── */
 .card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:24px 26px;
-  width:100%;
-  position:relative;overflow:hidden;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:24px 26px;width:100%;position:relative;overflow:hidden;
 }
 .card::before{
-  content:'';
-  position:absolute;top:0;left:0;right:0;height:2px;
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,var(--cyan),var(--pink),var(--yellow));
 }
 
-/* ── FIELD ── */
 .field{display:flex;flex-direction:column;gap:7px;width:100%}
 .field label{
   font-family:var(--font-hd);font-size:.6rem;
@@ -102,14 +87,11 @@ body::after{
 }
 .field input{
   background:var(--bg2);border:1px solid var(--border);border-radius:8px;
-  padding:11px 14px;color:var(--text);
-  font-family:var(--font-bd);font-size:1rem;font-weight:600;
-  outline:none;width:100%;
-  transition:border-color .2s,box-shadow .2s;
+  padding:11px 14px;color:var(--text);font-family:var(--font-bd);font-size:1rem;font-weight:600;
+  outline:none;width:100%;transition:border-color .2s,box-shadow .2s;
 }
 .field input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
 
-/* ── BUTTONS ── */
 .btn{
   font-family:var(--font-hd);font-size:.72rem;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase;
@@ -118,33 +100,24 @@ body::after{
   transition:transform .13s,filter .2s,box-shadow .2s;
 }
 .btn:active{transform:scale(.97)}
-.btn-cyan{
-  background:linear-gradient(135deg,var(--cyan),#0077cc);
-  color:#000;box-shadow:0 0 18px rgba(0,229,255,.25);
-}
+.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0077cc);color:#000;box-shadow:0 0 18px rgba(0,229,255,.25);}
 .btn-cyan:hover{filter:brightness(1.1);box-shadow:0 0 28px rgba(0,229,255,.45)}
-.btn-pink{
-  background:linear-gradient(135deg,var(--pink),#99003d);
-  color:#fff;box-shadow:0 0 18px rgba(255,31,110,.25);
-}
+.btn-pink{background:linear-gradient(135deg,var(--pink),#99003d);color:#fff;box-shadow:0 0 18px rgba(255,31,110,.25);}
 .btn-pink:hover{filter:brightness(1.1);box-shadow:0 0 28px rgba(255,31,110,.45)}
-.btn-ghost{
-  background:transparent;border:1px solid var(--border);color:var(--muted);
-}
+.btn-yellow{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000;box-shadow:0 0 18px rgba(255,214,0,.25);}
+.btn-yellow:hover{filter:brightness(1.1);box-shadow:0 0 28px rgba(255,214,0,.45)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
 .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
 .btn-row{display:flex;gap:10px;width:100%}
 .btn-row .btn{flex:1}
 
-/* ── STATUS BAR ── */
 .status-bar{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--muted)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .dot.on{background:var(--green);animation:blink 2s infinite}
-.dot.off{background:var(--pink);animation:none}
+.dot.off{background:var(--pink)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ══════════════════════════════
-   SCREEN LOGIN
-══════════════════════════════ */
+/* ══ LOGIN ══ */
 .avatar{
   width:72px;height:72px;border-radius:50%;
   background:linear-gradient(135deg,rgba(0,229,255,.1),rgba(255,31,110,.1));
@@ -154,9 +127,7 @@ body::after{
   box-shadow:0 0 20px rgba(0,229,255,.2);
 }
 
-/* ══════════════════════════════
-   SCREEN MODOS
-══════════════════════════════ */
+/* ══ MODOS ══ */
 .player-chip{
   display:flex;align-items:center;gap:8px;
   background:var(--bg2);border:1px solid var(--border);border-radius:100px;
@@ -170,84 +141,99 @@ body::after{
   transition:border-color .2s,transform .15s,box-shadow .2s;
   position:relative;overflow:hidden;
 }
-.mode-card:hover{transform:translateX(5px);border-color:var(--mc)}
-.mode-card:hover{box-shadow:0 0 14px color-mix(in srgb,var(--mc) 30%,transparent)}
+.mode-card:hover{transform:translateX(5px);border-color:var(--mc);box-shadow:0 0 14px color-mix(in srgb,var(--mc) 30%,transparent)}
 .mode-icon{font-size:2rem;filter:drop-shadow(0 0 6px var(--mc))}
-.mode-info h3{
-  font-family:var(--font-hd);font-size:.78rem;font-weight:700;
-  letter-spacing:.07em;color:var(--mc);margin-bottom:4px;
-}
+.mode-info h3{font-family:var(--font-hd);font-size:.78rem;font-weight:700;letter-spacing:.07em;color:var(--mc);margin-bottom:4px;}
 .mode-info p{font-size:.78rem;color:var(--muted);line-height:1.4}
 .mode-badge{
   font-family:var(--font-hd);font-size:.58rem;font-weight:700;letter-spacing:.1em;
   padding:4px 9px;border-radius:100px;white-space:nowrap;
   background:color-mix(in srgb,var(--mc) 12%,transparent);
-  color:var(--mc);
-  border:1px solid color-mix(in srgb,var(--mc) 35%,transparent);
+  color:var(--mc);border:1px solid color-mix(in srgb,var(--mc) 35%,transparent);
 }
 .settings-btn{
   position:absolute;top:12px;right:12px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:50%;width:36px;height:36px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:1rem;
-  transition:border-color .2s;
+  background:var(--surface);border:1px solid var(--border);border-radius:50%;
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;transition:border-color .2s;
 }
 .settings-btn:hover{border-color:var(--cyan)}
 
-/* ══════════════════════════════
-   SCREEN JUEGO
-══════════════════════════════ */
-.game-topbar{
-  display:flex;justify-content:space-between;align-items:center;width:100%;
+/* ══ SELECTOR DE CANCIÓN ══ */
+.song-list{display:flex;flex-direction:column;gap:10px;width:100%}
+.song-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;
+  transition:border-color .2s,transform .15s,box-shadow .2s;
+  position:relative;
 }
+.song-card:hover{transform:translateX(4px);border-color:var(--yellow);box-shadow:0 0 14px rgba(255,214,0,.15)}
+.song-card.selected{border-color:var(--yellow);background:rgba(255,214,0,.04);box-shadow:0 0 18px rgba(255,214,0,.2)}
+.song-num{
+  font-family:var(--font-hd);font-size:1.2rem;font-weight:900;
+  color:var(--yellow);width:28px;text-align:center;flex-shrink:0;
+  filter:drop-shadow(0 0 6px rgba(255,214,0,.4));
+}
+.song-info{flex:1;min-width:0}
+.song-info h3{
+  font-family:var(--font-hd);font-size:.76rem;font-weight:700;
+  letter-spacing:.06em;color:var(--text);margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.song-info p{font-size:.73rem;color:var(--muted);line-height:1.3}
+.song-meta{
+  display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;
+}
+.bpm-badge{
+  font-family:var(--font-hd);font-size:.58rem;font-weight:700;
+  padding:3px 8px;border-radius:100px;
+  background:rgba(255,214,0,.1);color:var(--yellow);
+  border:1px solid rgba(255,214,0,.25);
+}
+.pads-used{font-size:.65rem;color:var(--muted);letter-spacing:.04em}
+.song-play-btn{
+  font-size:.9rem;opacity:.35;transition:opacity .2s;flex-shrink:0;
+}
+.song-card:hover .song-play-btn,.song-card.selected .song-play-btn{opacity:1}
+
+.song-action-area{display:flex;flex-direction:column;gap:10px;width:100%}
+.selected-preview{
+  background:var(--surface);border:1px solid rgba(255,214,0,.3);border-radius:10px;
+  padding:14px 18px;display:flex;align-items:center;gap:12px;
+}
+.selected-preview .sp-icon{font-size:1.8rem}
+.selected-preview .sp-info{flex:1}
+.selected-preview .sp-name{font-family:var(--font-hd);font-size:.72rem;font-weight:700;color:var(--yellow);letter-spacing:.05em}
+.selected-preview .sp-hint{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+/* ══ JUEGO ══ */
+.game-topbar{display:flex;justify-content:space-between;align-items:center;width:100%;}
 .game-topbar .back-btn{
   font-family:var(--font-hd);font-size:.62rem;letter-spacing:.1em;
   background:none;border:1px solid var(--border);border-radius:6px;
-  color:var(--muted);padding:7px 12px;cursor:pointer;
-  transition:border-color .2s,color .2s;
+  color:var(--muted);padding:7px 12px;cursor:pointer;transition:border-color .2s,color .2s;
 }
 .game-topbar .back-btn:hover{border-color:var(--pink);color:var(--pink)}
-
-.score-big{
-  font-family:var(--font-hd);font-weight:900;
-  font-size:2.4rem;color:var(--yellow);
-  text-shadow:0 0 20px rgba(255,214,0,.4);
-  text-align:right;line-height:1;
-}
+.score-big{font-family:var(--font-hd);font-weight:900;font-size:2.4rem;color:var(--yellow);text-shadow:0 0 20px rgba(255,214,0,.4);text-align:right;line-height:1;}
 .score-label{font-size:.6rem;letter-spacing:.2em;color:var(--muted);text-align:right;margin-top:2px}
-
 .lives-row{display:flex;gap:4px}
 .life{font-size:.95rem;transition:filter .3s}
 .life.lost{filter:grayscale(1) opacity(.25)}
 
-/* STATUS JUEGO */
 .game-status-card{
   background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:16px 20px;width:100%;
-  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:16px 20px;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;
 }
-.estado-label{
-  font-family:var(--font-hd);font-size:.65rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted);
-}
-.estado-valor{
-  font-family:var(--font-hd);font-size:1.1rem;font-weight:700;
-  color:var(--cyan);text-align:center;line-height:1.3;
-}
+.estado-label{font-family:var(--font-hd);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.estado-valor{font-family:var(--font-hd);font-size:1.1rem;font-weight:700;color:var(--cyan);text-align:center;line-height:1.3;}
 .estado-valor.esperando{color:var(--muted);font-size:.85rem}
 
-/* FEED DE EVENTOS */
-.event-feed{
-  width:100%;min-height:52px;
-  display:flex;flex-direction:column;gap:6px;
-  overflow:hidden;
-}
+.event-feed{width:100%;min-height:52px;display:flex;flex-direction:column;gap:6px;overflow:hidden;}
 .event-item{
   display:flex;align-items:center;gap:10px;
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;padding:8px 14px;
-  font-size:.82rem;font-weight:600;
+  border-radius:8px;padding:8px 14px;font-size:.82rem;font-weight:600;
   animation:eventIn .25s ease;
 }
 @keyframes eventIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
@@ -255,43 +241,35 @@ body::after{
 .event-item.incorrecto{border-color:rgba(255,31,110,.35);color:var(--pink)}
 .event-item.combo{border-color:rgba(255,214,0,.35);color:var(--yellow)}
 .event-item.info{border-color:var(--border);color:var(--muted)}
+.event-item.perfecto{border-color:rgba(0,229,255,.4);color:var(--cyan)}
 
-/* COMBO + RONDA */
-.meta-row{
-  display:flex;justify-content:space-between;align-items:center;width:100%;
-  font-size:.78rem;color:var(--muted);
-}
-.meta-val{
-  font-family:var(--font-hd);font-weight:700;
-}
+.meta-row{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:.78rem;color:var(--muted);}
+.meta-val{font-family:var(--font-hd);font-weight:700;}
 .meta-val.combo-v{color:var(--yellow)}
 .meta-val.ronda-v{color:var(--cyan)}
 
-/* OLED HINT — solo recordatorio visual de que el OLED es el árbitro */
+/* barra de progreso de canción */
+.song-progress-wrap{width:100%;display:flex;flex-direction:column;gap:5px;}
+.song-progress-label{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);}
+.song-progress-bar{width:100%;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.song-progress-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));border-radius:3px;width:0%;transition:width .5s linear;}
+
 .oled-hint{
   display:flex;align-items:center;gap:10px;
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:10px;padding:12px 16px;width:100%;
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;width:100%;
 }
 .oled-screen{
-  width:56px;height:30px;
-  background:#000;border:1px solid #333;border-radius:3px;
+  width:56px;height:30px;background:#000;border:1px solid #333;border-radius:3px;
   display:flex;align-items:center;justify-content:center;
-  font-family:monospace;font-size:.6rem;color:#4cff50;
-  letter-spacing:.05em;flex-shrink:0;
+  font-family:monospace;font-size:.6rem;color:#4cff50;letter-spacing:.05em;flex-shrink:0;
   position:relative;overflow:hidden;
 }
-.oled-screen::after{
-  content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.2) 2px,rgba(0,0,0,.2) 3px);
-}
+.oled-screen::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.2) 2px,rgba(0,0,0,.2) 3px);}
 .oled-screen span{z-index:1}
 .oled-hint p{font-size:.75rem;color:var(--muted);line-height:1.4}
 .oled-hint strong{color:var(--text)}
 
-/* ══════════════════════════════
-   SCREEN RESULTADO
-══════════════════════════════ */
+/* ══ RESULTADO ══ */
 .result-big{text-align:center}
 .result-num{
   font-family:var(--font-hd);font-weight:900;font-size:4.5rem;line-height:1;
@@ -302,31 +280,22 @@ body::after{
 .result-pts{font-size:.68rem;letter-spacing:.25em;color:var(--muted);margin-top:4px}
 
 .stats-row{display:flex;gap:10px;width:100%}
-.stat-box{
-  flex:1;background:var(--bg2);border:1px solid var(--border);
-  border-radius:10px;padding:13px 10px;text-align:center;
-}
+.stat-box{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 10px;text-align:center;}
 .stat-v{font-family:var(--font-hd);font-size:1.2rem;font-weight:700;color:var(--cyan)}
 .stat-l{font-size:.68rem;color:var(--muted);margin-top:3px;letter-spacing:.07em}
 
-/* ══════════════════════════════
-   SCREEN RANKING
-══════════════════════════════ */
-.rtabs{display:flex;gap:7px;width:100%}
+/* ══ RANKING ══ */
+.rtabs{display:flex;gap:7px;width:100%;flex-wrap:wrap}
 .rtab{
   flex:1;font-family:var(--font-hd);font-size:.6rem;font-weight:700;
   letter-spacing:.1em;padding:8px 4px;
   background:var(--bg2);border:1px solid var(--border);border-radius:7px;
-  color:var(--muted);cursor:pointer;text-align:center;
-  transition:border-color .2s,color .2s;
+  color:var(--muted);cursor:pointer;text-align:center;transition:border-color .2s,color .2s;
+  min-width:60px;
 }
 .rtab.active{border-color:var(--cyan);color:var(--cyan)}
-.rlist{width:100%;display:flex;flex-direction:column;gap:7px;max-height:340px;overflow-y:auto}
-.ritem{
-  display:flex;align-items:center;gap:11px;
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:9px;padding:11px 14px;
-}
+.rlist{width:100%;display:flex;flex-direction:column;gap:7px;max-height:300px;overflow-y:auto}
+.ritem{display:flex;align-items:center;gap:11px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;}
 .ritem.mine{border-color:rgba(0,229,255,.4);background:rgba(0,229,255,.03)}
 .rnum{font-family:var(--font-hd);font-size:.75rem;font-weight:700;width:22px;text-align:center;color:var(--muted)}
 .rnum.g{color:#ffd700}.rnum.s{color:#b0bec5}.rnum.b{color:#a1887f}
@@ -335,34 +304,18 @@ body::after{
 .rscore{font-family:var(--font-hd);font-size:.88rem;font-weight:700;color:var(--yellow)}
 .rempty{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 0;letter-spacing:.05em}
 
-/* ══════════════════════════════
-   SCREEN WIFI
-══════════════════════════════ */
-.wifi-slot{
-  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
-  padding:16px;display:flex;flex-direction:column;gap:11px;width:100%;
-}
-.wifi-slot-hd{
-  display:flex;align-items:center;gap:7px;
-  font-family:var(--font-hd);font-size:.65rem;font-weight:700;
-  letter-spacing:.15em;color:var(--cyan);
-}
-.nav-back{
-  display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--muted);
-  background:none;border:none;cursor:pointer;letter-spacing:.07em;
-  transition:color .2s;
-}
+/* ══ WIFI ══ */
+.wifi-slot{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:11px;width:100%;}
+.wifi-slot-hd{display:flex;align-items:center;gap:7px;font-family:var(--font-hd);font-size:.65rem;font-weight:700;letter-spacing:.15em;color:var(--cyan);}
+.nav-back{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:.07em;transition:color .2s;}
 .nav-back:hover{color:var(--cyan)}
 
-/* ══════════════════════════════
-   TOAST
-══════════════════════════════ */
+/* ══ TOAST ══ */
 #toast{
   position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
   background:var(--surface);border:1px solid var(--cyan);border-radius:100px;
   padding:9px 20px;font-family:var(--font-hd);font-size:.68rem;font-weight:700;
-  letter-spacing:.1em;color:var(--cyan);
-  box-shadow:0 0 16px rgba(0,229,255,.2);z-index:300;
+  letter-spacing:.1em;color:var(--cyan);box-shadow:0 0 16px rgba(0,229,255,.2);z-index:300;
   white-space:nowrap;transition:opacity .3s;
 }
 #toast.off{display:none}
@@ -422,10 +375,47 @@ body::after{
         </div>
         <div class="mode-badge">MEMORY</div>
       </div>
+      <!-- NUEVO: Modo Canción -->
+      <div class="mode-card" style="--mc:var(--yellow)" onclick="ir('canciones')">
+        <div class="mode-icon">🎸</div>
+        <div class="mode-info">
+          <h3>Modo Canción</h3>
+          <p>Suena la pista. Toca el pad correcto cuando se encienda el LED.</p>
+        </div>
+        <div class="mode-badge">RHYTHM</div>
+      </div>
     </div>
 
     <button class="btn btn-ghost" onclick="ir('ranking')">VER RANKING 🏆</button>
     <button class="settings-btn" onclick="ir('wifi')" title="Config WiFi">⚙️</button>
+  </div>
+
+  <!-- ═══════════ SELECTOR DE CANCIONES ═══════════ -->
+  <div class="screen" id="s-canciones">
+    <div class="logo">
+      <h1>ELIGE<br>TU CANCIÓN</h1>
+      <p>DFPlayer 2 · Sincronizado con LEDs</p>
+    </div>
+    <div class="player-chip">🎮 <span id="chip-name-c">Jugador</span></div>
+
+    <div class="song-list" id="song-list">
+      <!-- cards generadas por JS -->
+    </div>
+
+    <div class="song-action-area">
+      <div class="selected-preview" id="selected-preview" style="display:none">
+        <div class="sp-icon">🎵</div>
+        <div class="sp-info">
+          <div class="sp-name" id="sp-name">—</div>
+          <div class="sp-hint">Los LEDs te guían — toca el pad cuando se encienda</div>
+        </div>
+      </div>
+      <button class="btn btn-yellow" id="btn-tocar" onclick="iniciarCancion()" style="display:none">
+        ▶ TOCAR ESTA CANCIÓN
+      </button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="ir('modos')">← VOLVER AL MENÚ</button>
   </div>
 
   <!-- ═══════════ JUEGO ═══════════ -->
@@ -439,30 +429,35 @@ body::after{
       <div class="lives-row" id="lives-row"></div>
     </div>
 
-    <!-- Indicador modo activo -->
     <div style="display:flex;align-items:center;gap:8px;width:100%">
       <div style="font-family:var(--font-hd);font-size:.62rem;letter-spacing:.2em;color:var(--muted)">MODO</div>
       <div id="modo-badge-active" class="mode-badge" style="--mc:var(--cyan)">—</div>
       <div style="flex:1"></div>
       <div class="meta-row" style="gap:16px">
         <span>COMBO <span class="meta-val combo-v" id="combo-v">x1</span></span>
-        <span>RONDA <span class="meta-val ronda-v" id="ronda-v">—</span></span>
+        <span id="meta-ronda-wrap">RONDA <span class="meta-val ronda-v" id="ronda-v">—</span></span>
       </div>
     </div>
 
-    <!-- Estado actual (lo que dicta el OLED) -->
+    <!-- Progreso de canción (solo visible en modo canción) -->
+    <div class="song-progress-wrap" id="song-progress-wrap" style="display:none">
+      <div class="song-progress-label">
+        <span id="prog-song-name">—</span>
+        <span id="prog-hits">0 aciertos</span>
+      </div>
+      <div class="song-progress-bar"><div class="song-progress-fill" id="prog-fill"></div></div>
+    </div>
+
     <div class="game-status-card">
       <div class="estado-label" id="estado-label">ESPERANDO ESP32</div>
       <div class="estado-valor esperando" id="estado-valor">Iniciando juego…</div>
     </div>
 
-    <!-- Hint OLED -->
     <div class="oled-hint">
       <div class="oled-screen"><span id="oled-preview">···</span></div>
       <p><strong>Mira el OLED</strong> en la batería.<br>Él te indica qué pad tocar.</p>
     </div>
 
-    <!-- Feed de eventos en tiempo real -->
     <div class="event-feed" id="event-feed"></div>
 
     <button class="btn btn-ghost" style="margin-top:4px" onclick="terminarJuego()">TERMINAR PARTIDA</button>
@@ -477,8 +472,11 @@ body::after{
     </div>
     <div class="stats-row">
       <div class="stat-box"><div class="stat-v" id="res-aciertos">0</div><div class="stat-l">ACIERTOS</div></div>
+      <div class="stat-box"><div class="stat-v" id="res-fallos">0</div><div class="stat-l">FALLOS</div></div>
       <div class="stat-box"><div class="stat-v" id="res-combo">x1</div><div class="stat-l">COMBO MÁX</div></div>
-      <div class="stat-box"><div class="stat-v" id="res-modo">—</div><div class="stat-l">MODO</div></div>
+    </div>
+    <div class="stats-row" style="margin-top:-10px">
+      <div class="stat-box" style="flex:2"><div class="stat-v" id="res-modo" style="font-size:.85rem">—</div><div class="stat-l">MODO / CANCIÓN</div></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-pink" onclick="jugarDeNuevo()">🔁 DE NUEVO</button>
@@ -491,10 +489,11 @@ body::after{
   <div class="screen" id="s-ranking">
     <div class="logo"><h1>RANKING 🏆</h1></div>
     <div class="rtabs">
-      <button class="rtab active" id="rt-todos"    onclick="filtrarRanking('todos')">TODOS</button>
-      <button class="rtab"        id="rt-libre"    onclick="filtrarRanking('libre')">LIBRE</button>
-      <button class="rtab"        id="rt-reflejos" onclick="filtrarRanking('reflejos')">REFLEJOS</button>
-      <button class="rtab"        id="rt-memoria"  onclick="filtrarRanking('memoria')">MEMORIA</button>
+      <button class="rtab active" id="rt-todos"     onclick="filtrarRanking('todos')">TODOS</button>
+      <button class="rtab"        id="rt-libre"     onclick="filtrarRanking('libre')">LIBRE</button>
+      <button class="rtab"        id="rt-reflejos"  onclick="filtrarRanking('reflejos')">REFLEJOS</button>
+      <button class="rtab"        id="rt-memoria"   onclick="filtrarRanking('memoria')">MEMORIA</button>
+      <button class="rtab"        id="rt-canciones" onclick="filtrarRanking('canciones')">CANCIONES</button>
     </div>
     <div class="rlist" id="rlist"></div>
     <div class="btn-row">
@@ -528,25 +527,46 @@ body::after{
 
 <script>
 /* ═══════════════════════════════════════════════
+   CATÁLOGO DE CANCIONES
+   id = índice 0-based → ESP32 recibe este número
+   El ESP32 lo mapea a archivoCancion[id] (1-5 para DFPlayer)
+═══════════════════════════════════════════════ */
+const CANCIONES = [
+  { id:0, nombre:'Billie Jean',       bpm:117, pads:'Bombo · Caja · Hi-Hat',  notas:17 },
+  { id:1, nombre:'Camisa Negra',      bpm:97,  pads:'Bombo · Caja · Hi-Hat',  notas:24 },
+  { id:2, nombre:'Center of Mass',    bpm:107, pads:'Bombo · Caja · Hi-Hat',  notas:28 },
+  { id:3, nombre:'Overcompensate',    bpm:120, pads:'Bombo · Caja · Hi-Hat',  notas:26 },
+  { id:4, nombre:'Seven Nation Army', bpm:126, pads:'Bombo · Caja · Tom piso',notas:32 },
+];
+
+/* ═══════════════════════════════════════════════
    ESTADO GLOBAL
 ═══════════════════════════════════════════════ */
 const G = {
-  jugador: '',
-  modo: null,
-  score: 0,
-  combo: 1,
-  maxCombo: 1,
-  aciertos: 0,
-  vidas: 3,
-  ronda: 0,
-  scores: [],
+  jugador:    '',
+  modo:       null,         /* 'libre'|'reflejos'|'memoria'|'cancion' */
+  cancionId:  -1,
+  cancionNombre: '',
+  cancionNotas:  0,
+  score:      0,
+  combo:      1,
+  maxCombo:   1,
+  aciertos:   0,
+  fallos:     0,
+  vidas:      3,
+  ronda:      0,
+  scores:     [],
   rankFilter: 'todos',
-  ws: null,
-  wsOk: false,
+  ws:         null,
+  wsOk:       false,
 };
 
-const MODO_LABEL = { libre:'LIBRE', reflejos:'REFLEJOS', memoria:'MEMORIA' };
-const MODO_COLOR = { libre:'var(--cyan)', reflejos:'var(--pink)', memoria:'var(--purple)' };
+const MODO_LABEL = {
+  libre:'LIBRE', reflejos:'REFLEJOS', memoria:'MEMORIA', cancion:'CANCIÓN'
+};
+const MODO_COLOR = {
+  libre:'var(--cyan)', reflejos:'var(--pink)', memoria:'var(--purple)', cancion:'var(--yellow)'
+};
 
 /* ═══════════════════════════════════════════════
    WEBSOCKET
@@ -558,127 +578,119 @@ function conectarWS() {
   if (!host) { setWSDot(false,'Modo demo (sin ESP32)'); cargarScoresDemo(); return; }
 
   G.ws = new WebSocket(host);
-
-  G.ws.onopen = () => {
-    G.wsOk = true;
-    setWSDot(true);
-    enviar({ accion:'get_scores' });
-  };
-  G.ws.onclose = () => {
-    G.wsOk = false;
-    setWSDot(false,'Sin conexión — reintentando…');
-    setTimeout(conectarWS, 3000);
-  };
-  G.ws.onmessage = (e) => {
-    try { manejarMensaje(JSON.parse(e.data)); } catch(_) {}
-  };
+  G.ws.onopen  = () => { G.wsOk=true; setWSDot(true); enviar({accion:'get_scores'}); };
+  G.ws.onclose = () => { G.wsOk=false; setWSDot(false,'Sin conexión — reintentando…'); setTimeout(conectarWS,3000); };
+  G.ws.onmessage = (e) => { try { manejarMensaje(JSON.parse(e.data)); } catch(_){} };
 }
 
 function enviar(obj) {
-  if (G.ws && G.ws.readyState === 1) G.ws.send(JSON.stringify(obj));
+  if (G.ws && G.ws.readyState===1) G.ws.send(JSON.stringify(obj));
 }
 
-/* ── Mensajes entrantes del ESP32 ── */
+/* ═══════════════════════════════════════════════
+   MENSAJES DEL ESP32
+═══════════════════════════════════════════════ */
 function manejarMensaje(d) {
-  // Ranking actualizado
   if (d.scores) { G.scores = d.scores; renderRanking(); }
-
-  // Confirmación guardado wifi
   if (d.ok === true) toast('✅ Guardado en ESP32');
 
-  // ── Eventos de juego ──
   switch(d.evento) {
 
+    /* ── modos clásicos ── */
     case 'juego_iniciado':
-      G.score=0; G.combo=1; G.maxCombo=1; G.aciertos=0; G.vidas=d.vidas||3; G.ronda=0;
+      G.score=0;G.combo=1;G.maxCombo=1;G.aciertos=0;G.fallos=0;G.vidas=d.vidas||3;G.ronda=0;
       actualizarHUD();
       setEstado('INICIANDO…','Sigue el OLED de la batería','esperando');
       break;
 
     case 'pad_objetivo':
-      // ESP32 indica qué pad debe tocar (solo para mostrar en web como referencia)
-      setEstado(
-        `TOCA → PAD ${d.pad + 1}`,
-        `Ronda ${d.ronda || G.ronda}`,
-        'activo'
-      );
+      setEstado(`TOCA → PAD ${d.pad+1}`,`Ronda ${d.ronda||G.ronda}`,'activo');
       setOledPreview(`P${d.pad+1}`);
-      G.ronda = d.ronda || G.ronda;
-      actualizarHUD();
-      break;
+      G.ronda=d.ronda||G.ronda; actualizarHUD(); break;
 
     case 'mostrando_secuencia':
-      setEstado('MEMORIZA LA SECUENCIA', `${d.largo} pasos — Ronda ${d.ronda}`, 'activo');
-      setOledPreview(`R${d.ronda}`);
-      G.ronda = d.ronda;
-      actualizarHUD();
-      break;
+      setEstado('MEMORIZA LA SECUENCIA',`${d.largo} pasos — Ronda ${d.ronda}`,'activo');
+      setOledPreview(`R${d.ronda}`); G.ronda=d.ronda; actualizarHUD(); break;
 
     case 'turno_jugador':
-      setEstado(`TU TURNO — PASO ${d.paso}/${d.total}`, 'Repite la secuencia','activo');
-      setOledPreview(`${d.paso}/${d.total}`);
-      break;
+      setEstado(`TU TURNO — PASO ${d.paso}/${d.total}`,'Repite la secuencia','activo');
+      setOledPreview(`${d.paso}/${d.total}`); break;
 
     case 'hit_correcto':
-      G.score = d.puntos_total ?? G.score;
-      G.combo = d.combo ?? G.combo;
-      if (G.combo > G.maxCombo) G.maxCombo = G.combo;
-      G.aciertos++;
+      G.score=d.puntos_total??G.score; G.combo=d.combo??G.combo;
+      if(G.combo>G.maxCombo) G.maxCombo=G.combo; G.aciertos++;
       actualizarHUD();
-      if (G.combo >= 3)
-        addEvento(`🔥 COMBO x${G.combo}! +${d.puntos_ganados||0}pts`, 'combo');
-      else
-        addEvento(`✅ PAD ${d.pad+1} — +${d.puntos_ganados||0}pts`, 'correcto');
+      if(G.combo>=3) addEvento(`🔥 COMBO x${G.combo}! +${d.puntos_ganados||0}pts`,'combo');
+      else            addEvento(`✅ PAD ${d.pad+1} — +${d.puntos_ganados||0}pts`,'correcto');
       break;
 
     case 'hit_incorrecto':
-      G.vidas = d.vidas ?? G.vidas - 1;
-      G.combo = 1;
-      actualizarHUD();
-      addEvento(`❌ PAD ${d.pad+1} incorrecto — vidas: ${G.vidas}`, 'incorrecto');
-      break;
+      G.vidas=d.vidas??G.vidas-1; G.combo=1; actualizarHUD();
+      addEvento(`❌ PAD ${d.pad+1} incorrecto — vidas: ${G.vidas}`,'incorrecto'); break;
 
     case 'tiempo_agotado':
-      G.vidas = d.vidas ?? G.vidas - 1;
-      G.combo = 1;
-      actualizarHUD();
-      addEvento(`⏰ Tiempo agotado — vidas: ${G.vidas}`, 'incorrecto');
-      break;
+      G.vidas=d.vidas??G.vidas-1; G.combo=1; actualizarHUD();
+      addEvento(`⏰ Tiempo agotado — vidas: ${G.vidas}`,'incorrecto'); break;
 
     case 'ronda_completada':
-      G.score = d.puntos_total ?? G.score;
-      actualizarHUD();
-      addEvento(`🎯 Ronda ${d.ronda} completada!`, 'combo');
-      break;
+      G.score=d.puntos_total??G.score; actualizarHUD();
+      addEvento(`🎯 Ronda ${d.ronda} completada!`,'combo'); break;
 
     case 'score_update':
-      G.score = d.puntos ?? G.score;
-      G.combo = d.combo ?? G.combo;
-      if (G.combo > G.maxCombo) G.maxCombo = G.combo;
-      actualizarHUD();
-      break;
+      G.score=d.puntos??G.score; G.combo=d.combo??G.combo;
+      if(G.combo>G.maxCombo) G.maxCombo=G.combo; actualizarHUD(); break;
 
     case 'juego_terminado':
-      G.score = d.puntos_final ?? G.score;
-      mostrarResultado();
+      G.score=d.puntos_final??G.score; mostrarResultado(); break;
+
+    /* ── modo canción ── */
+    case 'cancion_iniciada':
+      G.score=0;G.combo=1;G.maxCombo=1;G.aciertos=0;G.fallos=0;G.vidas=d.vidas||3;
+      actualizarHUD();
+      setEstado('♪ REPRODUCIENDO',d.cancion||G.cancionNombre,'activo');
+      setOledPreview('♪');
+      actualizarProgresoCancion();
       break;
+
+    case 'nota_hit':
+      G.score=d.puntos??G.score+(d.perfecto?200:100); // fallback si falta puntos
+      G.combo=d.combo??G.combo;
+      if(G.combo>G.maxCombo) G.maxCombo=G.combo; G.aciertos++;
+      actualizarHUD(); actualizarProgresoCancion();
+      if(d.perfecto)  addEvento(`💫 PERFECTO! PAD ${d.pad+1}  +${d.puntos||0}pts`,'perfecto');
+      else if(G.combo>=3) addEvento(`🔥 COMBO x${G.combo}! PAD ${d.pad+1}`,'combo');
+      else            addEvento(`✅ PAD ${d.pad+1}  +${d.puntos||0}pts`,'correcto');
+      break;
+
+    case 'nota_miss':
+      G.vidas=d.vidas??G.vidas-1; G.combo=1; G.fallos++; actualizarHUD(); actualizarProgresoCancion();
+      addEvento(`❌ MISS PAD ${d.pad+1} — vidas: ${G.vidas}`,'incorrecto'); break;
+
+    case 'cancion_update':
+      G.score=d.puntos??G.score; G.combo=d.combo??G.combo;
+      G.aciertos=d.aciertos??G.aciertos; G.fallos=d.fallos??G.fallos; G.vidas=d.vidas??G.vidas;
+      if(G.combo>G.maxCombo) G.maxCombo=G.combo; actualizarHUD(); actualizarProgresoCancion(); break;
+
+    case 'cancion_terminada':
+      G.score=d.puntos_final??G.score;
+      G.aciertos=d.aciertos??G.aciertos; G.fallos=d.fallos??G.fallos;
+      mostrarResultado(); break;
   }
 }
 
 function setWSDot(ok, msg) {
-  const dot = document.getElementById('ws-dot');
-  const lbl = document.getElementById('ws-label');
-  dot.className = 'dot ' + (ok ? 'on' : 'off');
-  lbl.textContent = ok ? 'Conectado al ESP32 ✓' : (msg || 'Sin conexión');
+  document.getElementById('ws-dot').className='dot '+(ok?'on':'off');
+  document.getElementById('ws-label').textContent=ok?'Conectado al ESP32 ✓':(msg||'Sin conexión');
 }
 
 /* ═══════════════════════════════════════════════
    NAVEGACIÓN
 ═══════════════════════════════════════════════ */
 function ir(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('s-' + id).classList.add('active');
-  if (id === 'ranking') renderRanking();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  if(id==='ranking')   renderRanking();
+  if(id==='canciones') renderSongList();
 }
 
 /* ═══════════════════════════════════════════════
@@ -686,75 +698,144 @@ function ir(id) {
 ═══════════════════════════════════════════════ */
 function doLogin() {
   const n = document.getElementById('inp-nombre').value.trim();
-  if (!n) { toast('⚠️ Escribe tu nombre'); return; }
-  G.jugador = n;
-  document.getElementById('chip-name').textContent = n;
+  if(!n){toast('⚠️ Escribe tu nombre');return;}
+  G.jugador=n;
+  document.getElementById('chip-name').textContent=n;
+  document.getElementById('chip-name-c').textContent=n;
   ir('modos');
 }
-document.getElementById('inp-nombre').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
+document.getElementById('inp-nombre').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
 /* ═══════════════════════════════════════════════
-   MODOS
+   MODOS CLÁSICOS
 ═══════════════════════════════════════════════ */
 function elegirModo(modo) {
-  G.modo = modo;
-  // Configurar badge del modo en pantalla de juego
-  const badge = document.getElementById('modo-badge-active');
-  badge.textContent = MODO_LABEL[modo];
-  badge.style.setProperty('--mc', MODO_COLOR[modo]);
-  // Limpiar feed
-  document.getElementById('event-feed').innerHTML = '';
+  G.modo=modo; G.cancionId=-1; G.cancionNombre=''; G.cancionNotas=0;
+
+  const badge=document.getElementById('modo-badge-active');
+  badge.textContent=MODO_LABEL[modo]; badge.style.setProperty('--mc',MODO_COLOR[modo]);
+
+  document.getElementById('event-feed').innerHTML='';
+  document.getElementById('song-progress-wrap').style.display='none';
+  document.getElementById('meta-ronda-wrap').style.display='';
   setEstado('CONECTANDO…','Enviando modo al ESP32…','esperando');
   setOledPreview('···');
-  // Ir a pantalla de juego ANTES de enviar, para que el usuario vea el estado
   ir('juego');
-  // Enviar al ESP32
-  enviar({ accion:'iniciar_juego', modo, jugador: G.jugador });
+  enviar({accion:'iniciar_juego',modo,jugador:G.jugador});
+}
+
+/* ═══════════════════════════════════════════════
+   SELECTOR DE CANCIONES
+═══════════════════════════════════════════════ */
+function renderSongList() {
+  const list=document.getElementById('song-list');
+  list.innerHTML='';
+  CANCIONES.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='song-card'+(G.cancionId===c.id?' selected':'');
+    div.id='sc-'+c.id;
+    div.innerHTML=`
+      <div class="song-num">${c.id+1}</div>
+      <div class="song-info">
+        <h3>${c.nombre}</h3>
+        <p>${c.pads} · ${c.notas} notas</p>
+      </div>
+      <div class="song-meta">
+        <div class="bpm-badge">${c.bpm} BPM</div>
+      </div>
+      <div class="song-play-btn">▶</div>`;
+    div.onclick=()=>seleccionarCancion(c.id);
+    list.appendChild(div);
+  });
+  actualizarSeleccionSong();
+}
+
+function seleccionarCancion(id) {
+  G.cancionId=id;
+  document.querySelectorAll('.song-card').forEach(c=>c.classList.remove('selected'));
+  const el=document.getElementById('sc-'+id);
+  if(el) el.classList.add('selected');
+  actualizarSeleccionSong();
+}
+
+function actualizarSeleccionSong() {
+  const prev=document.getElementById('selected-preview');
+  const btn =document.getElementById('btn-tocar');
+  if(G.cancionId<0){
+    prev.style.display='none'; btn.style.display='none'; return;
+  }
+  const c=CANCIONES[G.cancionId];
+  document.getElementById('sp-name').textContent=c.nombre+' — '+c.bpm+' BPM';
+  prev.style.display='flex'; btn.style.display='block';
+}
+
+function iniciarCancion() {
+  if(G.cancionId<0){toast('⚠️ Selecciona una canción');return;}
+  const c=CANCIONES[G.cancionId];
+  G.modo='cancion'; G.cancionNombre=c.nombre; G.cancionNotas=c.notas;
+
+  const badge=document.getElementById('modo-badge-active');
+  badge.textContent='🎸 '+c.nombre.toUpperCase();
+  badge.style.setProperty('--mc','var(--yellow)');
+
+  document.getElementById('event-feed').innerHTML='';
+  document.getElementById('song-progress-wrap').style.display='flex';
+  document.getElementById('prog-song-name').textContent=c.nombre;
+  document.getElementById('prog-hits').textContent='0 aciertos';
+  document.getElementById('prog-fill').style.width='0%';
+  document.getElementById('meta-ronda-wrap').style.display='none'; // no hay rondas en canción
+
+  setEstado('CARGANDO PISTA…','El DFPlayer arranca en un momento…','esperando');
+  setOledPreview('♪');
+  ir('juego');
+
+  /* El ESP32 espera: { accion:"iniciar_cancion", id:0-4, jugador:"..." } */
+  enviar({accion:'iniciar_cancion', id:G.cancionId, jugador:G.jugador});
+}
+
+function actualizarProgresoCancion() {
+  if(G.modo!=='cancion') return;
+  const total=G.cancionNotas||1;
+  const pct=Math.min(100,Math.round(((G.aciertos+G.fallos)/total)*100));
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-hits').textContent=`${G.aciertos} aciertos · ${G.fallos} fallos`;
 }
 
 /* ═══════════════════════════════════════════════
    JUEGO — HUD
 ═══════════════════════════════════════════════ */
 function actualizarHUD() {
-  document.getElementById('score-num').textContent = G.score;
-  document.getElementById('combo-v').textContent = 'x' + G.combo;
-  document.getElementById('ronda-v').textContent = G.ronda || '—';
-  // Vidas
-  const row = document.getElementById('lives-row');
-  row.innerHTML = '';
-  for (let i = 0; i < 3; i++) {
-    const s = document.createElement('span');
-    s.className = 'life' + (i >= G.vidas ? ' lost' : '');
-    s.textContent = '❤️';
-    row.appendChild(s);
+  document.getElementById('score-num').textContent=G.score;
+  document.getElementById('combo-v').textContent='x'+G.combo;
+  document.getElementById('ronda-v').textContent=G.ronda||'—';
+  const row=document.getElementById('lives-row');
+  row.innerHTML='';
+  for(let i=0;i<3;i++){
+    const s=document.createElement('span');
+    s.className='life'+(i>=G.vidas?' lost':'');
+    s.textContent='❤️'; row.appendChild(s);
   }
 }
 
-function setEstado(label, valor, tipo) {
-  document.getElementById('estado-label').textContent = label;
-  const v = document.getElementById('estado-valor');
-  v.textContent = valor;
-  v.className = 'estado-valor' + (tipo === 'esperando' ? ' esperando' : '');
+function setEstado(label,valor,tipo) {
+  document.getElementById('estado-label').textContent=label;
+  const v=document.getElementById('estado-valor');
+  v.textContent=valor;
+  v.className='estado-valor'+(tipo==='esperando'?' esperando':'');
 }
+function setOledPreview(t){document.getElementById('oled-preview').textContent=t;}
 
-function setOledPreview(txt) {
-  document.getElementById('oled-preview').textContent = txt;
-}
-
-function addEvento(txt, tipo) {
-  const feed = document.getElementById('event-feed');
-  // Máximo 3 eventos visibles
-  while (feed.children.length >= 3) feed.removeChild(feed.lastChild);
-  const div = document.createElement('div');
-  div.className = 'event-item ' + (tipo || 'info');
-  div.textContent = txt;
-  feed.insertBefore(div, feed.firstChild);
+function addEvento(txt,tipo) {
+  const feed=document.getElementById('event-feed');
+  while(feed.children.length>=3) feed.removeChild(feed.lastChild);
+  const div=document.createElement('div');
+  div.className='event-item '+(tipo||'info');
+  div.textContent=txt;
+  feed.insertBefore(div,feed.firstChild);
 }
 
 function terminarJuego() {
-  enviar({ accion:'terminar_juego' });
+  enviar({accion:'terminar_juego'});
   ir('modos');
 }
 
@@ -762,86 +843,86 @@ function terminarJuego() {
    RESULTADO
 ═══════════════════════════════════════════════ */
 function mostrarResultado() {
-  document.getElementById('res-num').textContent = G.score;
-  document.getElementById('res-aciertos').textContent = G.aciertos;
-  document.getElementById('res-combo').textContent = 'x' + G.maxCombo;
-  document.getElementById('res-modo').textContent = MODO_LABEL[G.modo] || '—';
+  document.getElementById('res-num').textContent=G.score;
+  document.getElementById('res-aciertos').textContent=G.aciertos;
+  document.getElementById('res-fallos').textContent=G.fallos;
+  document.getElementById('res-combo').textContent='x'+G.maxCombo;
+  document.getElementById('res-modo').textContent=
+    G.modo==='cancion' ? (G.cancionNombre||'—') : (MODO_LABEL[G.modo]||'—');
   ir('resultado');
 }
 
 function jugarDeNuevo() {
-  elegirModo(G.modo);
+  if(G.modo==='cancion') iniciarCancion();
+  else elegirModo(G.modo);
 }
 
 /* ═══════════════════════════════════════════════
    RANKING
 ═══════════════════════════════════════════════ */
 function filtrarRanking(f) {
-  G.rankFilter = f;
-  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
-  document.getElementById('rt-' + f).classList.add('active');
+  G.rankFilter=f;
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('rt-'+f).classList.add('active');
   renderRanking();
 }
 
 function renderRanking() {
-  const list = document.getElementById('rlist');
-  let scores = [...G.scores];
-  if (G.rankFilter !== 'todos') scores = scores.filter(s => s.modo === G.rankFilter);
-  scores.sort((a,b) => b.puntos - a.puntos);
+  const list=document.getElementById('rlist');
+  let scores=[...G.scores];
 
-  if (!scores.length) {
-    list.innerHTML = '<div class="rempty">Aún no hay puntuaciones</div>';
-    return;
+  if(G.rankFilter==='canciones') {
+    /* El modo canción guarda el nombre de la canción como modo en scores.json */
+    const nombresCancion=CANCIONES.map(c=>c.nombre);
+    scores=scores.filter(s=>nombresCancion.includes(s.modo));
+  } else if(G.rankFilter!=='todos') {
+    scores=scores.filter(s=>s.modo===G.rankFilter);
   }
-  list.innerHTML = '';
-  scores.slice(0,10).forEach((s,i) => {
-    const div = document.createElement('div');
-    div.className = 'ritem' + (s.nombre === G.jugador ? ' mine' : '');
-    const nc = i===0?'rnum g':i===1?'rnum s':i===2?'rnum b':'rnum';
-    const med = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
-    div.innerHTML = `
+
+  scores.sort((a,b)=>b.puntos-a.puntos);
+  if(!scores.length){list.innerHTML='<div class="rempty">Aún no hay puntuaciones</div>';return;}
+  list.innerHTML='';
+  scores.slice(0,10).forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='ritem'+(s.nombre===G.jugador?' mine':'');
+    const nc=i===0?'rnum g':i===1?'rnum s':i===2?'rnum b':'rnum';
+    const med=i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
+    div.innerHTML=`
       <div class="${nc}">${med}</div>
       <div class="rname">${s.nombre}${s.nombre===G.jugador?' 🎮':''}</div>
-      <div class="rmodo">${MODO_LABEL[s.modo]||s.modo}</div>
+      <div class="rmodo">${s.modo}</div>
       <div class="rscore">${s.puntos}</div>`;
     list.appendChild(div);
   });
 }
 
 /* ═══════════════════════════════════════════════
-   CONFIG WIFI
+   WIFI
 ═══════════════════════════════════════════════ */
 function guardarWifi() {
-  const s0 = document.getElementById('ssid0').value.trim();
-  const p0 = document.getElementById('pass0').value;
-  const s1 = document.getElementById('ssid1').value.trim();
-  const p1 = document.getElementById('pass1').value;
-  if (!s0) { toast('⚠️ La Red 1 no puede estar vacía'); return; }
-  enviar({ accion:'guardar_wifi', slot:0, ssid:s0, pass:p0 });
-  if (s1) enviar({ accion:'guardar_wifi', slot:1, ssid:s1, pass:p1 });
+  const s0=document.getElementById('ssid0').value.trim();
+  const p0=document.getElementById('pass0').value;
+  const s1=document.getElementById('ssid1').value.trim();
+  const p1=document.getElementById('pass1').value;
+  if(!s0){toast('⚠️ La Red 1 no puede estar vacía');return;}
+  enviar({accion:'guardar_wifi',slot:0,ssid:s0,pass:p0});
+  if(s1) enviar({accion:'guardar_wifi',slot:1,ssid:s1,pass:p1});
   toast('💾 Enviado al ESP32…');
-  setTimeout(() => ir('modos'), 1100);
+  setTimeout(()=>ir('modos'),1100);
 }
 
 /* ═══════════════════════════════════════════════
    TOAST
 ═══════════════════════════════════════════════ */
-let _toastT = null;
+let _toastT=null;
 function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.remove('off');
-  clearTimeout(_toastT);
-  _toastT = setTimeout(() => el.classList.add('off'), 2400);
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.remove('off');
+  clearTimeout(_toastT); _toastT=setTimeout(()=>el.classList.add('off'),2400);
 }
 
-/* ═══════════════════════════════════════════════
-   DEMO (sin ESP32)
-═══════════════════════════════════════════════ */
 function cargarScoresDemo() {
-  try {
-    const s = localStorage.getItem('esp32_scores');
-    if (s) G.scores = JSON.parse(s);
-  } catch(_) {}
+  try { const s=localStorage.getItem('esp32_scores'); if(s) G.scores=JSON.parse(s); } catch(_){}
 }
 
 /* ─── INIT ─── */
