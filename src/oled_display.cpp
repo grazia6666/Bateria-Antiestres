@@ -26,7 +26,7 @@ void oledInit(void) {
     display.cp437(true);
     display.setTextSize(1);
     display.setCursor(10, 10); display.println("BATERIA ANTI-ESTRES");
-    display.setCursor(28, 26); display.println("ESPOL 2025");
+    display.setCursor(28, 26); display.println("ESPOL 2026F");
     display.setCursor(8,  44); display.println("Iniciando...");
     display.display();
     Serial.println("[OLED] SSD1306 listo");
@@ -38,7 +38,7 @@ void oledEspera(const char* ip) {
     display.setCursor(14, 2);  display.println("BATERIA ANTI-ESTRES");
     hline(12);
     display.setCursor(0, 18); display.println("WiFi: BateriaESPOL");
-    display.setCursor(0, 30); display.print("IP: "); display.println(ip);
+    display.setCursor(0, 30); display.print("IP: 192.168.4.1 "); display.println(ip);
     hline(44);
     display.setCursor(4, 50); display.println("Esperando jugador...");
     display.display();
@@ -89,59 +89,49 @@ void oledPadObjetivo(int pad, int barraProgreso) {
 }
 
 void oledMostrarSecuencia(int* seq, int len, int ronda) {
-    int mostrar, porFila, i;
-
+    /* No mostramos la secuencia numerica — solo decimos que sigan los LEDs */
     display.clearDisplay();
     display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.print("MEMORIZA  R:");
-    display.println(ronda);
+    display.setCursor(18, 0); display.println("MODO MEMORIA");
     hline(10);
-
-    mostrar = len < 8 ? len : 8;
-    porFila = mostrar < 4 ? mostrar : 4;
-
-    display.setTextSize(2);
-    for (i = 0; i < porFila; i++) {
-        display.setCursor(4 + i * 30, 14);
-        display.print(seq[i] + 1);
-    }
-    if (mostrar > 4) {
-        for (i = 4; i < mostrar; i++) {
-            display.setCursor(4 + (i - 4) * 30, 36);
-            display.print(seq[i] + 1);
-        }
-    }
-    display.setTextSize(1);
-    hline(56);
-    display.setCursor(2, 58); display.print("Observa y recuerda");
+    display.setCursor(0, 18); display.println("  Sigue los LEDs");
+    display.setCursor(0, 30); display.println("  que se enciendan");
+    display.setCursor(0, 42); display.println("  y toca ese pad!");
+    hline(54);
+    display.setCursor(28, 57); display.print("Ronda "); display.print(ronda);
     display.display();
 }
 
 void oledTurnoJugador(int paso, int total, int ronda) {
-    char buf[8];
-    int i;
+    /* No usado — reemplazado por oledMemoriaScore */
+    (void)paso; (void)total; (void)ronda;
+}
+
+/* ── Memoria jugando: muestra puntaje + instruccion ─────────── */
+void oledMemoriaScore(int score, int ronda) {
+    char buf[12];
+    int16_t x1, y1;
+    uint16_t w, h;
 
     display.clearDisplay();
     display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.print("TU TURNO  R:");
-    display.println(ronda);
+    display.setCursor(18, 0); display.println("MODO MEMORIA");
     hline(10);
-    display.setCursor(0, 14); display.print("Paso:");
 
-    for (i = 0; i < total && i < 12; i++) {
-        if (i < paso)
-            display.fillRect(2 + i * 10, 24, 8, 8, SSD1306_WHITE);
-        else
-            display.drawRect(2 + i * 10, 24, 8, 8, SSD1306_WHITE);
-    }
+    display.setCursor(0, 14); display.println("Sigue los LEDs!");
 
-    display.setTextSize(3);
-    snprintf(buf, sizeof(buf), "%d/%d", paso + 1, total);
-    display.setCursor(24, 36);
+    /* Puntaje grande centrado */
+    display.setTextSize(2);
+    snprintf(buf, sizeof(buf), "%d", score);
+    display.getTextBounds(buf, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor((OLED_W - w) / 2, 26);
     display.print(buf);
+
     display.setTextSize(1);
+    display.setCursor(44, 46); display.print("pts");
+
+    hline(54);
+    display.setCursor(28, 57); display.print("Ronda "); display.print(ronda);
     display.display();
 }
 
@@ -224,26 +214,64 @@ void oledModoLibre(int puntos) {
     display.display();
 }
 
+/* ── Modo cancion: puntaje en tiempo real ────────────────────── */
+void oledModoCancion(int puntos, int aciertos, int fallos, int combo) {
+    char buf[12];
+    int16_t x1, y1;
+    uint16_t w, h;
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setCursor(18, 0); display.println("MODO CANCION");
+    hline(10);
+
+    /* Puntaje grande centrado */
+    display.setTextSize(2);
+    snprintf(buf, sizeof(buf), "%d", puntos);
+    display.getTextBounds(buf, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor((OLED_W - w) / 2, 13);
+    display.print(buf);
+
+    display.setTextSize(1);
+    display.setCursor(48, 31); display.print("pts");
+
+    hline(38);
+
+    display.setCursor(0,  42); display.print("OK:"); display.print(aciertos);
+    display.setCursor(42, 42); display.print("X:"); display.print(fallos);
+    display.setCursor(84, 42); display.print("x"); display.print(combo);
+
+    hline(53);
+    display.setCursor(10, 56); display.print("Sigue el ritmo!");
+    display.display();
+}
+
+/* ── Fin de partida — todos los modos ───────────────────────── */
 void oledFinJuego(int puntos, const char* jugador) {
     char buf[10];
     int16_t x1, y1;
     uint16_t w, h;
 
     display.clearDisplay();
-    display.setTextSize(1);
-    display.setCursor(28, 0); display.println("FIN DE JUEGO");
-    hline(10);
-    display.setCursor(0, 14);
-    display.print("Jugador: "); display.println(jugador);
 
-    display.setTextSize(2);
+    /* Puntaje grande centrado */
+    display.setTextSize(3);
     snprintf(buf, sizeof(buf), "%d", puntos);
     display.getTextBounds(buf, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor((OLED_W - w) / 2, 28);
+    display.setCursor((OLED_W - w) / 2, 2);
     display.print(buf);
 
     display.setTextSize(1);
-    display.setCursor(48, 48); display.println("puntos");
-    display.setCursor(10, 57); display.println("Ver ranking en cel.");
+    display.setCursor(44, 28); display.println("puntos");
+
+    hline(36);
+
+    display.setCursor(0, 40); display.print(jugador);
+
+    hline(50);
+
+    /* Mensaje principal */
+    display.setTextSize(1);
+    display.setCursor(0, 54); display.println("SELEC. OTRO MODO!");
     display.display();
 }
