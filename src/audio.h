@@ -13,25 +13,25 @@
    Formula: archivo = pad + 1
 ──────────────────────────────────────────────────────────────*/
 
-/* ── DFPlayer 2 (pistas) — carpeta 01 en SD ──────────────────
-   01/0001.mp3 = Billie Jean
-   01/0002.mp3 = Camisa Negra
-   01/0003.mp3 = Center of Mass
-   01/0004.mp3 = Overcompensate
-   01/0005.mp3 = Seven Nation Army
+/* ── DFPlayer 2 (pistas) — archivos en raiz SD ───────────────
+   0001.mp3 = Billie Jean          (activa)
+   0002.mp3 = Camisa Negra         (pendiente)
+   0003.mp3 = Center of Mass       (pendiente)
+   0004.mp3 = Overcompensate       (pendiente)
+   0005.mp3 = Seven Nation Army    (pendiente)
+   Confirmado: dfPista.play(id) reproduce directo desde raiz
 ──────────────────────────────────────────────────────────────*/
 #define CANCION_BILLIE_JEAN    1
-#define CANCION_CAMISA_NEGRA   2
+#define CANCION_CAMISA_NEGRA   5
 #define CANCION_CENTER_MASS    3
 #define CANCION_OVERCOMPENSATE 4
-#define CANCION_SEVEN_NATION   5
+#define CANCION_SEVEN_NATION   2
 
 /* ── API publica ──────────────────────────────────────────── */
 void audioInit(void);
-void audioDebugDF2(void);           /* debug exhaustivo DFPlayer 2  */
-void reproducirPad(int pad);        /* DFPlayer 1 — sonido del pad  */
-void reproducirCancion(int id);     /* DFPlayer 2 — pista de fondo  */
-void detenerCancion(void);          /* DFPlayer 2 — detener pista   */
+void reproducirPad(int pad);        /* DFPlayer 1 — sonido del pad */
+void reproducirCancion(int id);     /* DFPlayer 2 — pista de fondo */
+void detenerCancion(void);          /* DFPlayer 2 — detener pista  */
 void setVolumenPads(int vol);       /* 0-30 */
 void setVolumenPista(int vol);      /* 0-30 */
 

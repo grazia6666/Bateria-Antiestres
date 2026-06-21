@@ -117,7 +117,6 @@ body::after{
 .dot.off{background:var(--pink)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ══ LOGIN ══ */
 .avatar{
   width:72px;height:72px;border-radius:50%;
   background:linear-gradient(135deg,rgba(0,229,255,.1),rgba(255,31,110,.1));
@@ -127,7 +126,6 @@ body::after{
   box-shadow:0 0 20px rgba(0,229,255,.2);
 }
 
-/* ══ MODOS ══ */
 .player-chip{
   display:flex;align-items:center;gap:8px;
   background:var(--bg2);border:1px solid var(--border);border-radius:100px;
@@ -159,7 +157,6 @@ body::after{
 }
 .settings-btn:hover{border-color:var(--cyan)}
 
-/* ══ SELECTOR DE CANCIÓN ══ */
 .song-list{display:flex;flex-direction:column;gap:10px;width:100%}
 .song-card{
   background:var(--bg2);border:1px solid var(--border);border-radius:12px;
@@ -207,7 +204,6 @@ body::after{
 .selected-preview .sp-name{font-family:var(--font-hd);font-size:.72rem;font-weight:700;color:var(--yellow);letter-spacing:.05em}
 .selected-preview .sp-hint{font-size:.72rem;color:var(--muted);margin-top:3px}
 
-/* ══ JUEGO ══ */
 .game-topbar{display:flex;justify-content:space-between;align-items:center;width:100%;}
 .game-topbar .back-btn{
   font-family:var(--font-hd);font-size:.62rem;letter-spacing:.1em;
@@ -248,7 +244,6 @@ body::after{
 .meta-val.combo-v{color:var(--yellow)}
 .meta-val.ronda-v{color:var(--cyan)}
 
-/* barra de progreso de canción */
 .song-progress-wrap{width:100%;display:flex;flex-direction:column;gap:5px;}
 .song-progress-label{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);}
 .song-progress-bar{width:100%;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
@@ -269,7 +264,6 @@ body::after{
 .oled-hint p{font-size:.75rem;color:var(--muted);line-height:1.4}
 .oled-hint strong{color:var(--text)}
 
-/* ══ RESULTADO ══ */
 .result-big{text-align:center}
 .result-num{
   font-family:var(--font-hd);font-weight:900;font-size:4.5rem;line-height:1;
@@ -284,7 +278,6 @@ body::after{
 .stat-v{font-family:var(--font-hd);font-size:1.2rem;font-weight:700;color:var(--cyan)}
 .stat-l{font-size:.68rem;color:var(--muted);margin-top:3px;letter-spacing:.07em}
 
-/* ══ RANKING ══ */
 .rtabs{display:flex;gap:7px;width:100%;flex-wrap:wrap}
 .rtab{
   flex:1;font-family:var(--font-hd);font-size:.6rem;font-weight:700;
@@ -304,13 +297,11 @@ body::after{
 .rscore{font-family:var(--font-hd);font-size:.88rem;font-weight:700;color:var(--yellow)}
 .rempty{text-align:center;color:var(--muted);font-size:.82rem;padding:20px 0;letter-spacing:.05em}
 
-/* ══ WIFI ══ */
 .wifi-slot{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:11px;width:100%;}
 .wifi-slot-hd{display:flex;align-items:center;gap:7px;font-family:var(--font-hd);font-size:.65rem;font-weight:700;letter-spacing:.15em;color:var(--cyan);}
 .nav-back{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:.07em;transition:color .2s;}
 .nav-back:hover{color:var(--cyan)}
 
-/* ══ TOAST ══ */
 #toast{
   position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
   background:var(--surface);border:1px solid var(--cyan);border-radius:100px;
@@ -324,7 +315,6 @@ body::after{
 <body>
 <div id="app">
 
-  <!-- ═══════════ LOGIN ═══════════ -->
   <div class="screen active" id="s-login">
     <div class="logo">
       <h1>BATERÍA<br>ANTI‑ESTRÉS</h1>
@@ -345,7 +335,6 @@ body::after{
     </div>
   </div>
 
-  <!-- ═══════════ MODOS ═══════════ -->
   <div class="screen" id="s-modos">
     <div class="logo"><h1>ELIGE<br>TU MODO</h1></div>
     <div class="player-chip">🎮 <span id="chip-name">Jugador</span></div>
@@ -375,7 +364,6 @@ body::after{
         </div>
         <div class="mode-badge">MEMORY</div>
       </div>
-      <!-- NUEVO: Modo Canción -->
       <div class="mode-card" style="--mc:var(--yellow)" onclick="ir('canciones')">
         <div class="mode-icon">🎸</div>
         <div class="mode-info">
@@ -390,7 +378,6 @@ body::after{
     <button class="settings-btn" onclick="ir('wifi')" title="Config WiFi">⚙️</button>
   </div>
 
-  <!-- ═══════════ SELECTOR DE CANCIONES ═══════════ -->
   <div class="screen" id="s-canciones">
     <div class="logo">
       <h1>ELIGE<br>TU CANCIÓN</h1>
@@ -399,7 +386,6 @@ body::after{
     <div class="player-chip">🎮 <span id="chip-name-c">Jugador</span></div>
 
     <div class="song-list" id="song-list">
-      <!-- cards generadas por JS -->
     </div>
 
     <div class="song-action-area">
@@ -418,7 +404,6 @@ body::after{
     <button class="btn btn-ghost" onclick="ir('modos')">← VOLVER AL MENÚ</button>
   </div>
 
-  <!-- ═══════════ JUEGO ═══════════ -->
   <div class="screen" id="s-juego">
     <div class="game-topbar">
       <button class="back-btn" onclick="terminarJuego()">✕ SALIR</button>
@@ -439,7 +424,6 @@ body::after{
       </div>
     </div>
 
-    <!-- Progreso de canción (solo visible en modo canción) -->
     <div class="song-progress-wrap" id="song-progress-wrap" style="display:none">
       <div class="song-progress-label">
         <span id="prog-song-name">—</span>
@@ -464,7 +448,6 @@ body::after{
     <button class="btn btn-pink" id="btn-terminar-cancion" style="margin-top:4px;display:none" onclick="terminarJuego()">⏹ PARAR MÚSICA Y SALIR</button>
   </div>
 
-  <!-- ═══════════ RESULTADO ═══════════ -->
   <div class="screen" id="s-resultado">
     <div class="logo"><h1>RESULTADO</h1></div>
     <div class="result-big">
@@ -486,7 +469,6 @@ body::after{
     <button class="btn btn-ghost" onclick="ir('modos')">CAMBIAR MODO</button>
   </div>
 
-  <!-- ═══════════ RANKING ═══════════ -->
   <div class="screen" id="s-ranking">
     <div class="logo"><h1>RANKING 🏆</h1></div>
     <div class="rtabs">
@@ -503,7 +485,6 @@ body::after{
     </div>
   </div>
 
-  <!-- ═══════════ CONFIG WIFI ═══════════ -->
   <div class="screen" id="s-wifi">
     <div class="logo">
       <h1>CONFIG WiFi</h1>
@@ -523,7 +504,7 @@ body::after{
     <button class="nav-back" onclick="ir('modos')">← Volver al menú</button>
   </div>
 
-</div><!-- #app -->
+</div>
 <div id="toast" class="off"></div>
 
 <script>
@@ -537,15 +518,12 @@ const CANCIONES = [
   // { id:1, nombre:'Camisa Negra',      bpm:97,  pads:'Bombo · Caja · Hi-Hat',  notas:24 },
   // { id:2, nombre:'Center of Mass',    bpm:107, pads:'Bombo · Caja · Hi-Hat',  notas:28 },
   // { id:3, nombre:'Overcompensate',    bpm:120, pads:'Bombo · Caja · Hi-Hat',  notas:26 },
-  // { id:4, nombre:'Seven Nation Army', bpm:126, pads:'Bombo · Caja · Tom piso', notas:32 },
+  { id:4, nombre:'Seven Nation Army', bpm:126, pads:'Bombo · Caja · Tom piso · Hi-Hat', notas:128 },
 ];
 
-/* ═══════════════════════════════════════════════
-   ESTADO GLOBAL
-═══════════════════════════════════════════════ */
 const G = {
   jugador:    '',
-  modo:       null,         /* 'libre'|'reflejos'|'memoria'|'cancion' */
+  modo:       null,
   cancionId:  -1,
   cancionNombre: '',
   cancionNotas:  0,
@@ -569,9 +547,6 @@ const MODO_COLOR = {
   libre:'var(--cyan)', reflejos:'var(--pink)', memoria:'var(--purple)', cancion:'var(--yellow)'
 };
 
-/* ═══════════════════════════════════════════════
-   WEBSOCKET
-═══════════════════════════════════════════════ */
 function conectarWS() {
   const host = (location.hostname === '' || location.hostname === 'localhost')
     ? null : `ws://${location.hostname}/ws`;
@@ -588,16 +563,12 @@ function enviar(obj) {
   if (G.ws && G.ws.readyState===1) G.ws.send(JSON.stringify(obj));
 }
 
-/* ═══════════════════════════════════════════════
-   MENSAJES DEL ESP32
-═══════════════════════════════════════════════ */
 function manejarMensaje(d) {
   if (d.scores) { G.scores = d.scores; renderRanking(); }
   if (d.ok === true) toast('✅ Guardado en ESP32');
 
   switch(d.evento) {
 
-    /* ── modos clásicos ── */
     case 'juego_iniciado':
       G.score=0;G.combo=1;G.maxCombo=1;G.aciertos=0;G.fallos=0;G.vidas=d.vidas||3;G.ronda=0;
       actualizarHUD();
@@ -644,7 +615,6 @@ function manejarMensaje(d) {
     case 'juego_terminado':
       G.score=d.puntos_final??G.score; mostrarResultado(); break;
 
-    /* ── modo canción ── */
     case 'cancion_iniciada':
       G.score=0;G.combo=1;G.maxCombo=1;G.aciertos=0;G.fallos=0;G.vidas=d.vidas||3;
       actualizarHUD();
@@ -654,7 +624,7 @@ function manejarMensaje(d) {
       break;
 
     case 'nota_hit':
-      G.score=d.puntos??G.score+(d.perfecto?200:100); // fallback si falta puntos
+      G.score=d.puntos??G.score+(d.perfecto?200:100);
       G.combo=d.combo??G.combo;
       if(G.combo>G.maxCombo) G.maxCombo=G.combo; G.aciertos++;
       actualizarHUD(); actualizarProgresoCancion();
@@ -684,9 +654,6 @@ function setWSDot(ok, msg) {
   document.getElementById('ws-label').textContent=ok?'Conectado al ESP32 ✓':(msg||'Sin conexión');
 }
 
-/* ═══════════════════════════════════════════════
-   NAVEGACIÓN
-═══════════════════════════════════════════════ */
 function ir(id) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-'+id).classList.add('active');
@@ -694,9 +661,6 @@ function ir(id) {
   if(id==='canciones') renderSongList();
 }
 
-/* ═══════════════════════════════════════════════
-   LOGIN
-═══════════════════════════════════════════════ */
 function doLogin() {
   const n = document.getElementById('inp-nombre').value.trim();
   if(!n){toast('⚠️ Escribe tu nombre');return;}
@@ -707,9 +671,6 @@ function doLogin() {
 }
 document.getElementById('inp-nombre').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
-/* ═══════════════════════════════════════════════
-   MODOS CLÁSICOS
-═══════════════════════════════════════════════ */
 function elegirModo(modo) {
   G.modo=modo; G.cancionId=-1; G.cancionNombre=''; G.cancionNotas=0;
 
@@ -728,9 +689,6 @@ function elegirModo(modo) {
   enviar({accion:'iniciar_juego',modo,jugador:G.jugador});
 }
 
-/* ═══════════════════════════════════════════════
-   SELECTOR DE CANCIONES
-═══════════════════════════════════════════════ */
 function renderSongList() {
   const list=document.getElementById('song-list');
   list.innerHTML='';
@@ -768,14 +726,14 @@ function actualizarSeleccionSong() {
   if(G.cancionId<0){
     prev.style.display='none'; btn.style.display='none'; return;
   }
-  const c=CANCIONES[G.cancionId];
+  const c=CANCIONES.find(x=>x.id===G.cancionId);
   document.getElementById('sp-name').textContent=c.nombre+' — '+c.bpm+' BPM';
   prev.style.display='flex'; btn.style.display='block';
 }
 
 function iniciarCancion() {
   if(G.cancionId<0){toast('⚠️ Selecciona una canción');return;}
-  const c=CANCIONES[G.cancionId];
+  const c=CANCIONES.find(x=>x.id===G.cancionId);
   G.modo='cancion'; G.cancionNombre=c.nombre; G.cancionNotas=c.notas;
 
   const badge=document.getElementById('modo-badge-active');
@@ -790,7 +748,7 @@ function iniciarCancion() {
   document.getElementById('prog-song-name').textContent=c.nombre;
   document.getElementById('prog-hits').textContent='0 aciertos';
   document.getElementById('prog-fill').style.width='0%';
-  document.getElementById('meta-ronda-wrap').style.display='none'; // no hay rondas en canción
+  document.getElementById('meta-ronda-wrap').style.display='none';
 
   setEstado('CARGANDO PISTA…','El DFPlayer arranca en un momento…','esperando');
   setOledPreview('♪');
@@ -808,9 +766,6 @@ function actualizarProgresoCancion() {
   document.getElementById('prog-hits').textContent=`${G.aciertos} aciertos · ${G.fallos} fallos`;
 }
 
-/* ═══════════════════════════════════════════════
-   JUEGO — HUD
-═══════════════════════════════════════════════ */
 function actualizarHUD() {
   document.getElementById('score-num').textContent=G.score;
   document.getElementById('combo-v').textContent='x'+G.combo;
@@ -849,9 +804,6 @@ function terminarJuego() {
   ir('modos');
 }
 
-/* ═══════════════════════════════════════════════
-   RESULTADO
-═══════════════════════════════════════════════ */
 function mostrarResultado() {
   document.getElementById('res-num').textContent=G.score;
   document.getElementById('res-aciertos').textContent=G.aciertos;
@@ -867,9 +819,6 @@ function jugarDeNuevo() {
   else elegirModo(G.modo);
 }
 
-/* ═══════════════════════════════════════════════
-   RANKING
-═══════════════════════════════════════════════ */
 function filtrarRanking(f) {
   G.rankFilter=f;
   document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
@@ -882,7 +831,6 @@ function renderRanking() {
   let scores=[...G.scores];
 
   if(G.rankFilter==='canciones') {
-    /* El modo canción guarda el nombre de la canción como modo en scores.json */
     const nombresCancion=CANCIONES.map(c=>c.nombre);
     scores=scores.filter(s=>nombresCancion.includes(s.modo));
   } else if(G.rankFilter!=='todos') {
@@ -906,9 +854,6 @@ function renderRanking() {
   });
 }
 
-/* ═══════════════════════════════════════════════
-   WIFI
-═══════════════════════════════════════════════ */
 function guardarWifi() {
   const s0=document.getElementById('ssid0').value.trim();
   const p0=document.getElementById('pass0').value;
@@ -921,9 +866,6 @@ function guardarWifi() {
   setTimeout(()=>ir('modos'),1100);
 }
 
-/* ═══════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════ */
 let _toastT=null;
 function toast(msg) {
   const el=document.getElementById('toast');
@@ -935,7 +877,6 @@ function cargarScoresDemo() {
   try { const s=localStorage.getItem('esp32_scores'); if(s) G.scores=JSON.parse(s); } catch(_){}
 }
 
-/* ─── INIT ─── */
 actualizarHUD();
 conectarWS();
 </script>

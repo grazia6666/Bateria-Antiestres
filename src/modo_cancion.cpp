@@ -9,27 +9,27 @@
 #include "scores.h"
 #include "web_server.h"
 
-/* ── Incluir todas las pistas ────────────────────────────────── */
+/* ── Solo las pistas disponibles ────────────────────────────── */
 #include "pista_billie_jean.h"
-#include "pista_camisa_negra.h"
-#include "pista_center_mass.h"
-#include "pista_overcompensate.h"
 #include "pista_seven_nation.h"
+/* #include "pista_camisa_negra.h"    — pendiente */
+/* #include "pista_center_mass.h"     — pendiente */
+/* #include "pista_overcompensate.h"  — pendiente */
 
-/* ── Tabla de canciones ──────────────────────────────────────── */
+/* ── Tabla de canciones — solo id 0 y 4 activos ─────────────── */
 static NotaRitmica* tablaNotas[TOTAL_CANCIONES] = {
-    pistaBillieJean,
-    pistaCamisaNegra,
-    pistaCenterMass,
-    pistaOvercompensate,
-    pistaSevenNationArmy
+    pistaBillieJean,      /* id 0 */
+    NULL,                 /* id 1 — Camisa Negra, pendiente */
+    NULL,                 /* id 2 — Center of Mass, pendiente */
+    NULL,                 /* id 3 — Overcompensate, pendiente */
+    pistaSevenNationArmy  /* id 4 */
 };
 
 static const int totalNotas[TOTAL_CANCIONES] = {
     TOTAL_NOTAS_BILLIE_JEAN,
-    TOTAL_NOTAS_CAMISA_NEGRA,
-    TOTAL_NOTAS_CENTER_MASS,
-    TOTAL_NOTAS_OVERCOMPENSATE,
+    0,
+    0,
+    0,
     TOTAL_NOTAS_SEVEN_NATION
 };
 
@@ -126,7 +126,12 @@ void cancionStart(int idCancion, const char* jugador) {
     JsonDocument d;
     char buf[128];
 
-    if (idCancion < 0 || idCancion >= TOTAL_CANCIONES) return;
+    /* Validar que la cancion este disponible */
+    if (idCancion < 0 || idCancion >= TOTAL_CANCIONES ||
+        tablaNotas[idCancion] == NULL) {
+        Serial.printf("[CANCION] id=%d no disponible\n", idCancion);
+        return;
+    }
 
     C.activo    = 1;
     C.idCancion = idCancion;
@@ -158,6 +163,12 @@ void cancionStart(int idCancion, const char* jugador) {
 
     Serial.printf("\n[CANCION] Iniciando: %s (%d notas)\n",
                   nombresCancion[idCancion], C.totalN);
+    Serial.printf("[CANCION] Primera nota: pad=%d t=%lu\n",
+                  C.notas[0].pad, C.notas[0].tiempo_ms);
+    Serial.printf("[CANCION] Ultima nota : pad=%d t=%lu\n",
+                  C.notas[C.totalN-1].pad, C.notas[C.totalN-1].tiempo_ms);
+    Serial.printf("[CANCION] Archivo DFPlayer: %d\n",
+                  archivoCancion[idCancion]);
 }
 
 void cancionStop(void) {
@@ -183,7 +194,7 @@ void cancionTick(void) {
     ahora   = millis();
     elapsed = ahora - C.tInicio;
 
-    /* ── 1. Recorrer notas: encender LEDs y detectar MISS ─── */
+    /* ── 1. Encender LEDs y detectar MISS ────────────────── */
     for (i = 0; i < C.totalN; i++) {
         if (C.notas[i].evaluada) continue;
 
@@ -196,7 +207,6 @@ void cancionTick(void) {
         if (elapsed > C.notas[i].tiempo_ms + VENTANA_TOLERANCIA) {
             C.notas[i].evaluada = 1;
             ledApagar(C.notas[i].pad);
-            /* solo cuenta el fallo, sin descontar vidas ni game over */
             C.fallos++;
             C.combo = 1;
             C.racha = 0;
@@ -237,22 +247,21 @@ void cancionTick(void) {
             ledAnimacionCorrecto(pad);
             bcast_nota_hit(pad, pts, perfecto);
             bcast_cancion_update();
-            Serial.printf("[CANCION] %s PAD %d +%d pts  combo x%d\n",
+            Serial.printf("[CANCION] %s PAD %d +%d pts combo x%d\n",
                           perfecto ? "PERFECTO!" : "BIEN!",
                           pad + 1, pts, C.combo);
             goto check_fin;
         }
     }
 
-    /* Golpe fuera de ventana o pad sin nota activa */
+    /* Golpe fuera de ventana */
     C.combo = 1;
     C.racha = 0;
     reproducirPad(pad);
     ledAnimacionIncorrecto(pad);
-    Serial.printf("[CANCION] Golpe fuera de tiempo PAD %d\n", pad + 1);
+    Serial.printf("[CANCION] Fuera de tiempo PAD %d\n", pad + 1);
 
 check_fin:
-    /* ── 3. Verificar si terminaron todas las notas ───────── */
     {
         int todasEvaluadas = 1;
         for (i = 0; i < C.totalN; i++) {
@@ -263,7 +272,7 @@ check_fin:
             oledFinJuego(C.score, C.jugador);
             guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
             bcast_cancion_fin();
-            Serial.printf("[CANCION] Fin! Score=%d  Aciertos=%d  Fallos=%d\n",
+            Serial.printf("[CANCION] Fin! Score=%d Aciertos=%d Fallos=%d\n",
                           C.score, C.aciertos, C.fallos);
         }
     }
