@@ -10,22 +10,22 @@
 #include "web_server.h"
 #include "modo_cancion.h"
 
-/* ── Configuracion ───────────────────────────────────────────── */
+/*  Configuracion*/
 #define VIDAS_INICIAL        3
-#define COMBO_STEP           5
+#define COMBO_STEP           5 /*5 aciertos un compo*/
 #define COMBO_MAX            8
 #define PUNTOS_BASE_REFLEJO  100
 #define PUNTOS_BASE_MEMORIA  150
 #define PUNTOS_BASE_LIBRE    10
-#define MEMORIA_MAX_RONDA    12
+#define MEMORIA_MAX_RONDA    12 /*maximo de rondas*/
 #define JSON_BUF              256
 
-/* ── Enumeraciones estilo C ──────────────────────────────────── */
+/*Enumeraciones estilo C */
 #define MODO_NINGUNO   0
 #define MODO_LIBRE     1
 #define MODO_REFLEJOS  2
 #define MODO_MEMORIA   3
-
+ /*estado del juego */
 #define EST_INACTIVO           0
 #define EST_COUNTDOWN          1
 #define EST_LIBRE_ACTIVO       2
@@ -38,8 +38,9 @@
 
 /* ── Estado global del juego ─────────────────────────────────── */
 static struct {
-    int  modo;
-    int  estado;
+    
+    int  modo; /*guarda el modo actual*/
+    int  estado; /*estado del juego lo de arriba*/
     char jugador[20];
 
     int  score;
@@ -50,15 +51,15 @@ static struct {
     int  racha;
 
     /* reflejos */
-    int           padActivo;
-    unsigned long tInicioRonda;
-    unsigned long tPausa;
+    int           padActivo; /*pad que el jugador debe tocar*/
+    unsigned long tInicioRonda; 
+    unsigned long tPausa; /*tiempo entre rondas*/
 
     /* memoria */
-    int           secuencia[MEMORIA_MAX_RONDA];
-    int           seqLen;
-    int           seqRonda;
-    int           seqPaso;
+    int           secuencia[MEMORIA_MAX_RONDA]; /*es la secuencia que debe seguir*/
+    int           seqLen; /*longitud*/
+    int           seqRonda; 
+    int           seqPaso; 
     int           seqMostrandoIdx;
     unsigned long tMostrar;
     int           padEncendido;
@@ -68,13 +69,14 @@ static struct {
     unsigned long tCount;
 } G;
 
-/* ── Helpers broadcast ───────────────────────────────────────── */
+/* envia info mediante el websocket esp32-json -pagina*/
 static void broadcast_json(JsonDocument& doc) {
     char buf[JSON_BUF];
     serializeJson(doc, buf, sizeof(buf));
     wsBroadcast(buf);
 }
 
+/*INICIO DE LOS EVENTOS*/
 static void bcast_score_update(void) {
     JsonDocument d;
     d["evento"] = "score_update";
@@ -116,6 +118,7 @@ static void bcast_tiempo_agotado(void) {
     broadcast_json(d);
 }
 
+
 static void bcast_mostrando_secuencia(int largo, int ronda) {
     JsonDocument d;
     d["evento"] = "mostrando_secuencia";
@@ -151,7 +154,9 @@ static void bcast_juego_terminado(void) {
     wsBroadcast(scoresBuf);
 }
 
-/* ── Logica de combo ─────────────────────────────────────────── */
+/*FIN DE LOS EVENTOS*/
+
+/* Logica de combo siempre y cuando la rahca mayor 5 y el combo max 8 */
 static void registrar_acierto(void) {
     G.aciertos++;
     G.racha++;
@@ -161,6 +166,7 @@ static void registrar_acierto(void) {
         if (G.combo > G.maxCombo) G.maxCombo = G.combo;
     }
 }
+/*fallo y quito vida reseteo el combo y la racha*/
 
 static void registrar_fallo(void) {
     G.vidas--;
@@ -168,7 +174,7 @@ static void registrar_fallo(void) {
     G.racha = 0;
 }
 
-/* ── Fin de juego ────────────────────────────────────────────── */
+/*Fin de juego */
 static void end_game(void) {
     const char* modo_str;
     G.estado = EST_FIN;
@@ -184,7 +190,7 @@ static void end_game(void) {
     G.estado = EST_INACTIVO;
 }
 
-/* ── Countdown ───────────────────────────────────────────────── */
+/*  Countdown cuando inicia cada juego el 3 2 1 */
 static void iniciar_countdown(void) {
     G.estado   = EST_COUNTDOWN;
     G.countNum = 3;
@@ -192,7 +198,7 @@ static void iniciar_countdown(void) {
     oledContdown(G.countNum);
 }
 
-/* ── Reflejos ────────────────────────────────────────────────── */
+/* Modo Reflejos:  me dice que pad tocar enciende el led muestra en la oled envia el websocket y el jugador responda */
 static void reflejos_nueva_ronda(void) {
     int ronda = G.aciertos + 1;
     G.padActivo    = random(0, NUM_PADS);
@@ -205,7 +211,7 @@ static void reflejos_nueva_ronda(void) {
     Serial.printf("[REFLEJOS]  >> TOCA PAD %d <<\n\n", G.padActivo + 1);
 }
 
-/* ── Memoria ─────────────────────────────────────────────────── */
+/*Memoria */
 static void memoria_nueva_ronda(void) {
     int i;
     G.seqRonda++;
@@ -236,9 +242,7 @@ static void memoria_iniciar_turno(void) {
     Serial.println("[MEMORIA]  >> AHORA ES TU TURNO - repite la secuencia en los pads!");
 }
 
-/* ════════════════════════════════════════════════════════════
-   API PUBLICA
-════════════════════════════════════════════════════════════ */
+/* INICIO DE JUEGO  */
 void gameModeStart(const char* modo, const char* jugador) {
     JsonDocument d;
     char buf[JSON_BUF];
@@ -287,9 +291,7 @@ void gameModeStop(void) {
     Serial.println("[GAME] Detenido por usuario");
 }
 
-/* ════════════════════════════════════════════════════════════
-   TICK — llamado en cada loop()
-════════════════════════════════════════════════════════════ */
+/*   TICK — llamado en cada loop()*/
 void gameModeTick(void) {
     unsigned long ahora = millis();
     unsigned long elapsed;
@@ -301,7 +303,7 @@ void gameModeTick(void) {
 
     if (G.estado == EST_INACTIVO || G.estado == EST_FIN) return;
 
-    /* ── COUNTDOWN ────────────────────────────────────────── */
+    /* COUNTDOWN */
     if (G.estado == EST_COUNTDOWN) {
         if (ahora - G.tCount >= 950UL) {
             G.tCount = ahora;
@@ -316,7 +318,7 @@ void gameModeTick(void) {
         return;
     }
 
-    /* ── MODO LIBRE ───────────────────────────────────────── */
+    /* MODO LIBRE  */
     if (G.estado == EST_LIBRE_ACTIVO) {
         g = leerGolpe();
         if (g.pad != -1) {
@@ -335,7 +337,7 @@ void gameModeTick(void) {
         return;
     }
 
-    /* ── REFLEJOS — esperando golpe ───────────────────────── */
+    /* REFLEJOS  esperando golpe */
     if (G.estado == EST_REFLEJOS_ESPERANDO) {
         elapsed = ahora - G.tInicioRonda;
 
@@ -386,13 +388,13 @@ void gameModeTick(void) {
         return;
     }
 
-    /* ── REFLEJOS — pausa ─────────────────────────────────── */
+    /*REFLEJOS — pausa */
     if (G.estado == EST_REFLEJOS_PAUSA) {
         if (ahora - G.tPausa >= 700UL) reflejos_nueva_ronda();
         return;
     }
 
-    /* ── MEMORIA — mostrando secuencia ───────────────────── */
+    /* MEMORIA — mostrando secuencia */
     if (G.estado == EST_MEMORIA_MOSTRANDO) {
         if (!G.padEncendido) {
             if (ahora - G.tMostrar >= 300UL) {
@@ -419,7 +421,7 @@ void gameModeTick(void) {
         return;
     }
 
-    /* ── MEMORIA — turno jugador ──────────────────────────── */
+    /* MEMORIA — turno jugador*/
     if (G.estado == EST_MEMORIA_JUGADOR) {
         g = leerGolpe();
         if (g.pad == -1) return;
@@ -459,7 +461,7 @@ void gameModeTick(void) {
         return;
     }
 
-    /* ── MEMORIA — pausa entre rondas ─────────────────────── */
+    /*  MEMORIA — pausa entre rondas  */
     if (G.estado == EST_MEMORIA_PAUSA) {
         if (ahora - G.tPausa >= 1000UL) memoria_nueva_ronda();
         return;

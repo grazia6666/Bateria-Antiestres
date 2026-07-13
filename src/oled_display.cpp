@@ -103,11 +103,11 @@ void oledMostrarSecuencia(int* seq, int len, int ronda) {
 }
 
 void oledTurnoJugador(int paso, int total, int ronda) {
-    /* No usado — reemplazado por oledMemoriaScore */
+    /* lo cambie por el oledMemoriaScore */
     (void)paso; (void)total; (void)ronda;
 }
 
-/* ── Memoria jugando: muestra puntaje + instruccion ─────────── */
+/* ── Memoria jugando muestra puntaje + instruccion ─────────── */
 void oledMemoriaScore(int score, int ronda) {
     char buf[12];
     int16_t x1, y1;
@@ -214,7 +214,7 @@ void oledModoLibre(int puntos) {
     display.display();
 }
 
-/* ── Modo cancion: puntaje en tiempo real ────────────────────── */
+/*  Modo cancion: puntaje en tiempo real─ */
 void oledModoCancion(int puntos, int aciertos, int fallos, int combo) {
     char buf[12];
     int16_t x1, y1;
@@ -246,7 +246,7 @@ void oledModoCancion(int puntos, int aciertos, int fallos, int combo) {
     display.display();
 }
 
-/* ── Fin de partida — todos los modos ───────────────────────── */
+/* Fin de partida — todos los modos  */
 void oledFinJuego(int puntos, const char* jugador) {
     char buf[10];
     int16_t x1, y1;

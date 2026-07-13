@@ -9,14 +9,14 @@
 #include "scores.h"
 #include "web_server.h"
 
-/* ── Solo las pistas disponibles ────────────────────────────── */
+/* Solo las pistas disponibles */
 #include "pista_billie_jean.h"
 #include "pista_seven_nation.h"
 /* #include "pista_camisa_negra.h"    — pendiente */
 /* #include "pista_center_mass.h"     — pendiente */
 /* #include "pista_overcompensate.h"  — pendiente */
 
-/* ── Tabla de canciones — solo id 0 y 4 activos ─────────────── */
+/*  Tabla de canciones — solo id 0 y 4 activos  */
 static NotaRitmica* tablaNotas[TOTAL_CANCIONES] = {
     pistaBillieJean,      /* id 0 */
     NULL,                 /* id 1 — Camisa Negra, pendiente */
@@ -25,6 +25,7 @@ static NotaRitmica* tablaNotas[TOTAL_CANCIONES] = {
     pistaSevenNationArmy  /* id 4 */
 };
 
+/*Numero de notal toal */
 static const int totalNotas[TOTAL_CANCIONES] = {
     TOTAL_NOTAS_BILLIE_JEAN,
     0,
@@ -33,6 +34,7 @@ static const int totalNotas[TOTAL_CANCIONES] = {
     TOTAL_NOTAS_SEVEN_NATION
 };
 
+/*arreglo solo para nombre de las cnaciones*/
 static const char* nombresCancion[TOTAL_CANCIONES] = {
     "Billie Jean",
     "Camisa Negra",
@@ -41,6 +43,7 @@ static const char* nombresCancion[TOTAL_CANCIONES] = {
     "Seven Nation Army"
 };
 
+/*archivo mp3 al que esta asociado */
 static const int archivoCancion[TOTAL_CANCIONES] = {
     CANCION_BILLIE_JEAN,
     CANCION_CAMISA_NEGRA,
@@ -49,7 +52,7 @@ static const int archivoCancion[TOTAL_CANCIONES] = {
     CANCION_SEVEN_NATION
 };
 
-/* ── Estado del modo cancion ─────────────────────────────────── */
+/* Estado del modo cancion  */
 static struct {
     int           activo;
     int           idCancion;
@@ -65,13 +68,14 @@ static struct {
     int           totalN;
 } C;
 
-/* ── Helpers broadcast ───────────────────────────────────────── */
+/*Helpers broadcast  json a texto */
 static void cbcast(JsonDocument& doc) {
     char buf[256];
     serializeJson(doc, buf, sizeof(buf));
     wsBroadcast(buf);
 }
 
+/*envia la actualizacion del juego */
 static void bcast_cancion_update(void) {
     JsonDocument d;
     d["evento"]   = "cancion_update";
@@ -81,7 +85,7 @@ static void bcast_cancion_update(void) {
     d["fallos"]   = C.fallos;
     cbcast(d);
 }
-
+ /*envio de cuando el jugador acierta una nota */
 static void bcast_nota_hit(int pad, int pts, int perfecto) {
     JsonDocument d;
     d["evento"]   = "nota_hit";
@@ -92,6 +96,7 @@ static void bcast_nota_hit(int pad, int pts, int perfecto) {
     cbcast(d);
 }
 
+/*nota fallida*/
 static void bcast_nota_miss(int pad) {
     JsonDocument d;
     d["evento"] = "nota_miss";
@@ -99,6 +104,7 @@ static void bcast_nota_miss(int pad) {
     cbcast(d);
 }
 
+/*cancion fin + act de los socres*/
 static void bcast_cancion_fin(void) {
     char scoresBuf[2048];
     JsonDocument d;
@@ -112,7 +118,7 @@ static void bcast_cancion_fin(void) {
     wsBroadcast(scoresBuf);
 }
 
-/* ── Reset de flags de la pista ──────────────────────────────── */
+/* Reset de flags de la pista */
 static void resetPista(void) {
     int i;
     for (i = 0; i < C.totalN; i++) {
@@ -121,7 +127,7 @@ static void resetPista(void) {
     }
 }
 
-/* ── API publica ─────────────────────────────────────────────── */
+/* Validacion de inicio de cancion  */
 void cancionStart(int idCancion, const char* jugador) {
     JsonDocument d;
     char buf[128];
@@ -179,11 +185,12 @@ void cancionStop(void) {
     Serial.println("[CANCION] Detenida por usuario");
 }
 
+/*solo para saber si hay una cancion reproduciendose*/
 int cancionActiva(void) {
     return C.activo;
 }
 
-/* ── Tick principal ──────────────────────────────────────────── */
+/* Tick principal */
 void cancionTick(void) {
     unsigned long ahora, elapsed;
     int i, pad, pts, perfecto;

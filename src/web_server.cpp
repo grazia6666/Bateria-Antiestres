@@ -7,16 +7,19 @@
 #include "wifi_manager.h"
 #include "game_modes.h"
 #include "modo_cancion.h"
-
+/*guardo 4096 bytes para el json */
 #define JSON_BUF_LEN 4096
-
+/*creo el servidor http*/
 static AsyncWebServer server(80);
+/*/ws ruta -- la finalidad que la paginase comunique con el esp32*/
 static AsyncWebSocket ws("/ws");
 
 void wsBroadcast(const char* json) {
     ws.textAll(json);
 }
 
+/* un lciente envia un mensaje mediante websocket
+inicar el juego terminar el juego, etc */
 static void onWsEvent(AsyncWebSocket* s, AsyncWebSocketClient* client,
                       AwsEventType type, void* arg,
                       uint8_t* data, size_t len)
@@ -67,8 +70,8 @@ static void onWsEvent(AsyncWebSocket* s, AsyncWebSocketClient* client,
 }
 
 void servidorInit(void) {
-    ws.onEvent(onWsEvent);
-    server.addHandler(&ws);
+    ws.onEvent(onWsEvent); /*cada mnsj es procesdo por el esto*/
+    server.addHandler(&ws); /*integra el websocket al http*/
 
     server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 

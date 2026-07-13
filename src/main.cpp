@@ -10,7 +10,7 @@
 #include "game_modes.h"
 
 void setup(void) {
-    char ip[20];
+    char ip[20]; /* Guarda 20 caracteres para la ip */
 
     Serial.begin(115200);
     delay(1000);   /* esperar a que el monitor serie se conecte */
@@ -21,7 +21,7 @@ void setup(void) {
 
     scoresInit();
 
-    /* ── INFO LittleFS ── */
+    /* INFO LittleFS  */
     Serial.printf("[FS] Total : %d bytes (%.2f MB)\n",
                   LittleFS.totalBytes(),
                   LittleFS.totalBytes() / 1048576.0f);
@@ -30,7 +30,7 @@ void setup(void) {
                   LittleFS.totalBytes() - LittleFS.usedBytes(),
                   (LittleFS.totalBytes() - LittleFS.usedBytes()) / 1048576.0f);
 
-    padsInit();
+    padsInit(); 
     ledsInit();
     audioInit();
 
@@ -45,6 +45,6 @@ void setup(void) {
 }
 
 void loop(void) {
-    gameModeTick();
+    gameModeTick(); /*CEREBRO*/
     delay(10);
 }

@@ -10,7 +10,7 @@
 #define SLOT1_SSID_ADDR   96
 #define SLOT1_PASS_ADDR  128
 
-/* ── helpers internos ─────────────────────────────────────────── */
+/* helpers internos */
 static void eeprom_write_str(int addr, const char* str, int maxLen) {
     int i = 0;
     while (str[i] != '\0' && i < maxLen - 1) {
@@ -33,7 +33,7 @@ static void eeprom_read_str(int addr, char* buf, int maxLen) {
     buf[i] = '\0';
 }
 
-/* ── API pública ──────────────────────────────────────────────── */
+/*  */
 void guardarRed(int slot, const char* ssid, const char* pass) {
     EEPROM.begin(EEPROM_SIZE);
     int addrSSID = (slot == 0) ? SLOT0_SSID_ADDR : SLOT1_SSID_ADDR;
