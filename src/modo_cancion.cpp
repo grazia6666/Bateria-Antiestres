@@ -203,10 +203,18 @@ void cancionTick(void) {
 
     /* ── 1. Encender LEDs y detectar MISS ────────────────── */
     for (i = 0; i < C.totalN; i++) {
+        unsigned long tiempoEncender;
+
         if (C.notas[i].evaluada) continue;
 
-        if (!C.notas[i].luzEncendida &&
-            elapsed >= C.notas[i].tiempo_ms - ANTICIPACION_VISUAL) {
+        /* Si la nota esta muy al inicio (tiempo_ms < ANTICIPACION_VISUAL),
+           restar directo desborda el unsigned long y el LED nunca se
+           enciende. En ese caso se enciende de inmediato (t=0). */
+        tiempoEncender = (C.notas[i].tiempo_ms > (unsigned long)ANTICIPACION_VISUAL)
+                          ? C.notas[i].tiempo_ms - ANTICIPACION_VISUAL
+                          : 0UL;
+
+        if (!C.notas[i].luzEncendida && elapsed >= tiempoEncender) {
             ledEncender(C.notas[i].pad);
             C.notas[i].luzEncendida = 1;
         }
