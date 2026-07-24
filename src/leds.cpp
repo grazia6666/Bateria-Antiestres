@@ -1,15 +1,14 @@
 #include "leds.h"
+#include "pads.h"
 #include <FastLED.h>
 
-/*Tira de 60 LEDs dividida en 6 secciones de 10 
-   PAD 0 LEDs  0 - 9
-   PAD 1 LEDs 10 - 19
-   PAD 2 LEDs 20 - 29
-   PAD 3 LEDs 30 - 39
-   PAD 4 LEDs 40 - 49
-   PAD 5  LEDs 50 - 59
- */
-#define LEDS_POR_SECCION  10   /* 60 LEDs  6 pads = 10 por sección */
+/* LEDs por sección: se calcula a partir de NUM_LEDS y NUM_PADS (pads.h).
+   Antes estaba fijo en 10 (asumiendo 60 LEDs / 6 pads), lo que causaba
+   un desbordamiento del arreglo leds[] si NUM_LEDS se cambiaba a un
+   valor distinto de 60 (ej. una tira de 50 LEDs) — la sección del
+   último pad escribía fuera del arreglo y corrompía memoria vecina,
+   provocando un crash tipo LoadProhibited poco después del arranque. */
+#define LEDS_POR_SECCION  (NUM_LEDS / NUM_PADS)
 
 static CRGB leds[NUM_LEDS]; /*creo arreglo de los leds*/
 
@@ -25,10 +24,12 @@ static const CRGB COLORES[6] = {
 
 /* ── encender/apagar todos los LEDs de una sección ───── */
 static void seccion_color(int pad, CRGB color) {
-    int inicio, i;
-    if (pad < 0 || pad >= 6) return;
+    int inicio, fin, i;
+    if (pad < 0 || pad >= NUM_PADS) return;
     inicio = pad * LEDS_POR_SECCION;
-    for (i = inicio; i < inicio + LEDS_POR_SECCION; i++) {
+    fin    = inicio + LEDS_POR_SECCION;
+    if (fin > NUM_LEDS) fin = NUM_LEDS;   /* nunca escribir fuera del arreglo */
+    for (i = inicio; i < fin; i++) {
         leds[i] = color;
     }
 }
@@ -44,14 +45,14 @@ void ledsInit(void) {
 
 /* Enciende la sección del pad con su color */
 void ledEncender(int pad) {
-    if (pad < 0 || pad >= 6) return;
+    if (pad < 0 || pad >= NUM_PADS) return;
     seccion_color(pad, COLORES[pad]);
     FastLED.show();
 }
 
 /* ── Apagar sección del pad  */
 void ledApagar(int pad) {
-    if (pad < 0 || pad >= 6) return;
+    if (pad < 0 || pad >= NUM_PADS) return;
     seccion_color(pad, CRGB::Black);
     FastLED.show();
 }
@@ -64,7 +65,7 @@ void ledApagarTodos(void) {
 /* Animación acierto de los juegos #1 parpadeo verde en la sección  */
 void ledAnimacionCorrecto(int pad) {
     int i;
-    if (pad < 0 || pad >= 6) return;
+    if (pad < 0 || pad >= NUM_PADS) return;
     for (i = 0; i < 2; i++) {
         seccion_color(pad, CRGB::Green);  FastLED.show(); delay(60);
         seccion_color(pad, CRGB::Black);  FastLED.show(); delay(40);
@@ -76,7 +77,7 @@ void ledAnimacionCorrecto(int pad) {
 /* Animación error de los juegos #2 parpadeo rojo en la sección */
 void ledAnimacionIncorrecto(int pad) {
     int i;
-    if (pad < 0 || pad >= 6) return;
+    if (pad < 0 || pad >= NUM_PADS) return;
     for (i = 0; i < 3; i++) {
         seccion_color(pad, CRGB::Red);    FastLED.show(); delay(70);
         seccion_color(pad, CRGB::Black);  FastLED.show(); delay(50);
@@ -87,7 +88,7 @@ void ledAnimacionIncorrecto(int pad) {
 void ledAnimacionInicio(void) {
     int r, pad;
     for (r = 0; r < 2; r++) {
-        for (pad = 0; pad < 6; pad++) {
+        for (pad = 0; pad < NUM_PADS; pad++) {
             FastLED.clear(true);
             seccion_color(pad, COLORES[pad]);
             FastLED.show();
@@ -95,7 +96,7 @@ void ledAnimacionInicio(void) {
         }
     }
     /* encender todas las secciones juntas al final */
-    for (pad = 0; pad < 6; pad++) seccion_color(pad, COLORES[pad]);
+    for (pad = 0; pad < NUM_PADS; pad++) seccion_color(pad, COLORES[pad]);
     FastLED.show();
     delay(400);
     FastLED.clear(true);

@@ -8,6 +8,7 @@
 #include "oled_display.h"
 #include "scores.h"
 #include "web_server.h"
+#include "game_modes.h"
 
 /* Solo las pistas disponibles */
 #include "pista_billie_jean.h"
@@ -136,6 +137,14 @@ void cancionStart(int idCancion, const char* jugador) {
     if (idCancion < 0 || idCancion >= TOTAL_CANCIONES ||
         tablaNotas[idCancion] == NULL) {
         Serial.printf("[CANCION] id=%d no disponible\n", idCancion);
+        return;
+    }
+
+    /* Evitar correr una cancion mientras hay un modo libre/reflejos/memoria
+       activo: ambos leerian los mismos pads y usarian el mismo DFPlayer 1
+       y las mismas secciones de LEDs al mismo tiempo. */
+    if (gameModeActiva()) {
+        Serial.println("[CANCION] Bloqueado: hay un juego en curso");
         return;
     }
 

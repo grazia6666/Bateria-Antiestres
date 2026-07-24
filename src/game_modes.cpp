@@ -247,6 +247,11 @@ void gameModeStart(const char* modo, const char* jugador) {
     JsonDocument d;
     char buf[JSON_BUF];
 
+    if (cancionActiva()) {
+        Serial.println("[GAME] Bloqueado: hay una cancion en curso");
+        return;
+    }
+
     G.score     = 0;
     G.combo     = 1;
     G.maxCombo  = 1;
@@ -281,6 +286,11 @@ void gameModeStart(const char* modo, const char* jugador) {
         iniciar_countdown();
         Serial.printf("[GAME] Modo %s  countdown\n", modo);
     }
+}
+
+/* 1 si hay un modo libre/reflejos/memoria corriendo actualmente */
+int gameModeActiva(void) {
+    return (G.estado != EST_INACTIVO && G.estado != EST_FIN);
 }
 
 void gameModeStop(void) {
