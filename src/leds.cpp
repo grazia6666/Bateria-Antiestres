@@ -94,7 +94,12 @@ void ledApagarTodos(void) {
     FastLED.clear(true);
 }
 
-/* Animación acierto de los juegos #1 parpadeo verde en la sección  */
+/* Animación acierto de los juegos #1 parpadeo verde en la sección
+   FIX: antes, al terminar el parpadeo, la seccion se reencendia con
+   su color base (COLORES[pad]) en vez de apagarse. Eso dejaba el LED
+   prendido indefinidamente despues de un acierto en Reflejos y en
+   Memoria (turno del jugador), hasta la siguiente ronda. Ahora
+   termina en negro, igual que ledAnimacionIncorrecto(). */
 void ledAnimacionCorrecto(int pad) {
     int i;
     if (pad < 0 || pad >= NUM_PADS) return;
@@ -102,7 +107,7 @@ void ledAnimacionCorrecto(int pad) {
         seccion_color(pad, CRGB::Green);  FastLED.show(); delay(60);
         seccion_color(pad, CRGB::Black);  FastLED.show(); delay(40);
     }
-    seccion_color(pad, COLORES[pad]);
+    seccion_color(pad, CRGB::Black);
     FastLED.show();
 }
 
