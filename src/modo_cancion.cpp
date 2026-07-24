@@ -13,15 +13,15 @@
 /* Solo las pistas disponibles */
 #include "pista_billie_jean.h"
 #include "pista_seven_nation.h"
+#include "pista_we_will_rock_you.h"
 /* #include "pista_camisa_negra.h"    — pendiente */
-/* #include "pista_center_mass.h"     — pendiente */
 /* #include "pista_overcompensate.h"  — pendiente */
 
-/*  Tabla de canciones — solo id 0 y 4 activos  */
+/*  Tabla de canciones — id 0, 2 y 4 activos  */
 static NotaRitmica* tablaNotas[TOTAL_CANCIONES] = {
     pistaBillieJean,      /* id 0 */
     NULL,                 /* id 1 — Camisa Negra, pendiente */
-    NULL,                 /* id 2 — Center of Mass, pendiente */
+    pistaWeWillRockYou,   /* id 2 — We Will Rock You (0003.mp3) */
     NULL,                 /* id 3 — Overcompensate, pendiente */
     pistaSevenNationArmy  /* id 4 */
 };
@@ -30,7 +30,7 @@ static NotaRitmica* tablaNotas[TOTAL_CANCIONES] = {
 static const int totalNotas[TOTAL_CANCIONES] = {
     TOTAL_NOTAS_BILLIE_JEAN,
     0,
-    0,
+    TOTAL_NOTAS_WE_WILL_ROCK_YOU,
     0,
     TOTAL_NOTAS_SEVEN_NATION
 };
@@ -39,7 +39,7 @@ static const int totalNotas[TOTAL_CANCIONES] = {
 static const char* nombresCancion[TOTAL_CANCIONES] = {
     "Billie Jean",
     "Camisa Negra",
-    "Center of Mass",
+    "We Will Rock You",
     "Overcompensate",
     "Seven Nation Army"
 };
@@ -48,7 +48,7 @@ static const char* nombresCancion[TOTAL_CANCIONES] = {
 static const int archivoCancion[TOTAL_CANCIONES] = {
     CANCION_BILLIE_JEAN,
     CANCION_CAMISA_NEGRA,
-    CANCION_CENTER_MASS,
+    CANCION_WE_WILL_ROCK_YOU,
     CANCION_OVERCOMPENSATE,
     CANCION_SEVEN_NATION
 };
@@ -187,15 +187,11 @@ void cancionStart(int idCancion, const char* jugador) {
 }
 
 void cancionStop(void) {
-    /* FIX: detener el audio SIEMPRE, sin importar el valor de C.activo.
-       Antes, si C.activo ya era 0 (por ejemplo porque check_fin ya habia
-       terminado la coreografia sin detener la pista), esta funcion salia
-       en la siguiente linea y el DFPlayer 2 se quedaba sonando. */
-    ledApagarTodos();
-    detenerCancion();
-
+    detenerCancion();   /* siempre se intenta detener el DFPlayer 2,
+                           sin importar si C.activo ya estaba en 0 */
     if (!C.activo) return;
     C.activo = 0;
+    ledApagarTodos();
     Serial.println("[CANCION] Detenida por usuario");
 }
 
@@ -298,10 +294,10 @@ check_fin:
         }
         if (todasEvaluadas) {
             C.activo = 0;
-            detenerCancion();   /* FIX: detener el mp3 al terminar la coreografia,
-                                   antes nunca se llamaba aqui y la pista seguia
-                                   sonando en el DFPlayer 2 aunque el juego ya
-                                   habia terminado. */
+            detenerCancion();   /* el mp3 real suele durar mas que las
+                                   notas programadas -- sin esto la
+                                   musica seguia sonando de fondo aunque
+                                   el modo cancion ya habia terminado */
             oledFinJuego(C.score, C.jugador);
             guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
             bcast_cancion_fin();

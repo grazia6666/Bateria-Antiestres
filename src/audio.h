@@ -16,16 +16,16 @@
 /* ── DFPlayer 2 (pistas) — archivos en raiz SD 
    0001.mp3 = Billie Jean          (activa)
    0005.mp3 = Camisa Negra         (pendiente)
-   0003.mp3 = Center of Mass       (pendiente)
+   0003.mp3 = We Will Rock You     (activa)
    0004.mp3 = Overcompensate       (pendiente)
    0002.mp3 = Seven Nation Army    (activa)
   
 ─*/
-#define CANCION_BILLIE_JEAN    1
-#define CANCION_CAMISA_NEGRA   5
-#define CANCION_CENTER_MASS    3
-#define CANCION_OVERCOMPENSATE 4
-#define CANCION_SEVEN_NATION   2
+#define CANCION_BILLIE_JEAN      1
+#define CANCION_CAMISA_NEGRA     5
+#define CANCION_WE_WILL_ROCK_YOU 3
+#define CANCION_OVERCOMPENSATE   4
+#define CANCION_SEVEN_NATION     2
 
 
 void audioInit(void);
