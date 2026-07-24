@@ -187,10 +187,15 @@ void cancionStart(int idCancion, const char* jugador) {
 }
 
 void cancionStop(void) {
-    if (!C.activo) return;
-    C.activo = 0;
+    /* FIX: detener el audio SIEMPRE, sin importar el valor de C.activo.
+       Antes, si C.activo ya era 0 (por ejemplo porque check_fin ya habia
+       terminado la coreografia sin detener la pista), esta funcion salia
+       en la siguiente linea y el DFPlayer 2 se quedaba sonando. */
     ledApagarTodos();
     detenerCancion();
+
+    if (!C.activo) return;
+    C.activo = 0;
     Serial.println("[CANCION] Detenida por usuario");
 }
 
@@ -293,6 +298,10 @@ check_fin:
         }
         if (todasEvaluadas) {
             C.activo = 0;
+            detenerCancion();   /* FIX: detener el mp3 al terminar la coreografia,
+                                   antes nunca se llamaba aqui y la pista seguia
+                                   sonando en el DFPlayer 2 aunque el juego ya
+                                   habia terminado. */
             oledFinJuego(C.score, C.jugador);
             guardarScore(C.jugador, nombresCancion[C.idCancion], C.score);
             bcast_cancion_fin();
