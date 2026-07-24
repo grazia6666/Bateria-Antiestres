@@ -2,13 +2,21 @@
 #include "pads.h"
 #include <FastLED.h>
 
-/* LEDs por sección: se calcula a partir de NUM_LEDS y NUM_PADS (pads.h).
-   Antes estaba fijo en 10 (asumiendo 60 LEDs / 6 pads), lo que causaba
-   un desbordamiento del arreglo leds[] si NUM_LEDS se cambiaba a un
-   valor distinto de 60 (ej. una tira de 50 LEDs) — la sección del
-   último pad escribía fuera del arreglo y corrompía memoria vecina,
-   provocando un crash tipo LoadProhibited poco después del arranque. */
-#define LEDS_POR_SECCION  (NUM_LEDS / NUM_PADS)
+/* LEDs por sección: cada pad tiene una cantidad distinta de LEDs
+   (tira irregular / cableada a mano, no todas las secciones son
+   iguales). Antes se usaba NUM_LEDS / NUM_PADS con división entera,
+   lo que asumía secciones parejas y además dejaba LEDs sobrantes sin
+   usar cuando NUM_LEDS no era múltiplo exacto de NUM_PADS (ej. con
+   NUM_LEDS=52 y NUM_PADS=6 sobraban 4 LEDs al final sin asignar).
+
+   Ahora se define explícitamente cuántos LEDs tiene cada pad, y el
+   offset de inicio de cada sección se calcula sumando los anteriores.
+   La suma de LEDS_POR_PAD[] DEBE ser igual a NUM_LEDS. */
+static const int LEDS_POR_PAD[NUM_PADS] = { 9, 8, 9, 9, 9, 8 };
+
+/* Offset de inicio de cada sección, calculado en ledsInit() a partir
+   de LEDS_POR_PAD[] (suma acumulada). */
+static int seccionInicio[NUM_PADS];
 
 static CRGB leds[NUM_LEDS]; /*creo arreglo de los leds*/
 
@@ -26,8 +34,8 @@ static const CRGB COLORES[6] = {
 static void seccion_color(int pad, CRGB color) {
     int inicio, fin, i;
     if (pad < 0 || pad >= NUM_PADS) return;
-    inicio = pad * LEDS_POR_SECCION;
-    fin    = inicio + LEDS_POR_SECCION;
+    inicio = seccionInicio[pad];
+    fin    = inicio + LEDS_POR_PAD[pad];
     if (fin > NUM_LEDS) fin = NUM_LEDS;   /* nunca escribir fuera del arreglo */
     for (i = inicio; i < fin; i++) {
         leds[i] = color;
@@ -36,11 +44,35 @@ static void seccion_color(int pad, CRGB color) {
 
 /* Inicia toda la tira  */
 void ledsInit(void) {
+    int pad, acumulado, sumaTotal;
+
+    /* Calcular offset de inicio de cada seccion a partir de
+       LEDS_POR_PAD[], y de paso validar que la suma cuadre con
+       NUM_LEDS — si no cuadra, es un error de configuracion y es
+       mejor avisar por Serial que arrancar con secciones mal
+       alineadas (y volver a corromper memoria vecina). */
+    acumulado = 0;
+    for (pad = 0; pad < NUM_PADS; pad++) {
+        seccionInicio[pad] = acumulado;
+        acumulado += LEDS_POR_PAD[pad];
+    }
+    sumaTotal = acumulado;
+
+    if (sumaTotal != NUM_LEDS) {
+        Serial.printf("[LEDS] ERROR: suma de LEDS_POR_PAD=%d != NUM_LEDS=%d — "
+                      "revisa la configuracion, puede corromper memoria\n",
+                      sumaTotal, NUM_LEDS);
+    }
+
     FastLED.addLeds<WS2812B, PIN_LEDS, GRB>(leds, NUM_LEDS);
     FastLED.setBrightness(80);
     FastLED.clear(true);
-    Serial.printf("[LEDS] FastLED listo — %d LEDs, %d por seccion\n",
-                  NUM_LEDS, LEDS_POR_SECCION);
+    Serial.printf("[LEDS] FastLED listo — %d LEDs, %d pads (secciones: ",
+                  NUM_LEDS, NUM_PADS);
+    for (pad = 0; pad < NUM_PADS; pad++) {
+        Serial.printf("%d%s", LEDS_POR_PAD[pad], (pad < NUM_PADS - 1) ? "," : "");
+    }
+    Serial.println(")");
 }
 
 /* Enciende la sección del pad con su color */
