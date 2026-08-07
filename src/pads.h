@@ -12,6 +12,6 @@ typedef struct {
  
 void     padsInit(void);
 GolpePad leerGolpe(void);
+int      umbralPad(int pad);   /* umbral de deteccion de un pad especifico */
  
 #endif
- 

@@ -5,7 +5,34 @@ static const int PINES[NUM_PADS] = {
     PIN_PAD3, PIN_PAD4, PIN_PAD5
 };
 
+/* Pad deshabilitado por falso contacto en hardware (indice 5 = "pad 6"
+   contando desde 1). Se deja NUM_PADS=6 para no tener que renumerar
+   LEDs/audio/pines -- solo se ignora en deteccion y en la seleccion
+   aleatoria de objetivos (ver game_modes.cpp). Poner -1 para
+   rehabilitarlo cuando se arregle el hardware. */
+#define PAD_DESHABILITADO 5
+
 #define DEBOUNCE_MS 80
+
+/* Umbral de deteccion por pad. Por defecto todos usan PIEZO_UMBRAL
+   (definido en platformio.ini), pero se puede subir individualmente
+   si algun pad tiene mas ruido de fondo -- por ejemplo GPIO32/33
+   tienen un piso de ruido mas alto (~440-467) por el cristal de
+   32.768kHz del RTC del ESP32. Edita el numero de cada pad aqui: */
+static const int UMBRALES[NUM_PADS] = {
+    100,   /* pad 0 (GPIO34) */
+    300,   /* pad 1 (GPIO35) */
+    100,            /* pad 2 (GPIO32) -- subido por el piso de ruido del RTC */
+    400,   /* pad 3 (GPIO33) */
+    700,   /* pad 4 (GPIO36) */
+    300    /* pad 5 (GPIO39) -- deshabilitado, no importa el valor */
+};
+
+/* Devuelve el umbral configurado para un pad especifico. */
+int umbralPad(int pad) {
+    if (pad < 0 || pad >= NUM_PADS) return PIEZO_UMBRAL;
+    return UMBRALES[pad];
+}
 
 /*Guarda el instante en que cada sensor fue activado por última vez.*/
 static unsigned long ultimoGolpe[NUM_PADS];
@@ -35,6 +62,7 @@ GolpePad leerGolpe(void) {
     resultado.intensidad =  0;
 
     for (i = 0; i < NUM_PADS; i++) {
+        if (i == PAD_DESHABILITADO) continue; /* pad 6 fuera de servicio */
         if ((ahora - ultimoGolpe[i]) < DEBOUNCE_MS) continue; /*si es menor a 80 no lo tomo en cuenta*/
 
         val = analogRead(PINES[i]);
@@ -44,11 +72,11 @@ GolpePad leerGolpe(void) {
            microsegundos. Si la primera lectura supera el umbral,
            se confirma con una segunda lectura poco despues -- si el
            valor ya cayo, se descarta como ruido. */
-        if (val >= PIEZO_UMBRAL) {
+        if (val >= UMBRALES[i]) {
             int valConfirm;
             delayMicroseconds(400);
             valConfirm = analogRead(PINES[i]);
-            if (valConfirm < PIEZO_UMBRAL) {
+            if (valConfirm < UMBRALES[i]) {
                 continue; /* fue un pico aislado, no un golpe real */
             }
             val = (val + valConfirm) / 2;
@@ -58,7 +86,7 @@ GolpePad leerGolpe(void) {
         if (val > 50)
             Serial.printf("[PAD DEBUG] GPIO%d = %d\n", PINES[i], val);
         /*supera el valor min y si dos sensores se activan al mismo tiempo el que se golpeo mas fuerte se lee*/
-        if (val >= PIEZO_UMBRAL && val > resultado.intensidad) {
+        if (val >= UMBRALES[i] && val > resultado.intensidad) {
             resultado.pad        = i;
             resultado.intensidad = val;
         }

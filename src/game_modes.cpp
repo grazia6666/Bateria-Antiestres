@@ -18,6 +18,11 @@
 #define PUNTOS_BASE_MEMORIA  150
 #define PUNTOS_BASE_LIBRE    10
 #define MEMORIA_MAX_RONDA    12 /*maximo de rondas*/
+/* Pad 6 (indice 5) deshabilitado por falso contacto en hardware --
+   Reflejos y Memoria solo eligen objetivos entre los pads 1-5
+   (indices 0-4) hasta que se arregle. Debe coincidir con
+   PAD_DESHABILITADO en pads.cpp. */
+#define NUM_PADS_ACTIVOS     (NUM_PADS - 1)
 #define JSON_BUF              256
 
 /*Enumeraciones estilo C */
@@ -201,7 +206,7 @@ static void iniciar_countdown(void) {
 /* Modo Reflejos:  me dice que pad tocar enciende el led muestra en la oled envia el websocket y el jugador responda */
 static void reflejos_nueva_ronda(void) {
     int ronda = G.aciertos + 1;
-    G.padActivo    = random(0, NUM_PADS);
+    G.padActivo    = random(0, NUM_PADS_ACTIVOS);
     G.tInicioRonda = millis();
     G.estado       = EST_REFLEJOS_ESPERANDO;
     ledEncender(G.padActivo);
@@ -216,7 +221,7 @@ static void memoria_nueva_ronda(void) {
     int i;
     G.seqRonda++;
     if (G.seqLen < MEMORIA_MAX_RONDA)
-        G.secuencia[G.seqLen++] = random(0, NUM_PADS);
+        G.secuencia[G.seqLen++] = random(0, NUM_PADS_ACTIVOS);
     G.seqMostrandoIdx = 0;
     G.padEncendido    = 0;
     G.tMostrar        = millis();
@@ -332,9 +337,10 @@ void gameModeTick(void) {
     if (G.estado == EST_LIBRE_ACTIVO) {
         g = leerGolpe();
         if (g.pad != -1) {
+            int umbral = umbralPad(g.pad);
             pts = PUNTOS_BASE_LIBRE +
-                  (int)((long)(g.intensidad - PIEZO_UMBRAL) * (PUNTOS_BASE_LIBRE * 4) /
-                        (4095 - PIEZO_UMBRAL));
+                  (int)((long)(g.intensidad - umbral) * (PUNTOS_BASE_LIBRE * 4) /
+                        (4095 - umbral));
             G.score += pts;
             reproducirPad(g.pad);
             ledSetBrillo(g.intensidad);

@@ -25,7 +25,7 @@ void audioInit(void) {
     delay(1200);
     if (dfPads.begin(dfSerial1)) {
         dfPadsOk = 1;
-        dfPads.volume(5);
+        dfPads.volume(35);
         dfPads.EQ(DFPLAYER_EQ_NORMAL);
         Serial.println("[AUDIO] DFPlayer 1 (pads) listo");
     } else {
@@ -37,7 +37,7 @@ void audioInit(void) {
     delay(1200);
     if (dfPista.begin(dfSerial2)) {
         dfPistaOk = 1;
-        dfPista.volume(5);
+        dfPista.volume(35);
         dfPista.EQ(DFPLAYER_EQ_NORMAL);
         Serial.println("[AUDIO] DFPlayer 2 (pistas) listo");
     } else {

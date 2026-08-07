@@ -12,7 +12,7 @@
    Ahora se define explícitamente cuántos LEDs tiene cada pad, y el
    offset de inicio de cada sección se calcula sumando los anteriores.
    La suma de LEDS_POR_PAD[] DEBE ser igual a NUM_LEDS. */
-static const int LEDS_POR_PAD[NUM_PADS] = { 9, 8, 9, 9, 9, 8 };
+static const int LEDS_POR_PAD[NUM_PADS] = { 8, 9, 8, 9, 8, 9 };
 
 /* Offset de inicio de cada sección, calculado en ledsInit() a partir
    de LEDS_POR_PAD[] (suma acumulada). */
@@ -65,7 +65,7 @@ void ledsInit(void) {
     }
 
     FastLED.addLeds<WS2812B, PIN_LEDS, GRB>(leds, NUM_LEDS);
-    FastLED.setBrightness(80);
+    FastLED.setBrightness(10);
     FastLED.clear(true);
     Serial.printf("[LEDS] FastLED listo — %d LEDs, %d pads (secciones: ",
                   NUM_LEDS, NUM_PADS);
