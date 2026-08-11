@@ -20,12 +20,12 @@ static const int PINES[NUM_PADS] = {
    tienen un piso de ruido mas alto (~440-467) por el cristal de
    32.768kHz del RTC del ESP32. Edita el numero de cada pad aqui: */
 static const int UMBRALES[NUM_PADS] = {
-    100,   /* pad 0 (GPIO34) */
-    300,   /* pad 1 (GPIO35) */
-    100,            /* pad 2 (GPIO32) -- subido por el piso de ruido del RTC */
-    400,   /* pad 3 (GPIO33) */
-    700,   /* pad 4 (GPIO36) */
-    300    /* pad 5 (GPIO39) -- deshabilitado, no importa el valor */
+    450,            /* pad 0 (GPIO34) -- subido: se detectaron golpes falsos en Modo Cancion, ajustar segun [PAD DEBUG] */
+    PIEZO_UMBRAL,   /* pad 1 (GPIO35) */
+    800,            /* pad 2 (GPIO32) -- subido por el piso de ruido del RTC */
+    1300,   /* pad 3 (GPIO33) */
+    2000,   /* pad 4 (GPIO36) */
+    PIEZO_UMBRAL /* pad 5 (GPIO39) -- deshabilitado, no importa el valor */
 };
 
 /* Devuelve el umbral configurado para un pad especifico. */

@@ -45,6 +45,7 @@ void setup(void) {
 }
 
 void loop(void) {
+    procesarAccionesPendientes(); /* ejecuta lo que se pidio por WS, en este mismo hilo */
     gameModeTick(); /*CEREBRO*/
     delay(10);
 }

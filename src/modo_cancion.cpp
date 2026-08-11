@@ -67,6 +67,13 @@ static struct {
     int           racha;
     NotaRitmica*  notas;
     int           totalN;
+
+    /* Flash de feedback visual NO bloqueante (reemplaza a
+       ledAnimacionCorrecto/Incorrecto, que usan delay() y
+       desincronizaban las notas siguientes). */
+    int           flashActivo;
+    int           flashPad;
+    unsigned long flashHasta;
 } C;
 
 /*Helpers broadcast  json a texto */
@@ -158,6 +165,7 @@ void cancionStart(int idCancion, const char* jugador) {
     C.racha     = 0;
     C.notas     = tablaNotas[idCancion];
     C.totalN    = totalNotas[idCancion];
+    C.flashActivo = 0;
 
     strncpy(C.jugador, jugador, sizeof(C.jugador) - 1);
     C.jugador[sizeof(C.jugador) - 1] = '\0';
@@ -210,6 +218,14 @@ void cancionTick(void) {
 
     ahora   = millis();
     elapsed = ahora - C.tInicio;
+
+    /* Apagar el flash de feedback (verde/rojo) cuando se cumple su
+       tiempo -- reemplaza el delay() bloqueante de las animaciones
+       viejas, sin frenar la lectura de pads ni el reloj de las notas. */
+    if (C.flashActivo && ahora >= C.flashHasta) {
+        ledApagar(C.flashPad);
+        C.flashActivo = 0;
+    }
 
     /* ── 1. Encender LEDs y detectar MISS ────────────────── */
     for (i = 0; i < C.totalN; i++) {
@@ -269,7 +285,9 @@ void cancionTick(void) {
                 if (C.combo > C.maxCombo) C.maxCombo = C.combo;
             }
             reproducirPad(pad);
-            ledAnimacionCorrecto(pad);
+            if (C.flashActivo && C.flashPad != pad) ledApagar(C.flashPad);
+            ledFlashInstantaneo(pad, 1);
+            C.flashActivo = 1; C.flashPad = pad; C.flashHasta = ahora + 120;
             bcast_nota_hit(pad, pts, perfecto);
             bcast_cancion_update();
             Serial.printf("[CANCION] %s PAD %d +%d pts combo x%d\n",
@@ -283,7 +301,9 @@ void cancionTick(void) {
     C.combo = 1;
     C.racha = 0;
     reproducirPad(pad);
-    ledAnimacionIncorrecto(pad);
+    if (C.flashActivo && C.flashPad != pad) ledApagar(C.flashPad);
+    ledFlashInstantaneo(pad, 0);
+    C.flashActivo = 1; C.flashPad = pad; C.flashHasta = ahora + 150;
     Serial.printf("[CANCION] Fuera de tiempo PAD %d\n", pad + 1);
 
 check_fin:

@@ -65,7 +65,7 @@ void ledsInit(void) {
     }
 
     FastLED.addLeds<WS2812B, PIN_LEDS, GRB>(leds, NUM_LEDS);
-    FastLED.setBrightness(10);
+    FastLED.setBrightness(80);
     FastLED.clear(true);
     Serial.printf("[LEDS] FastLED listo — %d LEDs, %d pads (secciones: ",
                   NUM_LEDS, NUM_PADS);
@@ -99,7 +99,11 @@ void ledApagarTodos(void) {
    su color base (COLORES[pad]) en vez de apagarse. Eso dejaba el LED
    prendido indefinidamente despues de un acierto en Reflejos y en
    Memoria (turno del jugador), hasta la siguiente ronda. Ahora
-   termina en negro, igual que ledAnimacionIncorrecto(). */
+   termina en negro, igual que ledAnimacionIncorrecto().
+   OJO: esta animacion es BLOQUEANTE (usa delay()). Se sigue usando en
+   Reflejos/Memoria (donde el ritmo lo marca el jugador, no una pista
+   de audio), pero en Modo Cancion se reemplazo por ledFlashInstantaneo()
+   porque el bloqueo de ~200-360ms desincronizaba las notas siguientes. */
 void ledAnimacionCorrecto(int pad) {
     int i;
     if (pad < 0 || pad >= NUM_PADS) return;
@@ -111,7 +115,8 @@ void ledAnimacionCorrecto(int pad) {
     FastLED.show();
 }
 
-/* Animación error de los juegos #2 parpadeo rojo en la sección */
+/* Animación error de los juegos #2 parpadeo rojo en la sección
+   OJO: bloqueante, ver nota en ledAnimacionCorrecto(). */
 void ledAnimacionIncorrecto(int pad) {
     int i;
     if (pad < 0 || pad >= NUM_PADS) return;
@@ -154,4 +159,15 @@ void ledSetBrillo(int intensidad) {
     int brillo = (int)((long)intensidad * 180 / 4095) + 40;
     if (brillo > 220) brillo = 220;
     FastLED.setBrightness(brillo);
+}
+
+/* Flash instantaneo verde/rojo, SIN delay() -- no bloquea el loop().
+   Usado por Modo Cancion, donde el timing de las notas no puede
+   pausarse mientras se muestra el feedback visual de un golpe.
+   Quien llama esta funcion es responsable de apagar el pad despues
+   (normalmente con un temporizador no bloqueante basado en millis()). */
+void ledFlashInstantaneo(int pad, int correcto) {
+    if (pad < 0 || pad >= NUM_PADS) return;
+    seccion_color(pad, correcto ? CRGB::Green : CRGB::Red);
+    FastLED.show();
 }
