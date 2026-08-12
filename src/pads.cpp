@@ -23,7 +23,7 @@ static const int UMBRALES[NUM_PADS] = {
     450,            /* pad 0 (GPIO34) -- subido: se detectaron golpes falsos en Modo Cancion, ajustar segun [PAD DEBUG] */
     PIEZO_UMBRAL,   /* pad 1 (GPIO35) */
     800,            /* pad 2 (GPIO32) -- subido por el piso de ruido del RTC */
-    800,   /* pad 3 (GPIO33) */
+    600,   /* pad 3 (GPIO33) */
     1350,   /* pad 4 (GPIO36) */
     PIEZO_UMBRAL /* pad 5 (GPIO39) -- deshabilitado, no importa el valor */
 };
