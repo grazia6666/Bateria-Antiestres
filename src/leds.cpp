@@ -12,7 +12,7 @@
    Ahora se define explícitamente cuántos LEDs tiene cada pad, y el
    offset de inicio de cada sección se calcula sumando los anteriores.
    La suma de LEDS_POR_PAD[] DEBE ser igual a NUM_LEDS. */
-static const int LEDS_POR_PAD[NUM_PADS] = { 8, 9, 8, 9, 8, 9 };
+static const int LEDS_POR_PAD[NUM_PADS] = { 9, 8, 9, 8, 8, 9 };
 
 /* Offset de inicio de cada sección, calculado en ledsInit() a partir
    de LEDS_POR_PAD[] (suma acumulada). */
