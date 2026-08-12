@@ -1,40 +1,30 @@
 # 🥁 Batería Anti-Estrés Politécnico
 
-**Proyecto de Sistemas Embebidos — ESPOL**  
-Paralelo 101 · Ing. Karen Thamara Torres Medina  
-Estudiantes: Daniel Espinoza (Mecatrónica) · Maria Bravo (Telemática)
+**Proyecto de Sistemas Embebidos — ESPOL**
 
+Estudiantes:  Maria Bravo (Telemática) · Daniel Espinoza (Mecatrónica) 
+Paralelo 101 · Ing. Karen Thamara Torres Medina
 ---
-## MARIA NO OLVIDAR
-En la carpeta proyecto 
-pio run --target uploadfs
-pio device monitor 
 
 ## Descripción
 
-Batería electrónica interactiva de bajo costo construida sobre un **ESP32 DevKit V1**, con formato de máquina arcade. El sistema detecta golpes en pads físicos mediante sensores piezoeléctricos, genera respuesta luminosa (LEDs WS2812B), sonora (DFPlayer Mini) y visual (OLED SSD1306). Incluye tres modos de juego y un sistema IoT donde los jugadores se conectan desde su celular vía WiFi Access Point para registrarse y ver el ranking en tiempo real.
-
----
-
-## Cambios aplicados (retroalimentación del profesor)
-
-- **Pines ADC1 exclusivos:** los sensores piezoeléctricos se movieron a GPIO 34, 35, 32, 33, 36 y 39, todos pertenecientes al bloque ADC1, que está aislado físicamente de la antena WiFi. Los pines GPIO 25 y 26 (ADC2) fueron eliminados porque comparten circuitería con el módulo de radio y corrompían las lecturas cuando un celular interactuaba con el dashboard.
-- **C nativo estricto:** eliminado el uso de `String`, `bool`, `enum`, `map()` y `#pragma once` del código propio. Todo reemplazado con `char[]`, `int`, `#define`, aritmética manual y guards `#ifndef`. Las librerías externas (FastLED, Adafruit, AsyncWebServer) siguen siendo C++ porque no existe alternativa, pero todo el código del proyecto está escrito en estilo C nativo.
-- **EEPROM.h explícito:** el almacenamiento de redes WiFi usa `EEPROM.h` con posiciones de memoria fijas y documentadas, en lugar de `Preferences.h`, para cumplir exactamente el lineamiento del curso.
+Batería electrónica interactiva de bajo costo construida sobre un **ESP32**, con formato de máquina arcade, ahora ensamblada sobre **PCB**. El sistema detecta golpes en 5 pads físicos mediante sensores piezoeléctricos, genera respuesta luminosa (tira WS2812B de 52 LEDs), sonora (**dos** módulos DFPlayer Mini independientes) y visual (OLED SSD1306). Incluye **cuatro modos de juego** (Libre, Reflejos, Memoria y Canción/Ritmo) y un sistema IoT donde los jugadores se conectan desde su celular vía WiFi para registrarse, jugar y ver el ranking en tiempo real. Enfocado a un público amplio — niños en edad escolar, estudiantes y jóvenes — con el objetivo de estimular coordinación motriz, memoria, tiempo de reacción y reducción del estrés.
 
 ---
 
 ## Características principales
 
-- 6 pads con sensores piezoeléctricos y LEDs RGB individuales
-- Pantalla OLED 128×64 que indica qué pad tocar (árbitro del juego)
-- Audio con DFPlayer Mini y parlante 8Ω
-- 3 modos de juego: Libre, Reflejos y Memoria
-- WiFi Access Point propio del ESP32 (sin router externo)
-- Dashboard web accesible desde cualquier celular conectado al AP
-- Ranking en tiempo real vía WebSocket
-- Almacenamiento de 2 redes WiFi en memoria EEPROM
-- Alimentación portátil con 2 baterías 18650 recargables
+- 5 sensores piezoeléctricos (pad 6 actualmente **deshabilitado por software** — ver *Problemas conocidos*)
+- Tira de **52 LEDs WS2812B**, repartidos en 5 secciones de distinto tamaño (una por pad)
+- **Dos** DFPlayer Mini independientes: uno para los sonidos de golpe de cada pad, otro para las pistas de fondo del modo Canción
+- Pantalla OLED 128×64 que indica qué pad tocar
+- **4 modos de juego:** Libre, Reflejos, Memoria y Canción (ritmo musical sincronizado con LEDs)
+- 3 canciones activas: *Billie Jean*, *We Will Rock You* y *Seven Nation Army*
+- Umbral de detección de golpe **ajustable de forma independiente por pad**, no un solo valor global
+- WiFi con reconexión automática a 2 redes guardadas (EEPROM) y modo Access Point de respaldo si ninguna está disponible
+- Dashboard web (interfaz clara, con la paleta de los 5 LEDs físicos como lenguaje visual) accesible desde cualquier celular
+- Ranking en tiempo real vía WebSocket, persistente en LittleFS
+- Arquitectura sin condiciones de carrera entre el WebSocket y la lógica del juego (cola de acciones pendientes procesada desde un único hilo)
 
 ---
 
@@ -44,164 +34,80 @@ Batería electrónica interactiva de bajo costo construida sobre un **ESP32 DevK
 
 | Componente | Cantidad | Función |
 |---|---|---|
-| ESP32 DevKit V1 | 1 | Microcontrolador principal |
-| Sensor piezoeléctrico | 6 | Detectar golpes en los pads |
-| LED WS2812B | 6 | Iluminación RGB por pad |
-| DFPlayer Mini | 1 | Reproducción de audio |
-| Parlante 8Ω | 1 | Emisión de sonido |
+| ESP32  | 1 | Microcontrolador principal |
+| Sensor piezoeléctrico | 6 (1 deshabilitado) | Detectar golpes en los pads |
+| Tira LED WS2812B | 1 (52 LEDs) | Iluminación RGB por pad |
+| DFPlayer Mini | 2 | Audio de pads + pistas de fondo |
+| Parlante 8Ω | 2 | Emisión de sonido (uno por DFPlayer) |
 | OLED SSD1306 128×64 | 1 | Pantalla indicadora I2C |
-| Batería 18650 3.7V | 2 | Fuente de energía portátil |
-| Módulo TP4056 | 1 | Carga y protección de baterías |
-| Convertidor MT3608 Boost | 1 | Elevar voltaje 3.7V → 5V |
-| Resistencia 1MΩ | 6 | Pull-down para piezoeléctricos |
-| Resistencia 1kΩ | 1 | Protección línea TX → DFPlayer |
-| Interruptor | 1 | Encendido/apagado |
+| Resistencia 1kΩ | 2 | Protección línea TX → cada DFPlayer |
+| Fuente externa 5V | 1 | Alimentación del sistema completo |
+
 
 ---
 
-## Mapa completo de pines ESP32
+## Mapa de pines ESP32
+
+| GPIO | Función | Bloque |
+|---|---|---|
+| 4 | Datos tira LED WS2812B | — |
+| 14 | TX DFPlayer 2 (pistas de fondo) | UART2 |
+| 16 | RX DFPlayer 1 (sonidos de pads) | UART1 |
+| 17 | TX DFPlayer 1 | UART1 |
+| 21 | SDA OLED | I2C |
+| 22 | SCL OLED | I2C |
+| 27 | RX DFPlayer 2 | UART2 |
+| 32 | PAD 3 | ADC1 |
+| 33 | PAD 4 | ADC1 |
+| 34 | PAD 1 | ADC1 |
+| 35 | PAD 2 | ADC1 |
+| 36 | PAD 5 | ADC1 |
+| 39 | PAD 6 — **deshabilitado** | ADC1 |
+
+Todos los sensores piezoeléctricos están en pines **ADC1**, deliberadamente aislados del ADC2 (que no es confiable mientras el WiFi está activo). Los pines **GPIO 34, 35, 36 y 39 son input-only y no tienen resistencia pull-down interna** — necesitan resistencia externa a GND para no flotar y dar falsos positivos.
+
+
+
+### OLED SSD1306 — I2C
 
 ```
-                    ESP32 DevKit V1
-              ┌──────────────────────────┐
-         EN   │ EN              GPIO 23  │
-      GPIO 36 │ VP (ADC1) ←─── PIEZO 5  │ ← solo entrada, ADC1
-      GPIO 39 │ VN (ADC1) ←─── PIEZO 6  │ ← solo entrada, ADC1
-      GPIO 34 │ GPIO 34   ←─── PIEZO 1  │ ← solo entrada, ADC1
-      GPIO 35 │ GPIO 35   ←─── PIEZO 2  │ ← solo entrada, ADC1
-      GPIO 32 │ GPIO 32   ←─── PIEZO 3  │   ADC1
-      GPIO 33 │ GPIO 33   ←─── PIEZO 4  │   ADC1
-      GPIO 25 │ GPIO 25   (NO USAR)      │ ← ADC2 incompatible WiFi
-      GPIO 26 │ GPIO 26   (NO USAR)      │ ← ADC2 incompatible WiFi
-      GPIO 27 │ GPIO 27                  │
-      GPIO 14 │ GPIO 14                  │
-      GPIO 12 │ GPIO 12                  │
-          GND │ GND ────── GND común     │
-      GPIO 13 │ GPIO 13                  │
-              │ SD2                      │
-              │ SD3                      │
-              │ CMD                      │
-              │ SD0                      │
-              │ CLK                      │
-              │ SD1                      │
-         3.3V │ 3V3 ────── OLED VCC      │
-          GND │ GND                      │
-       GPIO 1 │ TX0  (monitor serie)     │
-       GPIO 3 │ RX0  (monitor serie)     │
-      GPIO 21 │ GPIO 21 ──── OLED SDA    │   I2C
-      GPIO 22 │ GPIO 22 ──── OLED SCL    │   I2C
-      GPIO 19 │ GPIO 19                  │
-      GPIO 18 │ GPIO 18                  │
-       GPIO 5 │ GPIO 5                   │
-      GPIO 17 │ GPIO 17 ──── DFPlayer RX │   UART2 TX del ESP32
-      GPIO 16 │ GPIO 16 ←─── DFPlayer TX │   UART2 RX del ESP32
-       GPIO 4 │ GPIO 4  ────► LED DIN    │   WS2812B data
-       GPIO 0 │ GPIO 0  (BOOT button)    │
-       GPIO 2 │ GPIO 2                   │
-      GPIO 15 │ GPIO 15                  │
-          GND │ GND                      │
-          VIN │ VIN ────── 5V bus        │ ← alimentación 5V
-              └──────────────────────────┘
-```
-
----
-
-## Conexiones detalladas por periférico
-
-### Sensores piezoeléctricos (×6) — solo ADC1
-
-> ⚠️ **Importante:** usar exclusivamente pines ADC1. El ADC2 comparte circuitería con el WiFi y las lecturas se corrompen durante la comunicación inalámbrica.
-
-```
-┌─────────┬──────────┬───────────────────────────┐
-│  PAD    │  GPIO    │  Bloque ADC               │
-├─────────┼──────────┼───────────────────────────┤
-│  PAD 1  │  34      │  ADC1 canal 6 (input-only)│
-│  PAD 2  │  35      │  ADC1 canal 7 (input-only)│
-│  PAD 3  │  32      │  ADC1 canal 4             │
-│  PAD 4  │  33      │  ADC1 canal 5             │
-│  PAD 5  │  36 (VP) │  ADC1 canal 0 (input-only)│
-│  PAD 6  │  39 (VN) │  ADC1 canal 3 (input-only)│
-└─────────┴──────────┴───────────────────────────┘
-```
-
-Esquema de conexión por cada pad:
-
-```
-Piezoeléctrico (+) ──┬──── GPIO (34 / 35 / 32 / 33 / 36 / 39)
-                     │
-                    1MΩ   (resistencia pull-down a GND)
-                     │
-Piezoeléctrico (-) ──┴──── GND
-```
-
-Los pines 34, 35, 36 y 39 son input-only (no tienen pull-up/pull-down interno), por eso se requiere la resistencia externa de 1MΩ a GND para fijar el nivel en reposo.
-
----
-
-### OLED SSD1306 128×64 — I2C
-
-```
-OLED VCC  ────  3.3V  (regulador interno del ESP32)
-OLED GND  ────  GND
-OLED SDA  ────  GPIO 21
-OLED SCL  ────  GPIO 22
+VCC ── 3.3V (regulador interno ESP32)
+GND ── GND
+SDA ── GPIO 21
+SCL ── GPIO 22
 Dirección I2C: 0x3C
 ```
 
----
-
-### LEDs WS2812B (×6 en cadena)
+### DFPlayer 1 — sonidos de pads (UART1)
 
 ```
-LED VCC   ────  5V bus  (desde MT3608)
-LED GND   ────  GND
-LED DIN   ────  GPIO 4
-
-Cadena: GPIO 4 ──► LED1 DIN → DOUT ──► LED2 DIN → DOUT ──► ... ──► LED6
+VCC  ── 5V
+GND  ── GND
+RX   ── GPIO 16  (ESP32 recibe)
+TX   ── GPIO 17  (ESP32 envía, con resistencia 1kΩ en serie)
+SD con 0001-0006.mp3 en la raíz (bombo, caja, hi-hat, tom grave, tom agudo, crash)
 ```
 
-> Agregar un condensador de 100µF entre VCC y GND del bus de 5V para absorber picos de corriente de los LEDs.
-
----
-
-### DFPlayer Mini + Parlante 8Ω — UART2
+### DFPlayer 2 — pistas de fondo (UART2)
 
 ```
-DFPlayer VCC   ────  5V bus
-DFPlayer GND   ────  GND
-DFPlayer RX    ────  GPIO 17  (a través de resistencia 1kΩ en serie)
-DFPlayer TX    ────  GPIO 16
-DFPlayer SPK1  ────  Parlante 8Ω terminal (+)
-DFPlayer SPK2  ────  Parlante 8Ω terminal (-)
+VCC  ── 5V
+GND  ── GND
+RX   ── GPIO 27  (ESP32 recibe)
+TX   ── GPIO 14  (ESP32 envía, con resistencia 1kΩ en serie)
+SD con 0001-0005.mp3 en la raíz (canciones)
 ```
 
-La resistencia de 1kΩ en la línea RX protege el DFPlayer de niveles de voltaje incorrectos.
-
----
-
-### Sistema de alimentación
+### Tira LED WS2812B
 
 ```
-Baterías 18650 × 2 (paralelo)
-  3.7V · ~5000 mAh combinados
-       │
-    TP4056
-  (carga microUSB + protección sobredescarga)
-       │
-  Interruptor ON/OFF
-       │
-    MT3608 Boost
-  (3.7V ──► 5V · máx 2A)
-       │
-       ├──── VIN del ESP32  (5V)
-       ├──── VCC LEDs WS2812B  (5V)
-       └──── VCC DFPlayer Mini  (5V)
-
-La OLED toma 3.3V del regulador interno del ESP32.
+VCC ── 5V
+GND ── GND
+DIN ── GPIO 4
+52 LEDs repartidos en 6 secciones de distinto tamaño (ver LEDS_POR_PAD en leds.cpp)
 ```
 
-> ⚠️ **Advertencia térmica MT3608:** no operar el convertidor al límite de su eficiencia. Mantener la corriente total por debajo de 1.5A para evitar calentamiento crítico y caídas de voltaje. Si los LEDs están todos al máximo simultáneamente, reducir el brillo en el código (`FastLED.setBrightness(80)`).
+> ⚠️ Verificar en `leds.cpp` que la suma de `LEDS_POR_PAD[]` coincida exactamente con `NUM_LEDS` de `platformio.ini` — un desajuste no corrompe memoria (hay clamps de seguridad) pero deja LEDs sin asignar o secciones más cortas de lo esperado.
 
 ---
 
@@ -209,10 +115,9 @@ La OLED toma 3.3V del regulador interno del ESP32.
 
 ### Entorno de desarrollo
 
-- **IDE:** Visual Studio Code + PlatformIO
-- **Framework:** Arduino para ESP32
-- **Lenguaje:** C nativo (archivos `.cpp` requeridos por las librerías externas, pero sin clases propias, sin `String`, sin `bool`, sin `enum`)
-- **Sistema de archivos:** LittleFS
+ **IDE:** Visual Studio Code + PlatformIO
+ **Framework:** Arduino para ESP32
+ **Sistema de archivos:** LittleFS
 
 ### Estructura del proyecto
 
@@ -220,51 +125,61 @@ La OLED toma 3.3V del regulador interno del ESP32.
 bateria-antistress/
 ├── platformio.ini
 ├── data/
-│   ├── index.html       ← dashboard web (SPA pasiva)
-│   └── scores.json      ← ranking persistente
+│   ├── index.html        ← dashboard web
+│   └── scores.json       ← ranking persistente
 └── src/
-    ├── main.cpp         ← setup() + loop()
-    ├── wifi_manager.h/cpp  ← AP WiFi + EEPROM 2 redes
-    ├── oled_display.h/cpp  ← pantallas OLED del juego
-    ├── pads.h/cpp          ← ADC piezoeléctricos + debounce
-    ├── leds.h/cpp          ← WS2812B FastLED
-    ├── audio.h/cpp         ← DFPlayer Mini UART2
-    ├── scores.h/cpp        ← LittleFS JSON top 20
-    ├── web_server.h/cpp    ← AsyncWebServer + WebSocket
-    └── game_modes.h/cpp    ← lógica de los 3 modos
+    ├── main.cpp             ← setup() + loop()
+    ├── tipos_juego.h        ← struct NotaRitmica, constantes de timing
+    ├── wifi_manager.h/cpp   ← STA (2 redes en EEPROM) + fallback AP
+    ├── oled_display.h/cpp   ← pantallas OLED del juego
+    ├── pads.h/cpp           ← ADC piezoeléctricos, debounce, umbral por pad
+    ├── leds.h/cpp           ← WS2812B FastLED (52 LEDs, secciones desiguales)
+    ├── audio.h/cpp          ← dos DFPlayer Mini (pads + pistas)
+    ├── scores.h/cpp         ← LittleFS JSON top 20
+    ├── web_server.h/cpp     ← AsyncWebServer + WebSocket + cola de acciones
+    ├── game_modes.h/cpp     ← lógica de Libre, Reflejos y Memoria
+    ├── modo_cancion.h/cpp   ← lógica del modo Canción (ritmo musical)
+    ├── pista_billie_jean.h        ← notas de Billie Jean (activa)
+    ├── pista_seven_nation.h       ← notas de Seven Nation Army (activa)
+    ├── pista_we_will_rock_you.h   ← notas de We Will Rock You (activa)
+    ├── pista_camisa_negra.h       ← pendiente (no incluida en la tabla)
+    └── pista_overcompensate.h     ← pendiente (no incluida en la tabla)
 ```
 
 ### Librerías utilizadas
 
-| Librería | Versión | Uso |
-|---|---|---|
-| ESPAsyncWebServer | latest | Servidor web asíncrono |
-| AsyncTCP | latest | TCP asíncrono |
-| ArduinoJson | ^7.0.0 | Serialización JSON |
-| FastLED | 3.5.0 | Control LEDs WS2812B |
-| DFRobotDFPlayerMini | ^1.0.5 | Módulo de audio |
-| Adafruit SSD1306 | ^2.5.7 | Driver OLED |
-| Adafruit GFX Library | ^1.11.9 | Gráficos OLED |
+| Librería | Uso |
+|---|---|
+| ESPAsyncWebServer + AsyncTCP | Servidor web y WebSocket asíncrono |
+| ArduinoJson | Serialización JSON |
+| FastLED | Control tira WS2812B |
+| DFRobotDFPlayerMini | Control de los dos módulos de audio |
+| Adafruit SSD1306 + GFX | Driver y gráficos OLED |
+| LittleFS | Sistema de archivos (dashboard + scores) |
+| EEPROM | Persistencia de credenciales WiFi |
 
 ### Parámetros configurables en `platformio.ini`
 
 | Parámetro | Valor | Descripción |
 |---|---|---|
-| `PIN_PAD0` | 34 | Piezoeléctrico PAD 1 — ADC1 |
-| `PIN_PAD1` | 35 | Piezoeléctrico PAD 2 — ADC1 |
-| `PIN_PAD2` | 32 | Piezoeléctrico PAD 3 — ADC1 |
-| `PIN_PAD3` | 33 | Piezoeléctrico PAD 4 — ADC1 |
-| `PIN_PAD4` | 36 | Piezoeléctrico PAD 5 — ADC1 |
-| `PIN_PAD5` | 39 | Piezoeléctrico PAD 6 — ADC1 |
-| `PIN_LEDS` | 4 | Data LEDs WS2812B |
-| `OLED_SDA` | 21 | SDA pantalla OLED |
-| `OLED_SCL` | 22 | SCL pantalla OLED |
-| `PIN_DFP_RX` | 16 | RX ESP32 ← TX DFPlayer |
-| `PIN_DFP_TX` | 17 | TX ESP32 → RX DFPlayer |
-| `PIEZO_UMBRAL` | 300 | Umbral ADC golpe (0–4095) |
-| `TIEMPO_REFLEJO_MS` | 1500 | Tiempo reacción modo Reflejos |
+| `PIN_PAD0`…`PIN_PAD5` | 34,35,32,33,36,39 | Piezoeléctricos, ADC1 |
+| `PIN_LEDS` | 4 | Data tira WS2812B |
+| `NUM_LEDS` | 52 | Cantidad total de LEDs de la tira (**verificar que coincida con el conteo físico real**) |
+| `OLED_SDA` / `OLED_SCL` | 21 / 22 | I2C OLED |
+| `PIN_DFP1_RX` / `PIN_DFP1_TX` | 16 / 17 | UART1 — DFPlayer de pads |
+| `PIN_DFP2_RX` / `PIN_DFP2_TX` | 27 / 14 | UART2 — DFPlayer de pistas |
+| `PIEZO_UMBRAL` | 300 | Umbral ADC por defecto (0-4095) — cada pad puede tener su propio valor, ver `UMBRALES[]` en `pads.cpp` |
+| `TIEMPO_REFLEJO_MS` | 1500 | Tiempo de reacción en modo Reflejos |
 
-### Mapa de memoria EEPROM
+### Ajuste de sensibilidad por pad
+
+`pads.cpp` define un arreglo `UMBRALES[NUM_PADS]` — cada pad tiene su propio umbral de detección, independiente de los demás. Útil porque no todos los GPIO se comportan igual: los pines input-only (34, 35, 36, 39) no tienen pull-down interno y son más sensibles a ruido de fondo, y GPIO32/33 comparten circuitería con el oscilador RTC de 32.768kHz de la placa, lo que les da un piso de ruido más alto y estable incluso sin nada conectado. Para calibrar, mirar los valores `[PAD DEBUG] GPIOxx = ...` que imprime el monitor serie y ajustar el número de la línea correspondiente en `UMBRALES[]`.
+
+### Deshabilitar/rehabilitar un pad por software
+
+`pads.cpp` tiene `#define PAD_DESHABILITADO N` (índice 0-5, actualmente `5` = pad 6/GPIO39). El pad deshabilitado se ignora por completo en la detección (`leerGolpe()`) y en la selección aleatoria de objetivos de Reflejos/Memoria (`NUM_PADS_ACTIVOS` en `game_modes.cpp`). Para rehabilitarlo, poner `PAD_DESHABILITADO -1` y `NUM_PADS_ACTIVOS = NUM_PADS`.
+
+### Mapa de memoria EEPROM (WiFi)
 
 ```
 Dirección   0 →  SSID red 1  (32 bytes)
@@ -283,71 +198,69 @@ Total reservado: 192 bytes
 
 ```
 Celular → Login + selección de modo
-       → ESP32 arranca el juego
-       → OLED muestra pad objetivo
-       → LED del pad enciende
+       → WS: {accion: iniciar_juego / iniciar_cancion}
+       → El callback de WS solo deja la accion pendiente (no ejecuta directo)
+       → loop() la procesa en el hilo principal (evita condiciones de carrera)
+       → OLED / LEDs indican qué pad tocar
        → Jugador golpea el pad físico
-       → Piezo detecta intensidad (ADC1)
-       → ESP32 valida
-       → LED anima + OLED actualiza + audio suena
-       → WebSocket → celular muestra score
+       → Piezo detecta intensidad (umbral por pad)
+       → ESP32 valida, LED responde, audio suena
+       → WebSocket → celular actualiza score en tiempo real
 ```
 
 ### 🎵 Modo Libre
-
-- Toca cualquier pad libremente
-- Puntos proporcionales a la intensidad del golpe (ADC 0–4095)
-- Sin límite de tiempo ni vidas
-- OLED muestra puntuación acumulada
+Toca cualquier pad libremente. Puntos proporcionales a la intensidad del golpe. Sin límite de tiempo ni vidas.
 
 ### ⚡ Modo Reflejos
-
-- ESP32 elige pad aleatorio → LED enciende → OLED muestra "TOCA PAD X" + barra de tiempo
-- 1500 ms para golpear el pad correcto
-- Acierto: `100 × combo` puntos
-- Fallo o tiempo agotado: pierde una vida, combo reinicia
-- Combo sube cada 5 aciertos consecutivos (máximo x8)
-- 3 vidas — al llegar a 0 termina el juego
+ESP32 elige un pad al azar (excluyendo el pad deshabilitado) → LED enciende → hay `TIEMPO_REFLEJO_MS` para golpearlo. Acierto: `100 × combo` puntos. Fallo o tiempo agotado: pierde una vida, combo reinicia. Combo sube cada 5 aciertos consecutivos (máx. x8). 3 vidas.
 
 ### 🧠 Modo Memoria
+La secuencia crece cada ronda (1 pad → hasta 12). El OLED/LEDs muestran la secuencia, luego el turno del jugador. Acierto completo de ronda: `150 × ronda × combo` puntos. Error: pierde una vida y repite la ronda. 3 vidas, máximo 12 rondas.
 
-- Secuencia crece cada ronda (1 pad → 2 → ... → 12)
-- OLED muestra la secuencia completa, luego el turno del jugador
-- Acierto completo: `150 × ronda × combo` puntos
-- Error: pierde una vida y repite la misma ronda
-- 3 vidas — máximo 12 rondas
+### 🎸 Modo Canción
+Suena una pista de fondo real (DFPlayer 2) mientras los LEDs indican, con anticipación, qué pad tocar y cuándo, según una partitura transcrita a milisegundos. Acierto perfecto: `200 × combo`; acierto dentro de ventana: `100 × combo`. El feedback visual usa un flash de LED **no bloqueante** (no usa `delay()`) para no desincronizar las notas siguientes. No se puede iniciar simultáneamente con Libre/Reflejos/Memoria (exclusión mutua por software).
+
+**Canciones activas:**
+
+| id | Canción | BPM | Pads usados | Notas |
+|---|---|---|---|---|
+| 0 | Billie Jean | 117 | Bombo, Caja, Hi-Hat | 1436 |
+| 2 | We Will Rock You | 87 | Bombo, Hi-Hat (platillo remapeado desde el pad deshabilitado) | 240 (compases 1-40; el final de la canción no está transcrito) |
+| 4 | Seven Nation Army | 126 | Bombo, Caja, Tom piso, Hi-Hat | 128 |
+
+Camisa Negra (id 1) y Overcompensate (id 3) tienen archivo de notas pero no están conectados a la tabla activa (`tablaNotas[]` en `modo_cancion.cpp`).
 
 ---
 
 ## Interfaz web (dashboard)
 
 ### Acceso
-
-1. Conectar al WiFi: **`BateriaESPOL`** / contraseña: **`bateria123`**
-2. Abrir navegador en: **`http://192.168.4.1`**
+1. Conectarse a la red WiFi que el ESP32 tenga configurada, o al Access Point de respaldo **`BateriaESPOL`** / **`bateria123`** si no hay red guardada.
+2. Abrir el navegador en la IP que muestra el OLED al iniciar (`192.168.4.1` en modo AP).
 
 ### Pantallas
-
 | Pantalla | Descripción |
 |---|---|
 | Login | Ingresar nombre del jugador |
-| Selección de modo | Elegir entre Libre, Reflejos o Memoria |
-| Juego | Score en tiempo real, vidas, combo, feed de eventos |
+| Selección de modo | Libre, Reflejos, Memoria o Canción |
+| Selección de canción | Lista de canciones activas con BPM y cantidad de notas |
+| Juego | Score en tiempo real, vidas o progreso de canción, combo, feed de eventos |
 | Resultado | Puntuación final, aciertos, combo máximo |
-| Ranking | Top 10 global y por modo, tiempo real |
-| Config WiFi | Guardar hasta 2 redes en EEPROM (botón ⚙️) |
+| Ranking | Top 10 global y por modo/canción, tiempo real |
+| Config WiFi | Guardar hasta 2 redes en EEPROM |
 
 ### Protocolo WebSocket
 
 **Celular → ESP32:**
 ```json
 { "accion": "iniciar_juego", "modo": "reflejos", "jugador": "Daniel" }
+{ "accion": "iniciar_cancion", "id": 2, "jugador": "Daniel" }
 { "accion": "terminar_juego" }
 { "accion": "get_scores" }
 { "accion": "guardar_wifi", "slot": 0, "ssid": "MiRed", "pass": "clave" }
 ```
 
-**ESP32 → Celular:**
+**ESP32 → Celular (modos clásicos):**
 ```json
 { "evento": "juego_iniciado", "vidas": 3, "modo": "reflejos" }
 { "evento": "pad_objetivo", "pad": 2, "ronda": 5 }
@@ -358,6 +271,17 @@ Celular → Login + selección de modo
 { "evento": "turno_jugador", "paso": 2, "total": 4, "ronda": 4 }
 { "evento": "ronda_completada", "ronda": 4, "puntos_total": 1200 }
 { "evento": "juego_terminado", "puntos_final": 1200 }
+```
+
+**ESP32 → Celular (modo Canción):**
+```json
+{ "evento": "cancion_iniciada", "cancion": "We Will Rock You", "jugador": "Daniel", "vidas": 3 }
+{ "evento": "nota_hit", "pad": 0, "puntos": 200, "perfecto": true, "combo": 3 }
+{ "evento": "nota_miss", "pad": 2, "vidas": 2 }
+{ "evento": "cancion_terminada", "puntos_final": 3400, "aciertos": 180, "fallos": 20, "cancion": "We Will Rock You" }
+```
+
+```json
 { "scores": [ { "nombre": "Daniel", "modo": "reflejos", "puntos": 1200 } ] }
 ```
 
@@ -366,20 +290,19 @@ Celular → Login + selección de modo
 ## Pasos para cargar el proyecto
 
 ### 1. Abrir en VSCode
-Abrir la carpeta `bateria-antistress/` con PlatformIO instalado.
+Abrir la carpeta del proyecto con PlatformIO instalado.
 
 ### 2. Compilar y subir firmware
 ```
 PlatformIO: Build    → verifica errores de compilación
 PlatformIO: Upload   → sube el firmware al ESP32
 ```
-Si sale "Write timeout": mantener presionado el botón **BOOT** del ESP32 al momento en que aparece `Connecting...` en el terminal.
 
 ### 3. Subir el filesystem
 ```
-PlatformIO: Upload Filesystem Image  → sube la carpeta data/ al ESP32
+PlatformIO: Upload Filesystem Image  → sube la carpeta data/ (index.html + scores.json)
 ```
-Sin este paso el ESP32 no puede servir la página web.
+Sin este paso el ESP32 responde "Not found" al abrir el dashboard — es un paso separado de subir el firmware, hay que hacer ambos.
 
 ### 4. Monitor serie (debug)
 ```
@@ -388,95 +311,37 @@ PlatformIO: Monitor  → 115200 baud
 Salida esperada:
 ```
 === BATERIA ANTI-ESTRES ESPOL ===
+[OLED] SSD1306 listo
 [SCORES] LittleFS listo
 [PADS] 6 sensores piezoelectricos listos
-[LEDS] FastLED listo
-[AUDIO] DFPlayer listo
-[WiFi] AP activo  IP: 192.168.4.1
+[LEDS] FastLED listo — 52 LEDs, 6 pads (secciones: ...)
+[AUDIO] DFPlayer 1 (pads) listo
+[AUDIO] DFPlayer 2 (pistas) listo
+[WiFi] AP activo  IP: 192.168.4.1   (o conectado a red guardada)
 [SERVER] HTTP + WS activo en puerto 80
 [MAIN] Setup completo. Esperando jugador...
 ```
 
 ---
 
-## Archivos de audio (DFPlayer Mini)
+## Problemas conocidos / pendientes
 
-Copiar en la microSD dentro de una carpeta llamada `01/` (FAT32):
-
-```
-microSD/
-└── 01/
-    ├── 0001.mp3   ← golpe correcto
-    ├── 0002.mp3   ← golpe incorrecto
-    ├── 0003.mp3   ← combo conseguido
-    ├── 0004.mp3   ← ronda completada
-    ├── 0005.mp3   ← game over
-    ├── 0006.mp3   ← tick cuenta regresiva
-    ├── 0007.mp3   ← sonido PAD 1 (bombo)
-    ├── 0008.mp3   ← sonido PAD 2 (caja)
-    ├── 0009.mp3   ← sonido PAD 3 (hi-hat cerrado)
-    ├── 0010.mp3   ← sonido PAD 4 (hi-hat abierto)
-    ├── 0011.mp3   ← sonido PAD 5 (tom)
-    └── 0012.mp3   ← sonido PAD 6 (crash)
-```
+- **Pad 6 (GPIO39) deshabilitado por software** — falso contacto detectado en el PCB. Ver `PAD_DESHABILITADO` en `pads.cpp`. Pendiente: revisión física del PCB (continuidad de la resistencia pull-down y de la traza/vía hacia GPIO39).
+- **Verificar `NUM_LEDS` vs. suma de `LEDS_POR_PAD[]`** — deben coincidir exactamente; el monitor serie avisa si no cuadran (`[LEDS] ERROR: ...`).
+- **`oledTurnoJugador()` no actualiza la pantalla** durante el turno del jugador en modo Memoria (quedó vacía tras un refactor; la lógica de turno sigue funcionando vía WebSocket, solo el texto en el OLED físico no se actualiza en ese momento puntual).
+- **`ipActual()` en `wifi_manager.cpp`** puede devolver una IP corrupta de forma intermitente al mostrarla en el OLED (uso de un `String` temporal ya liberado).
+- **Buffer de scores JSON con tamaños distintos** entre `web_server.cpp` (4096 bytes) y los broadcasts de fin de juego en `game_modes.cpp`/`modo_cancion.cpp` (2048 bytes) — no debería truncarse en uso normal, pero conviene unificar si el ranking crece mucho.
+- **We Will Rock You** solo tiene transcrito el patrón principal (compases 1-40); el final de la canción (relleno de batería) no está incluido.
 
 ---
 
-## Ajuste del umbral piezoeléctrico
+## Consideraciones de seguridad (público infantil)
 
-Si los pads no detectan golpes o hay falsos positivos, ajustar en `platformio.ini`:
-
-```ini
--DPIEZO_UMBRAL=300
-```
-
-Para calibrar, agregar temporalmente en `pads.cpp`:
-```c
-Serial.printf("PAD %d: %d\n", i, analogRead(PINES[i]));
-```
-Un golpe normal lee entre 500 y 2000. El umbral debe estar bajo el mínimo de golpe real.
+- Los pads son sensores piezoeléctricos de bajo voltaje, sin partes eléctricas expuestas al contacto directo del usuario.
+- El volumen de ambos DFPlayer es ajustable por software (`setVolumenPads()` / `setVolumenPista()`, 0-30).
+- No hay componentes de alto consumo o generación de calor accesibles al usuario.
+- Los nombres de jugador se almacenan únicamente dentro del ESP32 (LittleFS), no se transmiten a servidores externos.
 
 ---
 
-## Especificaciones eléctricas
-
-| Parámetro | Valor |
-|---|---|
-| Voltaje de entrada | 3.7V (baterías 18650) |
-| Voltaje de operación | 5V (boost MT3608) |
-| Consumo ESP32 | ~0.79W |
-| Consumo LEDs WS2812B (máx.) | ~7.20W |
-| Consumo DFPlayer + parlante | ~1.50W |
-| Potencia total máxima | ~9.49W |
-| Corriente máxima bus 5V | ~2A |
-| Autonomía estimada | 3–5 horas (5000mAh) |
-| Temperatura de operación | 20°C – 45°C |
-
----
-
-## Presupuesto estimado
-
-| Componente | Precio (USD) |
-|---|---|
-| ESP32 DevKit V1 | $12.00 |
-| Sensores piezoeléctricos ×6 | ~$21.00 ($3.48 c/u) |
-| LEDs WS2812B ×6 | $5.00 |
-| DFPlayer Mini | $4.50 |
-| Parlante 8Ω | $1.50 |
-| Baterías 18650 ×2 | $3.35 |
-| Módulo TP4056 | $1.50 |
-| Convertidor MT3608 | $2.00 |
-| OLED SSD1306 | $6.40 |
-| **Total estimado** | **$57–70 USD** |
-
----
-
-## Consideraciones éticas
-
-- Los nombres de usuario se almacenan únicamente dentro del ESP32 y no se transmiten a servidores externos.
-- El volumen se mantiene en niveles moderados para evitar contaminación auditiva.
-- El uso de baterías recargables reduce la generación de residuos electrónicos.
-
----
-
-*Proyecto desarrollado como parte del curso de Laboratorio de Sistemas Embebidos — ESPOL 2026
+*Proyecto desarrollado como parte del curso de Laboratorio de Sistemas Embebidos — ESPOL 2026*
