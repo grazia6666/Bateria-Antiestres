@@ -35,11 +35,11 @@ La Batería Anti-Estrés Politécnico es un instrumento electrónico interactivo
 
 **Interfaces entre componentes**
 
-![Interfaces entre Componentes](imgs/interfaces_componentes.png)
+![Interfaces entre Componentes](imgs/interfaces_componentes1.png)
 
 **Interacción con el usuario**
 
-![Interacción con el Usuario](imgs/interaccion_usuario.png)
+![Interacción con el Usuario](imgs/interaccion_usuario2.png)
 
 ## 7. Alternativas de Diseño y Justificación Técnica
 
