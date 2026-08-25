@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# 🥁 Batería Anti-Estrés Politécnico
-
-
 # Batería Anti-Estrés Politécnico
 
 **Integrantes**: Maria Grazia Bravo, Daniel Espinoza
@@ -70,4 +66,3 @@ Se aplicarán pruebas sistemáticas para asegurar la robustez del diseño:
 - **Contaminación Acústica**: El uso de un parlante de 3W puede resultar disruptivo en entornos académicos o de trabajo. Mitigación: Se implementará un control estricto del volumen máximo del DFPlayer por software, gestionable desde la interfaz web, para limitar los decibelios emitidos.
 
 - **Gestión de Residuos Electrónicos**: La utilización de celdas de iones de litio 18650 representa un riesgo químico y de incendio si se perforan o se someten a estrés excesivo. Mitigación: El diseño encierra las baterías en un habitáculo rígido aislado, apoyado exclusivamente en el módulo de protección del TP4056 para prevenir cortocircuitos. Se incluirán advertencias en el manual sobre la disposición final en centros de reciclaje de E-waste.
->>>>>>> grazia
